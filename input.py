@@ -1,8 +1,8 @@
-def input():
+def construct_input():
     inp = {}
 #Do not change lines above
 
-    inp['t0'] = 1
+    inp['t0'] = 0
     inp['tend'] = 20
     inp['dtout'] = 2
 
