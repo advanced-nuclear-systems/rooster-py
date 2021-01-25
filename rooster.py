@@ -29,13 +29,17 @@ class Reactor:
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.neutron = Neutron(self)
+        self.control = Control(self)
         solve(self)
 #--------------------------------------------------------------------------------------------------
 def solve(reactor):
 
     def construct_rhs(t, y):
         rhs = []
+        rhs += reactor.solid.calculate_rhs(reactor,t,y)
         rhs += reactor.fluid.calculate_rhs(reactor,t,y)
+        rhs += reactor.neutron.calculate_rhs(reactor,t,y)
+        rhs += reactor.control.calculate_rhs(reactor,t,y)
         return rhs
 
     solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
