@@ -12,7 +12,6 @@
 #--------------------------------------------------------------------------------------------------
 from control import Control
 from fluid import Fluid
-from input import construct_input
 from neutron import Neutron
 from solid import Solid
 
@@ -20,16 +19,13 @@ from solid import Solid
 #     python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.integrate import ode
 
-import json
-
 #--------------------------------------------------------------------------------------------------
 class Reactor:
     def __init__(self):
-        self.input = construct_input()
+        self.control = Control(self)
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.neutron = Neutron(self)
-        self.control = Control(self)
         solve(self)
 #--------------------------------------------------------------------------------------------------
 def solve(reactor):
@@ -43,15 +39,16 @@ def solve(reactor):
         return rhs
 
     solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
-    t0 = reactor.input['t0']
+    t0 = reactor.control.input['t0']
     y0 = [0, 0]
     solver.set_initial_value(y0, t0)
-    dtout = reactor.input['dtout']
-    tend = reactor.input['tend']
-    while solver.successful() and solver.t < tend:
-        time = solver.t + dtout
-        y = solver.integrate(time)
-        print(time, y)
+    for t_dt in reactor.control.input['t_dt'] :
+       tend = t_dt[0]
+       dtout = t_dt[1]
+       while solver.successful() and solver.t < tend:
+           time = solver.t + dtout
+           y = solver.integrate(time)
+           print(time, y)
 
 #--------------------------------------------------------------------------------------------------
 # create and solve
