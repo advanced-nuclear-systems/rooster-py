@@ -12,5 +12,7 @@ t_dt      200.      0.2
 signal    time      time
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      type      signal    in        out
-computer  time_rho  lookup    time      0.0       0.0
+*****     insignal  outsignal
+lookup    time      rho_ins &
+          0.0       0.0     &
+          1.0       1.0e-5  &
