@@ -48,7 +48,7 @@ def solve(reactor):
        while solver.successful() and solver.t < tend:
            time = solver.t + dtout
            y = solver.integrate(time)
-           print(time, y)
+#           print(time, y)
 
 #--------------------------------------------------------------------------------------------------
 # create and solve

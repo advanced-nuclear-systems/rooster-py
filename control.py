@@ -17,6 +17,7 @@ def construct_input():
     inp = {}
     inp['t0'] = 0 #default
     inp['t_dt'] = [] #no default
+    inp['signal'] = [] #no default
 
     #read input file line by line
     f = open('input', mode = 'r')
@@ -33,7 +34,15 @@ def construct_input():
             #--------------------------------------------------------------------------------------
             elif key == 't_dt' :
                 inp['t_dt'].append([float(word[1]), float(word[2])])
+            #--------------------------------------------------------------------------------------
+            elif key == 'signal' :
+                 signal = {}
+                 signal['type'] = word[1]
+                 signal['userid'] = word[2]
+                 signal['sign'] = word[3:]
+                 inp['signal'].append(signal)
 
+    print(inp)
     #verification
     if inp['t_dt'] == [] :
         print('ERROR: Card t_dt specifying time_end and dtime_out is obligatory')
