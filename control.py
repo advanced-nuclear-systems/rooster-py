@@ -16,15 +16,11 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
+    inp['lookup'] = [] #no default
+    inp['signal'] = [] #no default
     inp['t0'] = 0 #default
     inp['t_dt'] = [] #no default
-    inp['signal'] = [] #no default
-    inp['lookup'] = [] #no default
-
-#    #read input file line by line
-#    f = open('input', mode = 'r')
-#    lines = f.readlines()
-#    f.close()
+    inp['pnltime'] = '' #no default
 
     #read input file as a whole
     f = open('input', mode = 'r')
@@ -51,18 +47,25 @@ def construct_input():
         except :
             pass
         return w
+
     for line in lines:
         word = line.split()
         word = list(map(convert_to_float, word))
 
         key = word[0].lower()
         #--------------------------------------------------------------------------------------
-        if key == 't0' :
-            inp['t0'] = word[1]
+        # just placeholder
+        if key == '' :
+            pass
         #--------------------------------------------------------------------------------------
-        elif key == 't_dt' :
-            inp['t_dt'].append([word[1], word[2]])
+        # lookup table
+        elif key == 'lookup' :
+             lookup = {}
+             lookup['x'] = word[1::2]
+             lookup['f(x)'] = word[2::2]
+             inp['lookup'].append(lookup)
         #--------------------------------------------------------------------------------------
+        # signal varibale
         elif key == 'signal' :
              signal = {}
              signal['type'] = word[1]
@@ -70,11 +73,18 @@ def construct_input():
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
-        elif key == 'lookup' :
-             lookup = {}
-             lookup['x'] = word[1::2]
-             lookup['f(x)'] = word[2::2]
-             inp['lookup'].append(lookup)
+        # starting time
+        elif key == 't0' :
+            inp['t0'] = word[1]
+        #--------------------------------------------------------------------------------------
+        # end of time interval and output time step for this interval
+        elif key == 't_dt' :
+            inp['t_dt'].append([word[1], word[2]])
+        #--------------------------------------------------------------------------------------
+        # prompt neutron lifetime
+        elif key == 'pnltime' :
+            inp['pnltime'] = word[1]
+
     #verification
     if inp['t_dt'] == [] :
         print('****ERROR: obligatory card t_dt specifying time_end and dtime_out is absent.')
