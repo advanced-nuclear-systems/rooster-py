@@ -8,14 +8,26 @@ t0        0.0
 t_dt      100.      0.1
 t_dt      200.      0.2
 *
-*****     prompt_neutron_life_time
-pnltime   1.0e-7
-*
-*****     name      type
-signal    TIME      time
+*****     type      userid
+signal    time      TIME
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     insignal  outsignal
 lookup    TIME      RHO_INS &
           0.0       0.0     &
           1.0       1.0e-5
+*
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+*****     insignal  outsignal
+lookup    TIME      BLAHBLAH &
+          0.0       0.0     &
+          1.0       1.0e-5
+*
+*****     prompt_neutron_life_time
+tlife     1.0e-7
+*
+*****     delayed neutron precursor decay time constants
+dnplmb    0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+*
+*****     delayed neutron precursor decay time constants
+betaeff   0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2

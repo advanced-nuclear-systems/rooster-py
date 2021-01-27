@@ -31,6 +31,7 @@ class Reactor:
 def solve(reactor):
 
     def construct_rhs(t, y):
+        reactor.control.evaluate(reactor,t,y)
         rhs = []
         rhs += reactor.solid.calculate_rhs(reactor,t,y)
         rhs += reactor.fluid.calculate_rhs(reactor,t,y)
