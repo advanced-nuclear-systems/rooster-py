@@ -1,3 +1,5 @@
+from scipy.interpolate import interp1d
+
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -13,19 +15,23 @@ class Control:
         rhs = []
         return rhs
 
-    def evaluate(self,reactor, t, y):
+    def evaluate(self, reactor, t, y):
         # evaluate signals
-        for s in reactor.control.input['signal'] :
+        for s in self.input['signal'] :
             if s['type'] == 'time' :
                 self.signal[s['userid']] = t
 
         #evaluate output signals of lookup tables
-        lookup_table = reactor.control.input['lookup']
+        lookup_table = self.input['lookup']
         for table in lookup_table :
-            insignal = table['x'][0]
-            outsignal = table['f(x)'][0]
-            #if table['f(x)'][0] == 'RHO_INS' :
-            #    self.lookup['RHO_INS'](table)
+            insignal_name = table['x'][0]
+            outsignal_name = table['f(x)'][0]
+            x = table['x'][1:]
+            y = table['f(x)'][1:]
+            f = interp1d(x, y) #scipy function
+            xnew = max(min(self.signal[insignal_name],x[-1]),x[0])
+            ynew = f(xnew)
+            self.signal[outsignal_name] = ynew
 
 #--------------------------------------------------------------------------------------------------
 def construct_input():
