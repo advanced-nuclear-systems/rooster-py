@@ -4,7 +4,8 @@ class Fluid:
     neq = 0
 
     def __init__(self, reactor):
-        pass
+        self.state = [0, 0]
+        self.neq = len(self.state)
 
     def calculate_rhs(self, reactor, t):
         rhs = [2*t, 2]

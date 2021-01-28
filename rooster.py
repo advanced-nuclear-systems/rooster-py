@@ -24,11 +24,13 @@ from scipy.integrate import ode
 #--------------------------------------------------------------------------------------------------
 class Reactor:
     def __init__(self):
+        # create objects
         self.control = Control(self)
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.neutron = Neutron(self)
-        self.state = [0, 0]
+        # initialize state: a vector of variables
+        self.state = self.control.state + self.solid.state + self.fluid.state + self.neutron.state
         solve(self)
 #--------------------------------------------------------------------------------------------------
 def solve(reactor):
