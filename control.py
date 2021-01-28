@@ -134,5 +134,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    print(inp)
+    #print(inp)
     return inp

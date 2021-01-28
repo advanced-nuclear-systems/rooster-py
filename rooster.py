@@ -45,9 +45,10 @@ def solve(reactor):
         rhs += reactor.control.calculate_rhs(reactor, t)
         return rhs
 
-    solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
+    solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf', rtol = '1e-12')
     t0 = reactor.control.input['t0']
     solver.set_initial_value(reactor.state, t0)
+    solver.set_integrator
     for t_dt in reactor.control.input['t_dt'] :
        tend = t_dt[0]
        dtout = t_dt[1]
