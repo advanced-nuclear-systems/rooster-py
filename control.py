@@ -11,11 +11,11 @@ class Control:
     def __init__(self, reactor):
         self.input = construct_input()
 
-    def calculate_rhs(self,reactor, t, y):
+    def calculate_rhs(self, reactor, t):
         rhs = []
         return rhs
 
-    def evaluate(self, reactor, t, y):
+    def evaluate(self, reactor, t):
         # evaluate signals
         for s in self.input['signal'] :
             if s['type'] == 'time' :
@@ -79,6 +79,14 @@ def construct_input():
         if key == '' :
             pass
         #--------------------------------------------------------------------------------------
+        # effective delayed neutron fractions
+        elif key == 'betaeff' :
+            inp['betaeff'] = word[1:]
+        #--------------------------------------------------------------------------------------
+        # delayed neutron precursor decay time constants
+        elif key == 'dnplmb' :
+            inp['dnplmb'] = word[1:]
+        #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
              lookup = {}
@@ -94,6 +102,10 @@ def construct_input():
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
+        # 
+        elif key == 'solve' :
+            inp['solve'] = word[1:]
+        #--------------------------------------------------------------------------------------
         # integration starting time
         elif key == 't0' :
             inp['t0'] = word[1]
@@ -105,14 +117,6 @@ def construct_input():
         # prompt neutron lifetime
         elif key == 'tlife' :
             inp['tlife'] = word[1]
-        #--------------------------------------------------------------------------------------
-        # delayed neutron precursor decay time constants
-        elif key == 'dnplmb' :
-            inp['dnplmb'] = word[1:]
-        #--------------------------------------------------------------------------------------
-        # effective delayed neutron fractions
-        elif key == 'betaeff' :
-            inp['betaeff'] = word[1:]
 
     # verify that t_dt present
     if inp['t_dt'] == [] :
@@ -128,5 +132,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    #print(inp)
+    print(inp)
     return inp

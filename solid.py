@@ -6,7 +6,7 @@ class Solid:
         self.fuelrod = FuelRod(self, reactor)
         self.neq = self.structure.neq + self.fuelrod.neq
 
-    def calculate_rhs(self, reactor, t, y):
+    def calculate_rhs(self, reactor, t):
         rhs = []
         return rhs
 
