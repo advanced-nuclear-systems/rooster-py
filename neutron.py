@@ -20,16 +20,25 @@ class PointKinetics:
         self.power = 0
         self.ndnp = len(reactor.control.input['betaeff'])
         self.cdnp = [0] * self.ndnp
-        self.state = [self.power] #+ self.cdnp
+        self.state = [self.power] + self.cdnp
         self.neq = len(self.state)
 
     def calculate_rhs(self, reactor, t):
         index_power = reactor.solid.neq + reactor.fluid.neq
         index_cdnp = index_power + 1
         self.power = reactor.state[index_power]
-      #  self.cdnp = reactor.state[index_cdnp:index_cdnp+self.ndnp-1]
-        rhs = [ self.power * (reactor.control.signal['RHO_INS'] - sum(reactor.control.input['betaeff']))/ reactor.control.input['tlife'] + 1e-6 ]
-      #  rhs += [0] * self.ndnp
+        self.cdnp = reactor.state[index_cdnp:index_cdnp+self.ndnp]
+        rho = reactor.control.signal['RHO_INS']
+        betaeff = reactor.control.input['betaeff']
+        tlife = reactor.control.input['tlife']
+        dnplmb = reactor.control.input['dnplmb']
+
+        dpowerdt = self.power * (rho - sum(betaeff)) / tlife
+        dcdnpdt = [0] * self.ndnp
+        for i in range(self.ndnp) :
+            dpowerdt += self.cdnp[i]*dnplmb[i]
+            dcdnpdt[i] = betaeff[i]*self.power/tlife - self.cdnp[i]*dnplmb[i]
+        rhs = [dpowerdt + 1e-12] + dcdnpdt
         return rhs
 
 #--------------------------------------------------------------------------------------------------
