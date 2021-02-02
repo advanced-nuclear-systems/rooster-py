@@ -17,9 +17,11 @@ class Neutron:
 class PointKinetics:
 
     def __init__(self, solid, reactor):
-        self.power = 0
+        self.power = 1
         self.ndnp = len(reactor.control.input['betaeff'])
         self.cdnp = [0] * self.ndnp
+        for i in range(self.ndnp) :
+            self.cdnp[i] = reactor.control.input['betaeff'][i]*self.power/(reactor.control.input['dnplmb'][i]*reactor.control.input['tlife'])
         self.state = [self.power] + self.cdnp
         self.neq = len(self.state)
 
@@ -36,9 +38,9 @@ class PointKinetics:
         dpowerdt = self.power * (rho - sum(betaeff)) / tlife
         dcdnpdt = [0] * self.ndnp
         for i in range(self.ndnp) :
-            dpowerdt += self.cdnp[i]*dnplmb[i]
-            dcdnpdt[i] = betaeff[i]*self.power/tlife - self.cdnp[i]*dnplmb[i]
-        rhs = [dpowerdt + 1e-12] + dcdnpdt
+            dpowerdt += dnplmb[i]*self.cdnp[i]
+            dcdnpdt[i] = betaeff[i]*self.power/tlife - dnplmb[i]*self.cdnp[i]
+        rhs = [dpowerdt] + dcdnpdt
         return rhs
 
 #--------------------------------------------------------------------------------------------------
