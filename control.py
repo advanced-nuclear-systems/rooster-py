@@ -81,6 +81,10 @@ def construct_input():
         if key == '' :
             pass
         #--------------------------------------------------------------------------------------
+        # constant
+        elif key == 'constant' :
+             inp[word[1]] = float(word[2])
+        #--------------------------------------------------------------------------------------
         # effective delayed neutron fractions
         elif key == 'betaeff' :
             inp['betaeff'] = word[1:]
@@ -134,5 +138,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    #print(inp)
+#    print(inp)
     return inp
