@@ -13,7 +13,6 @@
 #             Controller
 #--------------------------------------------------------------------------------------------------
 from control import Control
-from dumka3 import dumka3
 from fluid import Fluid
 from neutron import Neutron
 from solid import Solid
@@ -47,44 +46,18 @@ def solve(reactor):
         rhs += reactor.control.calculate_rhs(reactor, t)
         return rhs
 
-#    solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
-#    t0 = reactor.control.input['t0']
-#    solver.set_initial_value(reactor.state, t0)
-#    solver.set_integrator
-#    for t_dt in reactor.control.input['t_dt'] :
-#       tend = t_dt[0]
-#       dtout = t_dt[1]
-#       while solver.successful() and solver.t < tend:
-#           time = solver.t + dtout
-#           reactor.state = solver.integrate(time)
-#           print(time, reactor.state)
+    solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
+    t0 = reactor.control.input['t0']
+    solver.set_initial_value(reactor.state, t0)
+    solver.set_integrator
+    for t_dt in reactor.control.input['t_dt'] :
+       tend = t_dt[0]
+       dtout = t_dt[1]
+       while solver.successful() and solver.t < tend:
+           time = solver.t + dtout
+           reactor.state = solver.integrate(time)
+           print(time, reactor.state)
 
-    inp = {}
-    inp['tstart'] = 0
-    inp['tend'] = 10
-    inp['y'] = reactor.state
-    inp['h0'] = 1e-6
-    inp['rhs'] = construct_rhs
-    
-    with open('coef', mode = 'r') as f :
-        string = f.read()
-    arr = string.split('\n')
-    inp['C_1'] = []
-    inp['C_2'] = []
-    inp['C_3'] = []
-    inp['C_4'] = []
-    inp['C_5'] = []
-    inp['C_6'] = []
-    for a in arr :
-        aa = a.strip().split()
-        inp['C_1'].append(float(aa[0]))
-        inp['C_2'].append(float(aa[1]))
-        inp['C_3'].append(float(aa[2]))
-        inp['C_4'].append(float(aa[3]))
-    inp['rtol'] = [1e-10] * len(reactor.state)
-    inp['atol'] = [1e-3] * len(reactor.state)
-
-    dumka3(inp)
 #--------------------------------------------------------------------------------------------------
 # create and solve
 reactor = Reactor()
