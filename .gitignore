@@ -1,3 +1,5 @@
 <<<<<<< HEAD
 __pycache__
 *.pyc
+*.o
+*.exe
