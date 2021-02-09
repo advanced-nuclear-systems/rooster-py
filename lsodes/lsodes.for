@@ -776,16 +776,11 @@
 !            meth = 2 means the method based on backward
 !                     differentiation formulas (bdf-s).
 !          miter indicates the corrector iteration method..
-!            miter = 0 means functional iteration (no jacobian matrix
-!                      is involved).
-!            miter = 1 means chord iteration with a user-supplied
-!                      sparse jacobian, given by subroutine jac.
-!            miter = 2 means chord iteration with an internally
-!                      generated (difference quotient) sparse jacobian
-!                      (using ngp extra calls to f per df/dy value,
-!                      where ngp is an optional output described below.)
-!            miter = 3 means chord iteration with an internally
-!                      generated diagonal jacobian approximation.
+!            miter = 0 means functional iteration (no jacobian matrix is involved).
+!            miter = 1 means chord iteration with a user-supplied sparse jacobian, given by subroutine jac.
+!            miter = 2 means chord iteration with an internally generated (difference quotient) sparse jacobian
+!                      (using ngp extra calls to f per df/dy value, where ngp is an optional output described below.)
+!            miter = 3 means chord iteration with an internally generated diagonal jacobian approximation.
 !                      (using 1 extra call to f per df/dy evaluation).
 !          if miter = 1 or moss = 1, the user must supply a subroutine
 !          jac (the name is arbitrary) as described above under jac.
@@ -1213,545 +1208,578 @@
 ! the following card is for optimized compilation on lll compilers.
 !lll. optimize
 !-----------------------------------------------------------------------
-      subroutine lsodes (f, neq, y, t, tout, itol, rtol, atol, itask, istate, iopt, rwork, lrw, iwork, liw, jac, mf)
-      external f, jac
+      subroutine lsodes(neq, y, t, tout, itol, rtol, atol, itask, istate, iopt, rwork, lrw, iwork, liw, mf)
+
       integer neq, itol, itask, istate, iopt, lrw, iwork, liw, mf
       double precision y, t, tout, rtol, atol, rwork
       dimension neq(1), y(1), rtol(1), atol(1), rwork(lrw), iwork(liw)
-      external prjs, slss
-      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, iowns
-      integer icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
-      integer iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, msbj, nslj, ngp, nlu, nnz, nsp, nzl, nzu
-      integer i, i1, i2, iflag, imax, imul, imxer, ipflag, ipgo, irem, j, kgo, lenyht, leniw, lenrw, lf0, lia, lja, lrtem, lwtem, lyhd, lyhn, mf1, mord, mxhnl0, mxstp0, ncolm
-      double precision rowns, ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
-      double precision con0, conmin, ccmxj, psmall, rbig, seth
-      double precision atoli, ayi, big, ewti, h0, hmax, hmx, rh, rtoli, tcrit, tdist, tnext, tol, tolsf, tp, size, sum, w0, d1mach, vnorm
+      integer i, i1, i2, iflag, imax, imul, imxer, ipflag, ipgo, irem, j, kgo, lenyht, leniw, lenrw, lf0, lia, lja, lrtem, lwtem, lyhd, lyhn, mf1, mord, mxhnl0, ncolm
+      double precision atoli, ayi, big, ewti, h0, hmax, hmx, rh, rtoli, tcrit, tdist, tnext, tol, tolsf, tp, size, sum, w0, vnorm
       dimension mord(2)
       logical ihit
-!-----------------------------------------------------------------------
-! the following two internal common blocks contain
-! (a) variables which are local to any subroutine but whose values must
-!     be preserved between calls to the routine (own variables), and
-! (b) variables which are communicated between subroutines.
-! the structure of each block is as follows..  all real variables are
-! listed first, followed by all integers.  within each type, the
-! variables are grouped with those local to subroutine lsodes first,
-! then those local to subroutine stode or subroutine prjs
-! (no other routines have own variables), and finally those used
-! for communication.  the block ls0001 is declared in subroutines
-! lsodes, iprep, prep, intdy, stode, prjs, and slss.  the block lss001
-! is declared in subroutines lsodes, iprep, prep, prjs, and slss.
-! groups of variables are replaced by dummy arrays in the common
-! declarations in routines where those variables are not used.
-!-----------------------------------------------------------------------
-      common /ls0001/ rowns(209), ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround, illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, iowns(6), icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
 
-      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth, iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, msbj, nslj, ngp, nlu, nnz, nsp, nzl, nzu
+!     the following two internal common blocks contain
+!     (a) variables which are local to any subroutine but whose values must be preserved between calls to the routine (own variables), and
+!     (b) variables which are communicated between subroutines. the structure of each block is as follows..  
+!         all real variables are listed first, followed by all integers.  
+!         within each type, the variables are grouped with those local to subroutine lsodes first,
+!         then those local to subroutine stode or subroutine prjs (no other routines have own variables), and finally those used for communication.
+!     the block ls0001 is declared in subroutines lsodes, iprep, prep, intdy, stode, prjs, and slss.  
+!     the block lss001 is declared in subroutines lsodes, iprep, prep, prjs, and slss.
+!     groups of variables are replaced by dummy arrays in the common declarations in routines where those variables are not used.
 
-      data mord(1),mord(2)/12,5/, mxstp0/500/, mxhnl0/10/
-!-----------------------------------------------------------------------
-! block a.
-! this code block is executed on every call.
-! it tests istate and itask for legality and branches appropriately.
-! if istate .gt. 1 but the flag init shows that initialization has
-! not yet been done, an error return occurs.
-! if istate = 1 and tout = t, jump to block g and return immediately.
-!-----------------------------------------------------------------------
+      double precision conit, crate, el, elco, hold, rmax, tesco, 
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
+      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh,
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
+      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12),
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround,
+     +   illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, 
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter,
+     +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
+
+      double precision con0, conmin, ccmxj, psmall, rbig, seth
+      integer iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, 
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, 
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
+      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth,
+     +   iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp,
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa,
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
+
+      data mord(1),mord(2)/12,5/, mxhnl0/10/
+
+!     block a.
+!     this code block is executed on every call. it tests istate and itask for legality and branches appropriately.
+!     if istate .gt. 1 but the flag init shows that initialization has not yet been done, an error return occurs.
+!     if istate = 1 and tout = t, jump to block g and return immediately.
       if(istate .lt. 1 .or. istate .gt. 3)then
          go to 601
       end if
       if(itask .lt. 1 .or. itask .gt. 5)then
          go to 602
       end if
-      if(istate .eq. 1) go to 10
-      if(init .eq. 0)then
+      if(istate .ne. 1 .and. init .eq. 0)then
          go to 603
       end if
-      if(istate .eq. 2) go to 200
-      go to 20
- 10   init = 0
-      if(tout .eq. t)then
-         ntrep = ntrep + 1
-         if(ntrep .lt. 5) return
-         call xerrwv("lsodes-- repeated calls with istate = 1 and tout = t (=r1)  ", 60, 301, 0, 0, 0, 0, 1, t, 0.0d0)
-         call xerrwv("lsodes-- run aborted.. apparent infinite loop     ", 50, 303, 2, 0, 0, 0, 0, 0.0d0, 0.0d0)
-!        stop
+      if(istate .eq. 1)then
+         init = 0
+         if(tout .eq. t)then
+            ntrep = ntrep + 1
+            if(ntrep .lt. 5) return
+            call xerrwv("lsodes-- repeated calls with istate = 1 and tout = t (=r1)  ", 60, 301, 0, 0, 0, 0, 1, t, 0.0d0)
+            call xerrwv("lsodes-- run aborted.. apparent infinite loop     ", 50, 303, 2, 0, 0, 0, 0, 0.0d0, 0.0d0)
+!           stop
+         end if
       end if
 
- 20   ntrep = 0
-!-----------------------------------------------------------------------
-! block b.
-! the next code block is executed for the initial call (istate = 1), or for a continuation call with parameter changes (istate = 3).
-! it contains checking of all inputs and various initializations. 
-! if istate = 1, the final setting of work space pointers, the matrix preprocessing, and other initializations are done in block c.
-! first check legality of the non-optional inputs neq, itol, iopt, mf, ml, and mu.
-!-----------------------------------------------------------------------
-      if(neq(1) .le. 0)then
-         go to 604
-      end if
-      if(istate .eq. 1) go to 25
-      if(neq(1) .gt. n)then
-         go to 605
-      end if
- 25   n = neq(1)
-      if(itol .lt. 1 .or. itol .gt. 4)then
-         go to 606
-      end if
-      if(iopt .lt. 0 .or. iopt .gt. 1)then
-         go to 607
-      end if
-      moss = mf/100
-      mf1 = mf - 100*moss
-      meth = mf1/10
-      miter = mf1 - 10*meth
-      if(moss .lt. 0 .or. moss .gt. 2)then
-         go to 608
-      end if
-      if(meth .lt. 1 .or. meth .gt. 2)then
-         go to 608
-      end if
-      if(miter .lt. 0 .or. miter .gt. 3)then
-         go to 608
-      end if
-      if(miter .eq. 0 .or. miter .eq. 3) moss = 0
-! next process and check the optional inputs.
-      if(iopt .eq. 1) go to 40
-      maxord = mord(meth)
-      mxstep = mxstp0
-      mxhnil = mxhnl0
-      if(istate .eq. 1) h0 = 0.0d0
-      hmxi = 0.0d0
-      hmin = 0.0d0
-      seth = 0.0d0
-      go to 60
- 40   maxord = iwork(5)
-      if(maxord .lt. 0)then
-         go to 611
-      end if
-      if(maxord .eq. 0) maxord = 100
-      maxord = min0(maxord,mord(meth))
-      mxstep = iwork(6)
-      if(mxstep .lt. 0)then
-         go to 612
-      end if
-      if(mxstep .eq. 0) mxstep = mxstp0
-      mxhnil = iwork(7)
-      if(mxhnil .lt. 0)then
-         go to 613
-      end if
-      if(mxhnil .eq. 0) mxhnil = mxhnl0
-      if(istate .ne. 1) go to 50
-      h0 = rwork(5)
-      if((tout - t)*h0 .lt. 0.0d0)then
-         go to 614
-      end if
- 50   hmax = rwork(6)
-      if(hmax .lt. 0.0d0)then
-         go to 615
-      end if
-      hmxi = 0.0d0
-      if(hmax .gt. 0.0d0) hmxi = 1.0d0/hmax
-      hmin = rwork(7)
-      if(hmin .lt. 0.0d0)then
-         go to 616
-      end if
-      seth = rwork(8)
-      if(seth .lt. 0.0d0)then
-         go to 609
-      end if
-! check rtol and atol for legality.
- 60   rtoli = rtol(1)
-      atoli = atol(1)
-      do i = 1,n
-         if(itol .ge. 3) rtoli = rtol(i)
-         if(itol .eq. 2 .or. itol .eq. 4) atoli = atol(i)
-         if(rtoli .lt. 0.0d0)then
-            go to 619
+      if(istate .eq. 1 .or. istate .eq. 3)then
+         ntrep = 0
+         
+!        block b.
+!        the next code block is executed for the initial call (istate = 1), or for a continuation call with parameter changes (istate = 3).
+!        it contains checking of all inputs and various initializations. 
+!        if istate = 1, the final setting of work space pointers, the matrix preprocessing, and other initializations are done in block c.
+!        first check legality of the non-optional inputs neq, itol, iopt, mf, ml, and mu.
+         if(neq(1) .le. 0)then
+            go to 604
          end if
-         if(atoli .lt. 0.0d0)then
-            go to 620
+         if(istate .ne. 1 .and. neq(1) .gt. n)then
+            go to 605
          end if
-      end do
-!-----------------------------------------------------------------------
-! compute required work array lengths, as far as possible, and test
-! these against lrw and liw.  then set tentative pointers for work
-! arrays.  pointers to rwork/iwork segments are named by prefixing l to
-! the name of the segment.  e.g., the segment yh starts at rwork(lyh).
-! segments of rwork (in order) are denoted  wm, yh, savf, ewt, acor.
-! if miter = 1 or 2, the required length of the matrix work space wm
-! is not yet known, and so a crude minimum value is used for the
-! initial tests of lrw and liw, and yh is temporarily stored as far
-! to the right in rwork as possible, to leave the maximum amount
-! of space for wm for matrix preprocessing.  thus if miter = 1 or 2
-! and moss .ne. 2, some of the segments of rwork are temporarily
-! omitted, as they are not needed in the preprocessing.  these
-! omitted segments are.. acor if istate = 1, ewt and acor if istate = 3
-! and moss = 1, and savf, ewt, and acor if istate = 3 and moss = 0.
-!-----------------------------------------------------------------------
-      if(istate .eq. 1) nyh = n
-      lwmin = 0
-      if(miter .eq. 1) lwmin = 4*n + 10*n/2
-      if(miter .eq. 2) lwmin = 4*n + 11*n/2
-      if(miter .eq. 3) lwmin = n + 2
-      lenyh = (maxord+1)*nyh
-      lrest = lenyh + 3*n
-      lenrw = 20 + lwmin + lrest
-      iwork(17) = lenrw
-      leniw = 30
-      if(moss .eq. 0 .and. miter .ne. 0 .and. miter .ne. 3) leniw = leniw + n + 1
-      iwork(18) = leniw
-      if(lenrw .gt. lrw)then
-         go to 617
-      end if
-      if(leniw .gt. liw)then
-         go to 618
-      end if
-      lia = 31
-      if(moss .eq. 0 .and. miter .ne. 0 .and. miter .ne. 3) leniw = leniw + iwork(lia+n) - 1
-      iwork(18) = leniw
-      if(leniw .gt. liw)then
-         go to 618
-      end if
-      lja = lia + n + 1
-      lia = min0(lia,liw)
-      lja = min0(lja,liw)
-      lwm = 21
-      if(istate .eq. 1) nq = 1
-      ncolm = min0(nq+1,maxord+2)
-      lenyhm = ncolm*nyh
-      lenyht = lenyh
-      if(miter .eq. 1 .or. miter .eq. 2) lenyht = lenyhm
-      imul = 2
-      if(istate .eq. 3) imul = moss
-      if(moss .eq. 2) imul = 3
-      lrtem = lenyht + imul*n
-      lwtem = lwmin
-      if(miter .eq. 1 .or. miter .eq. 2) lwtem = lrw - 20 - lrtem
-      lenwk = lwtem
-      lyhn = lwm + lwtem
-      lsavf = lyhn + lenyht
-      lewt = lsavf + n
-      lacor = lewt + n
-      istatc = istate
-      if(istate .eq. 1) go to 100
-!-----------------------------------------------------------------------
-! istate = 3.  move yh to its new location.
-! note that only the part of yh needed for the next step, namely
-! min(nq+1,maxord+2) columns, is actually moved.
-! a temporary error weight array ewt is loaded if moss = 2.
-! sparse matrix processing is done in iprep/prep if miter = 1 or 2.
-! if maxord was reduced below nq, then the pointers are finally set
-! so that savf is identical to yh(*,maxord+2).
-!-----------------------------------------------------------------------
-      lyhd = lyh - lyhn
-      imax = lyhn - 1 + lenyhm
-! move yh.  branch for move right, no move, or move left.
-      if(lyhd) 70,80,74
- 70   do i = lyhn,imax
-         j = imax + lyhn - i
-         rwork(j) = rwork(j+lyhd)
-      end do
-      go to 80
- 74   do i = lyhn,imax
-         rwork(i) = rwork(i+lyhd)
-      end do
- 80   lyh = lyhn
-      iwork(22) = lyh
-      if(miter .eq. 0 .or. miter .eq. 3) go to 92
-      if(moss .ne. 2) go to 85
-! temporarily load ewt if miter = 1 or 2 and moss = 2.
-      call ewset (n, itol, rtol, atol, rwork(lyh), rwork(lewt))
-      do i = 1,n
-         if(rwork(i+lewt-1) .le. 0.0d0)then
-            go to 621
+         n = neq(1)
+         if(itol .lt. 1 .or. itol .gt. 4)then
+            go to 606
          end if
-         rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
-      end do
- 85   continue
-! iprep and prep do sparse matrix preprocessing if miter = 1 or 2.
-      lsavf = min0(lsavf,lrw)
-      lewt = min0(lewt,lrw)
-      lacor = min0(lacor,lrw)
-      call iprep (neq, y, rwork, iwork(lia), iwork(lja), ipflag, f, jac)
-      lenrw = lwm - 1 + lenwk + lrest
-      iwork(17) = lenrw
-      if(ipflag .ne. -1) iwork(23) = ipian
-      if(ipflag .ne. -1) iwork(24) = ipjan
-      ipgo = -ipflag + 1
-      go to (90, 628, 629, 630, 631, 632, 633), ipgo
- 90   iwork(22) = lyh
-      if(lenrw .gt. lrw)then
-         go to 617
-      end if
-! set flag to signal parameter changes to stode.
- 92   jstart = -1
-      if(n .eq. nyh) go to 200
-! neq was reduced.  zero part of yh to avoid undefined references.
-      i1 = lyh + l*nyh
-      i2 = lyh + (maxord + 1)*nyh - 1
-      if(i1 .gt. i2) go to 200
-      do i = i1,i2
-         rwork(i) = 0.0d0
-      end do
-      go to 200
-!-----------------------------------------------------------------------
-! block c.
-! the next block is for the initial call only (istate = 1).
-! it contains all remaining initializations, the initial call to f,
-! the sparse matrix preprocessing (miter = 1 or 2), and the
-! calculation of the initial step size.
-! the error weights in ewt are inverted after being loaded.
-!-----------------------------------------------------------------------
- 100  continue
-      lyh = lyhn
-      iwork(22) = lyh
-      tn = t
-      nst = 0
-      h = 1.0d0
-      nnz = 0
-      ngp = 0
-      nzl = 0
-      nzu = 0
-! load the initial value vector in yh.
-      do i = 1,n
-         rwork(i+lyh-1) = y(i)
-      end do
-! initial call to f.  (lf0 points to yh(*,2).)
-      lf0 = lyh + nyh
-      call f (neq, t, y, rwork(lf0))
-      nfe = 1
-! load and invert the ewt array.  (h is temporarily set to 1.0.)
-      call ewset (n, itol, rtol, atol, rwork(lyh), rwork(lewt))
-      do i = 1,n
-         if(rwork(i+lewt-1) .le. 0.0d0)then
-            go to 621
+         if(iopt .lt. 0 .or. iopt .gt. 1)then
+            go to 607
          end if
-         rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
-      end do
-      if(miter .eq. 0 .or. miter .eq. 3) go to 120
-! iprep and prep do sparse matrix preprocessing if miter = 1 or 2.
-      lacor = min0(lacor,lrw)
-      call iprep (neq, y, rwork, iwork(lia), iwork(lja), ipflag, f, jac)
-      lenrw = lwm - 1 + lenwk + lrest
-      iwork(17) = lenrw
-      if(ipflag .ne. -1) iwork(23) = ipian
-      if(ipflag .ne. -1) iwork(24) = ipjan
-      ipgo = -ipflag + 1
-      go to (115, 628, 629, 630, 631, 632, 633), ipgo
- 115  iwork(22) = lyh
-      if(lenrw .gt. lrw)then
-         go to 617
-      end if
-! check tcrit for legality (itask = 4 or 5).
- 120  continue
-      if(itask .ne. 4 .and. itask .ne. 5) go to 125
-      tcrit = rwork(1)
-      if((tcrit - tout)*(tout - t) .lt. 0.0d0) then
-         go to 625
-      end if
-      if(h0 .ne. 0.0d0 .and. (t + h0 - tcrit)*h0 .gt. 0.0d0)
-     1   h0 = tcrit - t
-! initialize all remaining parameters.
- 125  uround = d1mach(4)
-      jstart = 0
-      if(miter .ne. 0) rwork(lwm) = dsqrt(uround)
-      msbj = 50
-      nslj = 0
-      ccmxj = 0.2d0
-      psmall = 1000.0d0*uround
-      rbig = 0.01d0/psmall
-      nhnil = 0
-      nje = 0
-      nlu = 0
-      nslast = 0
-      hu = 0.0d0
-      nqu = 0
-      ccmax = 0.3d0
-      maxcor = 3
-      msbp = 20
-      mxncf = 10
-!-----------------------------------------------------------------------
-! the coding below computes the step size, h0, to be attempted on the first step, unless the user has supplied a value for this.
-! first check that tout - t differs significantly from zero.
-! a scalar tolerance quantity tol is computed, as max(rtol(i)) if this is positive, or max(atol(i)/abs(y(i))) otherwise, 
-! adjusted so as to be between 100*uround and 1.0e-3.
-! then the computed value h0 is given by..
-!                                      neq
-!   h0**2 = tol / ( w0**-2 + (1/neq) * sum ( f(i)/ywt(i) )**2  )
-!                                       1
-! where   w0     = max ( abs(t), abs(tout) ),
-!         f(i)   = i-th component of initial value of f,
-!         ywt(i) = ewt(i)/tol  (a weight for y(i)).
-! the sign of h0 is inferred from the initial values of tout and t.
-!-----------------------------------------------------------------------
-      lf0 = lyh + nyh
-      if(h0 .eq. 0.0d0)then
-         tdist = dabs(tout - t)
-         w0 = dmax1(dabs(t),dabs(tout))
-         if(tdist .lt. 2.0d0*uround*w0)then
-            go to 622
+         moss = mf/100
+         mf1 = mf - 100*moss
+         meth = mf1/10
+         miter = mf1 - 10*meth
+         if(moss .lt. 0 .or. moss .gt. 2)then
+            go to 608
          end if
-         tol = rtol(1)
-         if(itol .gt. 2)then
+         if(meth .lt. 1 .or. meth .gt. 2)then
+            go to 608
+         end if
+         if(miter .lt. 0 .or. miter .gt. 3)then
+            go to 608
+         end if
+         if(miter .eq. 0 .or. miter .eq. 3) moss = 0
+!        next process and check the optional inputs.
+         if(iopt .eq. 0)then
+            maxord = mord(meth)
+            mxstep = 500
+            mxhnil = mxhnl0
+            if(istate .eq. 1) h0 = 0.0d0
+            hmxi = 0.0d0
+            hmin = 0.0d0
+            seth = 0.0d0
+         else ! iopt == 1
+            maxord = iwork(5)
+            if(maxord .lt. 0)then
+               go to 611
+            end if
+            if(maxord .eq. 0) maxord = 100
+            maxord = min0(maxord,mord(meth))
+            mxstep = iwork(6)
+            if(mxstep .lt. 0)then
+               go to 612
+            end if
+            if(mxstep .eq. 0) mxstep = 500
+            mxhnil = iwork(7)
+            if(mxhnil .lt. 0)then
+               go to 613
+            end if
+            if(mxhnil .eq. 0) mxhnil = mxhnl0
+            if(istate .eq. 1)then
+               h0 = rwork(5)
+               if((tout - t)*h0 .lt. 0.0d0)then
+                  go to 614
+               end if
+            end if
+            hmax = rwork(6)
+            if(hmax .lt. 0.0d0)then
+               go to 615
+            end if
+            hmxi = 0.0d0
+            if(hmax .gt. 0.0d0) hmxi = 1.0d0/hmax
+            hmin = rwork(7)
+            if(hmin .lt. 0.0d0)then
+               go to 616
+            end if
+            seth = rwork(8)
+            if(seth .lt. 0.0d0)then
+               go to 609
+            end if
+         end if
+         
+!        check rtol and atol for legality.
+         rtoli = rtol(1)
+         atoli = atol(1)
+         do i = 1,n
+            if(itol .ge. 3) rtoli = rtol(i)
+            if(itol .eq. 2 .or. itol .eq. 4) atoli = atol(i)
+            if(rtoli .lt. 0.0d0)then
+               go to 619
+            end if
+            if(atoli .lt. 0.0d0)then
+               go to 620
+            end if
+         end do
+         
+!        compute required work array lengths, as far as possible, and test these against lrw and liw.  then set tentative pointers for work arrays.
+!        pointers to rwork/iwork segments are named by prefixing l to the name of the segment.  e.g., the segment yh starts at rwork(lyh).
+!        segments of rwork (in order) are denoted  wm, yh, savf, ewt, acor.
+!        if miter = 1 or 2, the required length of the matrix work space wm is not yet known, 
+!        and so a crude minimum value is used for the initial tests of lrw and liw, and yh is temporarily stored as far
+!        to the right in rwork as possible, to leave the maximum amount of space for wm for matrix preprocessing.
+!        thus if miter = 1 or 2 and moss .ne. 2, some of the segments of rwork are temporarily omitted, as they are not needed in the preprocessing.
+!        these omitted segments are.. acor if istate = 1, ewt and acor if istate = 3 and moss = 1, and savf, ewt, and acor if istate = 3 and moss = 0.
+         if(istate .eq. 1) nyh = n
+         lwmin = 0
+         if(miter .eq. 1) lwmin = 4*n + 10*n/2
+         if(miter .eq. 2) lwmin = 4*n + 11*n/2
+         if(miter .eq. 3) lwmin = n + 2
+         lenyh = (maxord+1)*nyh
+         lrest = lenyh + 3*n
+         lenrw = 20 + lwmin + lrest
+         iwork(17) = lenrw
+         leniw = 30
+         if(moss .eq. 0 .and. miter .ne. 0 .and. miter .ne. 3) leniw = leniw + n + 1
+         iwork(18) = leniw
+         if(lenrw .gt. lrw)then
+            go to 617
+         end if
+         if(leniw .gt. liw)then
+            go to 618
+         end if
+         lia = 31
+         if(moss .eq. 0 .and. miter .ne. 0 .and. miter .ne. 3) leniw = leniw + iwork(lia+n) - 1
+         iwork(18) = leniw
+         if(leniw .gt. liw)then
+            go to 618
+         end if
+         lja = lia + n + 1
+         lia = min0(lia,liw)
+         lja = min0(lja,liw)
+         lwm = 21
+         if(istate .eq. 1) nq = 1
+         ncolm = min0(nq+1,maxord+2)
+         lenyhm = ncolm*nyh
+         lenyht = lenyh
+         if(miter .eq. 1 .or. miter .eq. 2) lenyht = lenyhm
+         imul = 2
+         if(istate .eq. 3) imul = moss
+         if(moss .eq. 2) imul = 3
+         lrtem = lenyht + imul*n
+         lwtem = lwmin
+         if(miter .eq. 1 .or. miter .eq. 2) lwtem = lrw - 20 - lrtem
+         lenwk = lwtem
+         lyhn = lwm + lwtem
+         lsavf = lyhn + lenyht
+         lewt = lsavf + n
+         lacor = lewt + n
+         istatc = istate
+         if(istate .eq. 1)then
+!           block c.
+!           the next block is for the initial call only (istate = 1).
+!           it contains all remaining initializations, the initial call to f,
+!           the sparse matrix preprocessing (miter = 1 or 2), and the
+!           calculation of the initial step size.
+!           the error weights in ewt are inverted after being loaded.
+            lyh = lyhn
+            iwork(22) = lyh
+            tn = t
+            nst = 0
+            h = 1.0d0
+            nnz = 0
+            ngp = 0
+            nzl = 0
+            nzu = 0
+!           load the initial value vector in yh.
             do i = 1,n
-               tol = dmax1(tol,rtol(i))
+               rwork(i+lyh-1) = y(i)
             end do
-         end if
-         if(tol .le. 0.0d0)then
-            atoli = atol(1)
+!           initial call to f.  (lf0 points to yh(*,2).)
+            lf0 = lyh + nyh
+            call rhs(neq, t, y, rwork(lf0))
+            nfe = 1
+!           load and invert the ewt array.  (h is temporarily set to 1.0.)
+            call ewset(n, itol, rtol, atol, rwork(lyh), rwork(lewt))
             do i = 1,n
-               if(itol .eq. 2 .or. itol .eq. 4) atoli = atol(i)
-               ayi = dabs(y(i))
-               if(ayi .ne. 0.0d0) tol = dmax1(tol,atoli/ayi)
+               if(rwork(i+lewt-1) .le. 0.0d0)then
+                  go to 621
+               end if
+               rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
             end do
-         end if
-         tol = dmax1(tol,100.0d0*uround)
-         tol = dmin1(tol,0.001d0)
-         sum = vnorm (n, rwork(lf0), rwork(lewt))
-         sum = 1.0d0/(tol*w0*w0) + tol*sum**2
-         h0 = 1.0d0/dsqrt(sum)
-         h0 = dmin1(h0,tdist)
-         h0 = dsign(h0,tout-t)
-      end if
-!     adjust h0 if necessary to meet hmax bound.
-      rh = dabs(h0)*hmxi
-      if(rh .gt. 1.0d0) h0 = h0/rh
-! load h with h0 and scale yh(*,2) by h0.
-      h = h0
-      do i = 1,n
-         rwork(i+lf0-1) = h0*rwork(i+lf0-1
-      end do
-      go to 270
-!-----------------------------------------------------------------------
-! block d.
-! the next code block is for continuation calls only (istate = 2 or 3)
-! and is to check stop conditions before taking a step.
-!-----------------------------------------------------------------------
- 200  nslast = nst
-      go to (210, 250, 220, 230, 240), itask
- 210  if ((tn - tout)*h .lt. 0.0d0) go to 250
-      call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
-      if(iflag .ne. 0)then
-         go to 627
-      end if
-      t = tout
-      go to 420
- 220  tp = tn - hu*(1.0d0 + 100.0d0*uround)
-      if((tp - tout)*h .gt. 0.0d0)then
-         go to 623
-      end if
-      if ((tn - tout)*h .lt. 0.0d0) go to 250
-      go to 400
- 230  tcrit = rwork(1)
-      if((tn - tcrit)*h .gt. 0.0d0)then
-         go to 624
-      end if
-      if((tcrit - tout)*h .lt. 0.0d0)then
-         go to 625
-      end if
-      if ((tn - tout)*h .lt. 0.0d0) go to 245
-      call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
-      if(iflag .ne. 0)then
-         go to 627
-      end if
-      t = tout
-      go to 420
- 240  tcrit = rwork(1)
-      if((tn - tcrit)*h .gt. 0.0d0)then
-         go to 624
-      end if
- 245  hmx = dabs(tn) + dabs(h)
-      ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
-      if(ihit) go to 400
-      tnext = tn + h*(1.0d0 + 4.0d0*uround)
-      if((tnext - tcrit)*h .gt. 0.0d0)then
-         h = (tcrit - tn)*(1.0d0 - 4.0d0*uround)
-         if(istate .eq. 2) jstart = -2
-      rend do
-      go to 250 !MK
-!-----------------------------------------------------------------------
-! block e.
-! the next block is normally executed for all calls and contains the call to the one-step core integrator stode.
-!
-! this is a looping point for the integration steps.
-!
-! first check for too many steps being taken, update ewt (if not at start of problem), check for too much accuracy being requested, and
-! check for h below the roundoff level in t.
-!-----------------------------------------------------------------------
- 250  continue
-      if ((nst-nslast) .ge. mxstep) go to 500
-      call ewset (n, itol, rtol, atol, rwork(lyh), rwork(lewt))
-      do i = 1,n
-         if(rwork(i+lewt-1) .le. 0.0d0) go to 510
-         rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
-      end do
- 270  tolsf = uround*vnorm (n, rwork(lyh), rwork(lewt))
-      if(tolsf .le. 1.0d0) go to 280
-      tolsf = tolsf*2.0d0
-      if(nst .eq. 0)then
-         go to 626
-      end if
-      go to 520
+            if(miter .eq. 1 .or. miter .eq. 2)then
+!              iprep and prep do sparse matrix preprocessing if miter = 1 or 2.
+               lacor = min0(lacor,lrw)
+               call iprep(neq, y, rwork, iwork(lia), iwork(lja), ipflag)
+               lenrw = lwm - 1 + lenwk + lrest
+               iwork(17) = lenrw
+               if(ipflag .ne. -1) iwork(23) = ipian
+               if(ipflag .ne. -1) iwork(24) = ipjan
+               ipgo = -ipflag + 1
+               go to (115, 628, 629, 630, 631, 632, 633), ipgo
+ 115           iwork(22) = lyh
+               if(lenrw .gt. lrw)then
+                  go to 617
+               end if
+!              check tcrit for legality (itask = 4 or 5).
+            end if
+            if(itask .eq. 4 .or. itask .eq. 5)then
+               tcrit = rwork(1)
+               if((tcrit - tout)*(tout - t) .lt. 0.0d0) then
+                  go to 625
+               end if
+               if(h0 .ne. 0.0d0 .and. (t + h0 - tcrit)*h0 .gt. 0.0d0) h0 = tcrit - t
+            end if
+!           initialize all remaining parameters.
+            uround = 1.0e-14
+            jstart = 0
+            if(miter .ne. 0) rwork(lwm) = dsqrt(uround)
+            msbj = 50
+            nslj = 0
+            ccmxj = 0.2d0
+            psmall = 1000.0d0*uround
+            rbig = 0.01d0/psmall
+            nhnil = 0
+            nje = 0
+            nlu = 0
+            nslast = 0
+            hu = 0.0d0
+            nqu = 0
+            ccmax = 0.3d0
+            maxcor = 3
+            msbp = 20
+            mxncf = 10
+!           the coding below computes the step size, h0, to be attempted on the first step, unless the user has supplied a value for this.
+!           first check that tout - t differs significantly from zero.
+!           a scalar tolerance quantity tol is computed, as max(rtol(i)) if this is positive, or max(atol(i)/abs(y(i))) otherwise, 
+!           adjusted so as to be between 100*uround and 1.0e-3.
+!           then the computed value h0 is given by..
+!                                                neq
+!             h0**2 = tol / ( w0**-2 + (1/neq) * sum ( f(i)/ywt(i) )**2  )
+!                                                 1
+!           where   w0     = max ( abs(t), abs(tout) ),
+!                   f(i)   = i-th component of initial value of f,
+!                   ywt(i) = ewt(i)/tol  (a weight for y(i)).
+!           the sign of h0 is inferred from the initial values of tout and t.
+            lf0 = lyh + nyh
+            if(h0 .eq. 0.0d0)then
+               tdist = dabs(tout - t)
+               w0 = dmax1(dabs(t),dabs(tout))
+               if(tdist .lt. 2.0d0*uround*w0)then
+                  go to 622
+               end if
+               tol = rtol(1)
+               if(itol .gt. 2)then
+                  do i = 1,n
+                     tol = dmax1(tol,rtol(i))
+                  end do
+               end if
+               if(tol .le. 0.0d0)then
+                  atoli = atol(1)
+                  do i = 1,n
+                     if(itol .eq. 2 .or. itol .eq. 4) atoli = atol(i)
+                     ayi = dabs(y(i))
+                     if(ayi .ne. 0.0d0) tol = dmax1(tol,atoli/ayi)
+                  end do
+               end if
+               tol = dmax1(tol,100.0d0*uround)
+               tol = dmin1(tol,0.001d0)
+               sum = vnorm (n, rwork(lf0), rwork(lewt))
+               sum = 1.0d0/(tol*w0*w0) + tol*sum**2
+               h0 = 1.0d0/dsqrt(sum)
+               h0 = dmin1(h0,tdist)
+               h0 = dsign(h0,tout-t)
+            end if
+!           adjust h0 if necessary to meet hmax bound.
+            rh = dabs(h0)*hmxi
+            if(rh .gt. 1.0d0) h0 = h0/rh
+!           load h with h0 and scale yh(*,2) by h0.
+            h = h0
+            do i = 1,n
+               rwork(i+lf0-1) = h0*rwork(i+lf0-1)
+            end do
 
- 280  continue
-      if((tn + h) .eq. tn)then
-         nhnil = nhnil + 1
-         if(nhnil .le. mxhnil)then
-            call xerrwv("lsodes-- warning..internal t (=r1) and h (=r2) are", 50, 101, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
-            call xerrwv("      such that in the machine, t + h = t on the next step  ", 60, 101, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
-            call xerrwv("      (h = step size). solver will continue anyway", 50, 101, 0, 0, 0, 0, 2, tn, h)
-            if(nhnil .eq. mxhnil)then
-               call xerrwv("lsodes-- above warning has been issued i1 times.  2", 50, 102, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
-               call xerrwv("      it will not be issued again for this problem", 50, 102, 0, 1, mxhnil, 0, 0, 0.0d0, 0.0d0)
+         else ! istate .eq. 3
+         
+!           istate = 3. move yh to its new location.
+!           note that only the part of yh needed for the next step, namely min(nq+1,maxord+2) columns, is actually moved.
+!           a temporary error weight array ewt is loaded if moss = 2. sparse matrix processing is done in iprep/prep if miter = 1 or 2.
+!           if maxord was reduced below nq, then the pointers are finally set so that savf is identical to yh(*,maxord+2).
+            lyhd = lyh - lyhn
+            imax = lyhn - 1 + lenyhm
+!           move yh. branch for move right, no move, or move left.
+            if(lyhd .eq. 1)then
+!              move right
+               do i = lyhn,imax
+                  j = imax + lyhn - i
+                  rwork(j) = rwork(j+lyhd)
+               end do
+            else if(lyhd .eq. 3)then
+!              move left
+               do i = lyhn,imax
+                  rwork(i) = rwork(i+lyhd)
+               end do
+            end if
+            lyh = lyhn
+            iwork(22) = lyh
+            if(miter .eq. 1 .or. miter .eq. 2)then
+               if(moss .eq. 2)then
+!                 temporarily load ewt if miter = 1 or 2 and moss = 2.
+                  call ewset (n, itol, rtol, atol, rwork(lyh), rwork(lewt))
+                  do i = 1,n
+                     if(rwork(i+lewt-1) .le. 0.0d0)then
+                        go to 621
+                     end if
+                     rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
+                  end do
+               end if
+!              iprep and prep do sparse matrix preprocessing if miter = 1 or 2.
+               lsavf = min0(lsavf,lrw)
+               lewt = min0(lewt,lrw)
+               lacor = min0(lacor,lrw)
+               call iprep(neq, y, rwork, iwork(lia), iwork(lja), ipflag)
+               lenrw = lwm - 1 + lenwk + lrest
+               iwork(17) = lenrw
+               if(ipflag .ne. -1) iwork(23) = ipian
+               if(ipflag .ne. -1) iwork(24) = ipjan
+               ipgo = -ipflag + 1
+               go to (90, 628, 629, 630, 631, 632, 633), ipgo
+ 90            iwork(22) = lyh
+               if(lenrw .gt. lrw)then
+                  go to 617
+               end if
+            end if
+
+!           set flag to signal parameter changes to stode.
+            jstart = -1
+            if(n .ne. nyh)then
+!              neq was reduced.  zero part of yh to avoid undefined references.
+               i1 = lyh + l*nyh
+               i2 = lyh + (maxord + 1)*nyh - 1
+               if(i1 .le. i2)then
+                  do i = i1,i2
+                     rwork(i) = 0.0d0
+                  end do
+               end if
             end if
          end if
       end if
-!-----------------------------------------------------------------------
-!    call stode(neq,y,yh,nyh,yh,ewt,savf,acor,wm,wm,f,jac,prjs,slss)
-!-----------------------------------------------------------------------
-      call stode (neq, y, rwork(lyh), nyh, rwork(lyh), rwork(lewt), rwork(lsavf), rwork(lacor), rwork(lwm), rwork(lwm))
-      kgo = 1 - kflag
-      go to (300, 530, 540, 550), kgo
-!-----------------------------------------------------------------------
-! block f.
-! the following block handles the case of a successful return from the
-! core integrator (kflag = 0).  test for stop conditions.
-!-----------------------------------------------------------------------
- 300  init = 1
-      go to (310, 400, 330, 340, 350), itask
-! itask = 1.  if tout has been reached, interpolate.
- 310  if ((tn - tout)*h .lt. 0.0d0) go to 250
-      call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
-      t = tout
-      go to 420
-! itask = 3.  jump to exit if tout was reached.
- 330  if ((tn - tout)*h .ge. 0.0d0) go to 400
-      go to 250
-! itask = 4.  see if tout or tcrit was reached.  adjust h if necessary.
- 340  if ((tn - tout)*h .lt. 0.0d0) go to 345
-      call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
-      t = tout
-      go to 420
- 345  hmx = dabs(tn) + dabs(h)
-      ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
-      if(ihit) go to 400
-      tnext = tn + h*(1.0d0 + 4.0d0*uround)
-      if ((tnext - tcrit)*h .le. 0.0d0) go to 250
-      h = (tcrit - tn)*(1.0d0 - 4.0d0*uround)
-      jstart = -2
-      go to 250
-! itask = 5.  see if tcrit was reached and jump to exit.
- 350  hmx = dabs(tn) + dabs(h)
-      ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
-!-----------------------------------------------------------------------
+
+      if(istate .eq. 2 .or. istate .eq. 3)then
+!        block d.
+!        the next code block is for continuation calls only (istate = 2 or 3)
+!        and is to check stop conditions before taking a step.
+         nslast = nst
+         if(itask .eq. 1)then
+            if((tn - tout)*h .ge. 0.0d0)then
+               call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
+               if(iflag .ne. 0)then
+                  go to 627
+               end if
+               t = tout
+               go to 420
+            end if
+         
+         else if(itask .eq. 3)then
+            tp = tn - hu*(1.0d0 + 100.0d0*uround)
+            if((tp - tout)*h .gt. 0.0d0)then
+               go to 623
+            end if
+            if((tn - tout)*h .ge. 0.0d0) go to 400
+         
+         else if(itask .eq. 4)then
+            tcrit = rwork(1)
+            if((tn - tcrit)*h .gt. 0.0d0)then
+               go to 624
+            end if
+            if((tcrit - tout)*h .lt. 0.0d0)then
+               go to 625
+            end if
+            if((tn - tout)*h .ge. 0.0d0)then
+               call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
+               if(iflag .ne. 0)then
+                  go to 627
+               end if
+               t = tout
+               go to 420
+            end if
+         
+         else if(itask .eq. 5)then
+            tcrit = rwork(1)
+            if((tn - tcrit)*h .gt. 0.0d0)then
+               go to 624
+            end if
+         end if
+
+         if(itask .eq. 4 .or. itask .eq. 5)then
+            hmx = dabs(tn) + dabs(h)
+            ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
+            if(ihit) go to 400
+            tnext = tn + h*(1.0d0 + 4.0d0*uround)
+            if((tnext - tcrit)*h .gt. 0.0d0)then
+               h = (tcrit - tn)*(1.0d0 - 4.0d0*uround)
+               if(istate .eq. 2) jstart = -2
+            end if
+         end if
+      end if
+
+!     block e.
+!     the next block is normally executed for all calls and contains the call to the one-step core integrator stode.
+!     this is a looping point for the integration steps.
+!     first check for too many steps being taken, update ewt (if not at start of problem), check for too much accuracy being requested, and
+!     check for h below the roundoff level in t.
+      do while(.true.)
+         if(istate .ne. 1)then
+            if((nst-nslast) .ge. mxstep)then
+               go to 500
+            end if
+            call ewset (n, itol, rtol, atol, rwork(lyh), rwork(lewt))
+            do i = 1,n
+               if(rwork(i+lewt-1) .le. 0.0d0)then
+                  go to 510
+               end if
+               rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
+            end do
+         end if
+         tolsf = uround*vnorm (n, rwork(lyh), rwork(lewt))
+         if(tolsf .gt. 1.0d0)then
+            tolsf = tolsf*2.0d0
+            if(nst .eq. 0)then
+               go to 626
+            end if
+            go to 520
+         end if
+         
+         if((tn + h) .eq. tn)then
+            nhnil = nhnil + 1
+            if(nhnil .le. mxhnil)then
+               call xerrwv("lsodes-- warning..internal t (=r1) and h (=r2) are", 50, 101, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
+               call xerrwv("      such that in the machine, t + h = t on the next step  ", 60, 101, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
+               call xerrwv("      (h = step size). solver will continue anyway", 50, 101, 0, 0, 0, 0, 2, tn, h)
+               if(nhnil .eq. mxhnil)then
+                  call xerrwv("lsodes-- above warning has been issued i1 times.  2", 50, 102, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
+                  call xerrwv("      it will not be issued again for this problem", 50, 102, 0, 1, mxhnil, 0, 0, 0.0d0, 0.0d0)
+               end if
+            end if
+         end if
+         call stode (neq, y, rwork(lyh), nyh, rwork(lyh), rwork(lewt), rwork(lsavf), rwork(lacor), rwork(lwm), rwork(lwm))
+         kgo = 1 - kflag
+         
+!        block f.
+!        the following block handles the case of a successful return from the
+!        core integrator (kflag = 0).  test for stop conditions.
+         if(kgo .eq. 1)then
+            init = 1
+         else if(kgo .eq. 2)then
+            go to 530
+         else if(kgo .eq. 3)then
+            go to 540
+         else if(kgo .eq. 4)then
+            go to 550
+         end if
+         
+         if(itask .eq. 1) then
+!           itask = 1.  if tout has been reached, interpolate.
+            if((tn - tout)*h .ge. 0.0d0)then
+               call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
+               t = tout
+               go to 420
+            end if
+         
+         else if(itask .eq. 2) then
+!           itask = 2.  jump to exit.
+            go to 400
+         
+         else if(itask .eq. 3) then
+!           itask = 3.  jump to exit if tout was reached.
+            if ((tn - tout)*h .ge. 0.0d0) go to 400
+         
+         else if(itask .eq. 4) then
+!           itask = 4. see if tout or tcrit was reached. adjust h if necessary.
+            if((tn - tout)*h .ge. 0.0d0)then
+               call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
+               t = tout
+               go to 420
+            else
+               hmx = dabs(tn) + dabs(h)
+               ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
+               if(ihit)then
+                  go to 400
+               else
+                  tnext = tn + h*(1.0d0 + 4.0d0*uround)
+                  if((tnext - tcrit)*h .gt. 0.0d0)then
+                     h = (tcrit - tn)*(1.0d0 - 4.0d0*uround)
+                     jstart = -2
+                  end if
+               end if
+            end if
+         
+         else if(itask .eq. 5) then
+!           itask = 5.  see if tcrit was reached and jump to exit.
+            hmx = dabs(tn) + dabs(h)
+            ihit = dabs(tn - tcrit) .le. 100.0d0*uround*hmx
+            go to 400 ! MK
+         end if
+      end do
+
 ! block g.
-! the following block handles all successful returns from lsodes.
-! if itask .ne. 1, y is loaded from yh and t is set accordingly.
-! istate is set to 2, the illegal input counter is zeroed, and the
-! optional outputs are loaded into the work arrays before returning.
-! if istate = 1 and tout = t, there is a return with no action taken,
-! except that if this has happened repeatedly, the run is terminated.
-!-----------------------------------------------------------------------
+! the following block handles all successful returns from lsodes. if itask .ne. 1, y is loaded from yh and t is set accordingly.
+! istate is set to 2, the illegal input counter is zeroed, and the optional outputs are loaded into the work arrays before returning.
+! if istate = 1 and tout = t, there is a return with no action taken, except that if this has happened repeatedly, the run is terminated.
+
  400  do i = 1,n
          y(i) = rwork(i+lyh-1)
       end do
@@ -1760,7 +1788,6 @@
          if(ihit) t = tcrit
       end if
  420  istate = 2
-      illin = 0
       rwork(11) = hu
       rwork(12) = h
       rwork(13) = tn
@@ -1776,48 +1803,53 @@
       iwork(26) = nzu
       RETURN
 
-!-----------------------------------------------------------------------
+
 ! block h.
 ! the following block handles all unsuccessful returns other than those for illegal input.  first the error message routine is called.
 ! if there was an error test or convergence test failure, imxer is set.
-! then y is loaded from yh, t is set to tn, and the illegal input counter illin is set to 0.
+! then y is loaded from yh, t is set to tn.
 ! the optional outputs are loaded into the work arrays before returning.
-!-----------------------------------------------------------------------
-! the maximum number of steps was taken before reaching tout.
+
+!     the maximum number of steps was taken before reaching tout.
  500  call xerrwv("lsodes-- at current t (=r1), mxstep (=i1) steps   ", 50, 201, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      taken on this call before reaching tout     ", 50, 201, 0, 1, mxstep, 0, 1, tn, 0.0d0)
       istate = -1
       go to 580
-! ewt(i) .le. 0.0 for some i (not at start of problem).
+
+!     ewt(i) .le. 0.0 for some i (not at start of problem).
  510  ewti = rwork(lewt+i-1)
       call xerrwv("lsodes-- at t (=r1), ewt(i1) has become r2 .le. 0.", 50, 202, 0, 1, i, 0, 2, tn, ewti)
       istate = -6
       go to 580
-! too much accuracy requested for machine precision.
+
+!     too much accuracy requested for machine precision.
  520  call xerrwv("lsodes-- at t (=r1), too much accuracy requested  ", 50, 203, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      for precision of machine..  see tolsf (=r2) ", 50, 203, 0, 0, 0, 0, 2, tn, tolsf)
       rwork(14) = tolsf
       istate = -2
       go to 580
 
-! kflag = -1.  error test failed repeatedly or with abs(h) = hmin.
+!     kflag = -1.  error test failed repeatedly or with abs(h) = hmin.
  530  call xerrwv("lsodes-- at t(=r1) and step size h(=r2), the error", 50, 204, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      test failed repeatedly or with abs(h) = hmin", 50, 204, 0, 0, 0, 0, 2, tn, h)
       istate = -4
       go to 560
-! kflag = -2.  convergence failed repeatedly or with abs(h) = hmin.
+
+!     kflag = -2.  convergence failed repeatedly or with abs(h) = hmin.
  540  call xerrwv("lsodes-- at t (=r1) and step size h (=r2), the    ", 50, 205, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      corrector convergence failed repeatedly     ", 50, 205, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      or with abs(h) = hmin   ", 30, 205, 0, 0, 0, 0, 2, tn, h)
       istate = -5
       go to 560
-! kflag = -3.  fatal error flag returned by prjs or slss (cdrv).
+
+!     kflag = -3.  fatal error flag returned by prjs or slss (cdrv).
  550  call xerrwv("lsodes-- at t (=r1) and step size h (=r2), a fatal", 50, 207, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      error flag was returned by cdrv (by way of  ", 50, 207, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       call xerrwv("      subroutine prjs or slss)", 30, 207, 0, 0, 0, 0, 2, tn, h)
       istate = -7
       go to 580
-! compute imxer if relevant.
+
+!     compute imxer if relevant.
  560  big = 0.0d0
       imxer = 1
       do i = 1,n
@@ -1828,12 +1860,12 @@
          end if
       end do
       iwork(16) = imxer
-! set y vector, t, illin, and optional outputs.
+
+!     set y vector, t and optional outputs.
  580  do i = 1,n
          y(i) = rwork(i+lyh-1)
       end do
       t = tn
-      illin = 0
       rwork(11) = hu
       rwork(12) = h
       rwork(13) = tn
@@ -1847,15 +1879,15 @@
       iwork(21) = nlu
       iwork(25) = nzl
       iwork(26) = nzu
-      return
-!-----------------------------------------------------------------------
+      RETURN
+
 ! block i.
 ! the following block handles all error returns due to illegal input
 ! (istate = -3), as detected before calling the core integrator.
 ! first the error message routine is called.  then if there have been
 ! 5 consecutive such returns just before this call to the solver,
 ! the run is halted.
-!-----------------------------------------------------------------------
+
  601  call xerrwv("lsodes-- istate (=i1) illegal ", 30, 1, 0, 1, istate, 0, 0, 0.0d0, 0.0d0)
       go to 700
  602  call xerrwv("lsodes-- itask (=i1) illegal  ", 30, 2, 0, 1, itask, 0, 0, 0.0d0, 0.0d0)
@@ -1938,11 +1970,7 @@
       if(imul .eq. 2) call xerrwv("        duplicate entry in sparsity structure descriptors   ", 60, 33, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
       if(imul .eq. 3 .or. imul .eq. 6) call xerrwv("        insufficient storage for nsfc (called by cdrv)      ", 60, 33, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
 
- 700  if(illin .eq. 5)then
-         call xerrwv("lsodes-- repeated occurrences of illegal input    ", 50, 302, 0, 0, 0, 0, 0, 0.0d0, 0.0d0)
-         call xerrwv("lsodes-- run aborted.. apparent infinite loop     ", 50, 303, 2, 0, 0, 0, 0, 0.0d0, 0.0d0)
-!        stop
-      end if
-      illin = illin + 1
+ 700  continue
       istate = -3
-      return
+      stop
+      end

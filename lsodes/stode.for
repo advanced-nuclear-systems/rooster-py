@@ -8,10 +8,10 @@
 ! n      = the number of first-order differential equations.
 ! neq    = integer array containing problem size in neq(1), and passed as the neq argument in all calls to f and jac.
 ! y      = an array of length .ge. n used as the y argument in all calls to f and jac.
-! yh     = an nyh by maxord+1 array containing the dependent variables and their approximate scaled derivatives, where.  
+! yh     = an nnyh by maxord+1 array containing the dependent variables and their approximate scaled derivatives, where.  
 !          yh(i,j+1) contains the approximate j-th derivative of y(i), scaled by h**j/factorial(j) (j = 0,1,...,nq).  
 !          on entry for the first step, the first two columns of yh must be set from the initial values.
-! nyh    = a constant integer .ge. n, the first dimension of yh.
+! nnyh   = a constant integer .ge. n, the first dimension of yh.
 ! yh1    = a one-dimensional array occupying the same space as yh.
 ! ewt    = an array of length n containing multiplicative weights for local error measurements.  
 !          local errors in y(i) are compared to 1.0/ewt(i) in various error tests.
@@ -57,17 +57,27 @@
 !          if miter = 1 the user must supply a subroutine jac (the name is arbitrary) as described in lsodes.
 !          otherwise, a dummy argument can be used.
 !
-      subroutine stode (neq, y, yh, nyh, yh1, ewt, savf, acor, wm, iwm)
+      subroutine stode (neq, y, yh, nnyh, yh1, ewt, savf, acor, wm, iwm)
 
-      integer neq, nyh, iwm
-      integer iownd, ialth, ipup, lmax, meo, nqnyh, nslp, icf, ierpj, iersl, jcur, jstart, kflag, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
+      integer neq, nnyh, iwm
       integer i, i1, j, jb, m, ncf, newq
       double precision y, yh, yh1, ewt, savf, acor, wm
-      double precision conit, crate, el, elco, hold, rmax, tesco, el0, h, hmin, hmxi, hu, rc, tn, uround
       double precision dcon, ddn, del, delp, dsm, dup, exdn, exsm, exup, r, rh, rhdn, rhsm, rhup, told, vnorm
-!     WARNING: yh(nyh,1) replaced by yh(nyh,n) to avoid error on out of boundary
-      dimension neq(1), y(1), yh(nyh,n), yh1(1), ewt(1), savf(1), acor(1), wm(1), iwm(1)
-      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12), el0, h, hmin, hmxi, hu, rc, tn, uround, iownd(14), ialth, ipup, lmax, meo, nqnyh, nslp, icf, ierpj, iersl, jcur, jstart, kflag, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
+!     WARNING: yh(nnyh,1) replaced by yh(nnyh,n) to avoid error on out of boundary
+      dimension neq(1), y(1), yh(nnyh,n), yh1(1), ewt(1), savf(1), acor(1), wm(1), iwm(1)
+
+      double precision conit, crate, el, elco, hold, rmax, tesco, 
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
+      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh,
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
+      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12),
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround, 
+     +   illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, 
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
 
       logical exit1, exit2
       n = neq(1)
@@ -101,7 +111,7 @@
          do i = 1,nq+1
             el(i) = elco(i,nq)
          end do
-         nqnyh = nq*nyh
+         nqnyh = nq*nnyh
          rc = rc*el(1)/el0
          el0 = el(1)
          conit = 0.5d0/dfloat(nq+2)
@@ -124,7 +134,7 @@
                do i = 1,nq+1
                   el(i) = elco(i,nq)
                end do
-               nqnyh = nq*nyh
+               nqnyh = nq*nnyh
                rc = rc*el(1)/el0
                el0 = el(1)
                conit = 0.5d0/dfloat(nq+2)
@@ -142,7 +152,7 @@
             do i = 1,nq+1
                el(i) = elco(i,nq)
             end do
-            nqnyh = nq*nyh
+            nqnyh = nq*nnyh
             rc = rc*el(1)/el0
             el0 = el(1)
             conit = 0.5d0/dfloat(nq+2)
@@ -203,9 +213,9 @@
          tn = tn + h
          i1 = nqnyh + 1
          do jb = 1,nq
-            i1 = i1 - nyh
+            i1 = i1 - nnyh
             do i = i1,nqnyh
-               yh1(i) = yh1(i) + yh1(i+nyh)
+               yh1(i) = yh1(i) + yh1(i+nnyh)
             end do
          end do
 
@@ -223,7 +233,7 @@
             nfe = nfe + 1
             if(ipup .gt. 0)then
 !              if indicated, the matrix p = i - h*el(1)*j is reevaluated and preprocessed before starting the corrector iteration.  
-               call prjs(neq, y, yh, nyh, ewt, acor, savf, wm, iwm, f, jac)
+               call prjs(neq, y, yh, nnyh, ewt, acor, savf, wm, iwm, f, jac)
 !              ipup is set to 0 as an indicator that the matrix was evaluated.
                ipup = 0
                rc = 1.0d0
@@ -407,9 +417,9 @@
                         tn = told
                         i1 = nqnyh + 1
                         do jb = 1,nq
-                           i1 = i1 - nyh
+                           i1 = i1 - nnyh
                            do i = i1,nqnyh
-                              yh1(i) = yh1(i) - yh1(i+nyh)
+                              yh1(i) = yh1(i) - yh1(i+nnyh)
                            end do
                         end do
                         rmax = 2.0d0
@@ -458,7 +468,7 @@
                               do i = 1,nq+1
                                  el(i) = elco(i,nq)
                               end do
-                              nqnyh = nq*nyh
+                              nqnyh = nq*nnyh
                               rc = rc*el(1)/el0
                               el0 = el(1)
                               conit = 0.5d0/dfloat(nq+2)
@@ -520,7 +530,7 @@
                               do i = 1,nq+1
                                  el(i) = elco(i,nq)
                               end do
-                              nqnyh = nq*nyh
+                              nqnyh = nq*nnyh
                               rc = rc*el(1)/el0
                               el0 = el(1)
                               conit = 0.5d0/dfloat(nq+2)
@@ -562,9 +572,9 @@
          tn = told
          i1 = nqnyh + 1
          do jb = 1,nq
-            i1 = i1 - nyh
+            i1 = i1 - nnyh
             do i = i1,nqnyh
-               yh1(i) = yh1(i) - yh1(i+nyh)
+               yh1(i) = yh1(i) - yh1(i+nnyh)
             end do
          end do
 

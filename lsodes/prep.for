@@ -39,16 +39,34 @@
       subroutine prep (neq, y, yh, savf, ewt, ftem, ia, ja, wk, iwk, ipper)
 
       integer neq, ia, ja, iwk, ipper
-      integer iownd, iowns, icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
-      integer iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
       integer i, ibr, ier, ipil, ipiu, iptt1, iptt2, j, jfound, k, knew, kmax, kmin, ldif, lenigp, liwk, maxg, np1, nzsut
       double precision y, yh, savf, ewt, ftem, wk
-      double precision rowns, el0, h, hmin, hmxi, hu, rc, tn, uround
-      double precision con0, conmin, ccmxj, psmall, rbig, seth
       double precision dq, dyj, erwt, fac, yj
       dimension neq(1), y(1), yh(1), savf(1), ewt(1), ftem(1), ia(n), ja(1), wk(1), iwk(1)
-      common /ls0001/ rowns(209), el0, h, hmin, hmxi, hu, rc, tn, uround, iownd(14), iowns(6), icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
-      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth, iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
+
+      double precision conit, crate, el, elco, hold, rmax, tesco, 
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
+      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh,
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
+      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12),
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround,
+     +   illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, 
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter,
+     +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
+
+      double precision con0, conmin, ccmxj, psmall, rbig, seth
+      integer iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, 
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, 
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
+      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth,
+     +   iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp,
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa,
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
 
       ibian = 4
       ipian = ibian + 1
@@ -206,6 +224,7 @@
          iptt1 = ipigp + np1
          iptt2 = iptt1 + n
          lreq = iptt2 + n - 1
+         write(*,*)'ipigp ', ipigp
          if(lreq .gt. liwk)then
             ipper = -2
             lreq = (lreq - 1)/2 + 1

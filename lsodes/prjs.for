@@ -23,20 +23,38 @@
 !       = -2 if other error found in cdrv (should not occur here).
 ! jcur  = output flag = 1 to indicate that the jacobian matrix (or approximation) is now current.
 !
-      subroutine prjs(neq,y,yh,nyh,ewt,ftem,savf,wk,iwk)
+      subroutine prjs(neq, y, yh, nnyh, ewt, ftem, savf, wk, iwk)
 
-      integer neq, nyh, iwk
-      integer iownd, iowns, icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
-      integer iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
+      integer neq, nnyh, iwk
       integer i, imul, j, jj, jok, jmax, jmin, k, kmax, kmin, ng
       double precision y, yh, ewt, ftem, savf, wk
-      double precision rowns, el0, h, hmin, hmxi, hu, rc, tn, uround
-      double precision con0, conmin, ccmxj, psmall, rbig, seth
       double precision con, di, fac, hl0, pij, r, r0, rcon, rcont, srur, vnorm
-!     WARNING: yh(nyh,1) replaced by yh(nyh,n) to avoid error on out of boundary
-      dimension neq(1), y(1), yh(nyh,n), ewt(1), ftem(1), savf(1), wk(n), iwk(1)                                                        
-      common /ls0001/ rowns(209), el0, h, hmin, hmxi, hu, rc, tn, uround, iownd(14), iowns(6), icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, n, nq, nst, nfe, nje, nqu
-      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth, iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
+!     WARNING: yh(nnyh,1) replaced by yh(nnyh,n) to avoid error on out of boundary
+      dimension neq(1), y(1), yh(nnyh,n), ewt(1), ftem(1), savf(1), wk(n), iwk(1)                                                        
+
+      double precision conit, crate, el, elco, hold, rmax, tesco, 
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
+      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh,
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
+      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12),
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround,
+     +   illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, 
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter,
+     +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
+
+      double precision con0, conmin, ccmxj, psmall, rbig, seth
+      integer iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, 
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, 
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
+      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth,
+     +   iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp,
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa,
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
 
       hl0 = h*el0
       con = -hl0

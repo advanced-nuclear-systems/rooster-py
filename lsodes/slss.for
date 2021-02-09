@@ -1,15 +1,34 @@
-      subroutine slss (wk, iwk, x, tem)
+      subroutine slss(wk, iwk, x, tem)
+
       integer iwk
-      integer iownd, iowns, icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
-      integer iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
       integer i
       double precision wk, x, tem
-      double precision rowns, el0, h, hmin, hmxi, hu, rc, tn, uround
-      double precision rlss
       double precision di, hl0, phl0, r
       dimension wk(n), iwk(1), x(1), tem(1)                                   
-      common /ls0001/ rowns(209), el0, h, hmin, hmxi, hu, rc, tn, uround, iownd(14), iowns(6), icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
-      common /lss001/ rlss(6), iplost, iesp, iys, iba, ibian, ibjan, ibjgp, ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, lenyh, lenyhm, lenwk, lreq, lrest, lwmin, moss, nslj, ngp, nlu, nnz, nsp, nzl, nzu
+
+      double precision conit, crate, el, elco, hold, rmax, tesco, 
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
+      integer illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh,
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
+     +   maxord, maxcor, msbp, n, nq, nst, nfe, nje, nqu
+      common /ls0001/ conit, crate, el(13), elco(13,12), hold, rmax, tesco(3,12),
+     +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround,
+     +   illin, init, lyh, lewt, lacor, lsavf, lwm, liwm, mxstep, mxhnil, nhnil, ntrep, nslast, nyh, 
+     +   ialth, ipup, lmax, meo, nqnyh, nslp, 
+     +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter,
+     +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
+
+      double precision con0, conmin, ccmxj, psmall, rbig, seth
+      integer iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp, 
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa, 
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
+      common /lss001/ con0, conmin, ccmxj, psmall, rbig, seth,
+     +   iplost, iesp, istatc, iys, iba, ibian, ibjan, ibjgp,
+     +   ipian, ipjan, ipjgp, ipigp, ipr, ipc, ipic, ipisp, iprsp, ipa,
+     +   lenyh, lenyhm, lenwk, lreq, lrat, lrest, lwmin, moss, msbj,
+     +   nslj, ngp, nlu, nnz, nsp, nzl, nzu
 
       iersl = 0
       if(miter .eq. 3)then

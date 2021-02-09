@@ -4,6 +4,7 @@ gfortran -ffixed-line-length-none -c cdrv.for
 gfortran -ffixed-line-length-none -c cfode.for
 gfortran -ffixed-line-length-none -c cntnzu.for
 gfortran -ffixed-line-length-none -c ewset.for
+gfortran -ffixed-line-length-none -c intdy.for
 gfortran -ffixed-line-length-none -c iprep.for
 gfortran -ffixed-line-length-none -c jgroup.for
 gfortran -ffixed-line-length-none -c lsodes.for
