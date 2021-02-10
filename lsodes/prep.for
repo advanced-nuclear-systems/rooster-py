@@ -42,7 +42,7 @@
       integer i, ibr, ier, ipil, ipiu, iptt1, iptt2, j, jfound, k, knew, kmax, kmin, ldif, lenigp, liwk, maxg, np1, nzsut
       double precision y, yh, savf, ewt, ftem, wk
       double precision dq, dyj, erwt, fac, yj
-      dimension neq(1), y(1), yh(1), savf(1), ewt(1), ftem(1), ia(n), ja(1), wk(1), iwk(1)
+      dimension neq(1), y(1), yh(1), savf(1), ewt(1), ftem(1), ia(1), ja(1), wk(1), iwk(1)
 
       double precision conit, crate, el, elco, hold, rmax, tesco, 
      +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround

@@ -1734,7 +1734,7 @@
          if(itask .eq. 1) then
 !           itask = 1.  if tout has been reached, interpolate.
             if((tn - tout)*h .ge. 0.0d0)then
-               call intdy (tout, 0, rwork(lyh), nyh, y, iflag)
+               call intdy(tout, 0, rwork(lyh), nyh, y, iflag)
                t = tout
                go to 420
             end if
@@ -1780,14 +1780,16 @@
 ! istate is set to 2, the illegal input counter is zeroed, and the optional outputs are loaded into the work arrays before returning.
 ! if istate = 1 and tout = t, there is a return with no action taken, except that if this has happened repeatedly, the run is terminated.
 
- 400  do i = 1,n
+ 400  continue
+      do i = 1,n
          y(i) = rwork(i+lyh-1)
       end do
       t = tn
       if(itask .eq. 4 .or. itask .eq. 5)then
          if(ihit) t = tcrit
       end if
- 420  istate = 2
+ 420  continue
+      istate = 2
       rwork(11) = hu
       rwork(12) = h
       rwork(13) = tn

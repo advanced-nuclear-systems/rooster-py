@@ -1,21 +1,16 @@
 !
-! intdy computes interpolated values of the k-th derivative of the
-! dependent variable vector y, and stores it in dky.  this routine
-! is called within the package with k = 0 and t = tout, but may
-! also be called by the user for any k up to the current order.
+! intdy computes interpolated values of the k-th derivative of the dependent variable vector y, and stores it in dky.
+! this routine is called within the package with k = 0 and t = tout, but may also be called by the user for any k up to the current order.
 ! (see detailed instructions in the usage documentation.)
-!-----------------------------------------------------------------------
-! the computed values in dky are gotten by interpolation using the
-! nordsieck history array yh.  this array corresponds uniquely to a
-! vector-valued polynomial of degree nqcur or less, and dky is set
-! to the k-th derivative of this polynomial at t.
+!
+! the computed values in dky are gotten by interpolation using the nordsieck history array yh.
+! this array corresponds uniquely to a vector-valued polynomial of degree nqcur or less, and dky is set to the k-th derivative of this polynomial at t.
 ! the formula for dky is..
 !              q
 !  dky(i)  =  sum  c(j,k) * (t - tn)**(j-k) * h**(-j) * yh(i,j+1)
 !             j=k
 ! where  c(j,k) = j*(j-1)*...*(j-k+1), q = nqcur, tn = tcur, h = hcur.
-! the quantities  nq = nqcur, l = nq+1, n = neq, tn, and h are
-! communicated by common.  the above sum is done in reverse order.
+! the quantities  nq = nqcur, l = nq+1, n = neq, tn, and h are communicated by common.  the above sum is done in reverse order.
 ! iflag is returned negative if either k or t is out of bounds.
 
       subroutine intdy (t, k, yh, nnyh, dky, iflag)

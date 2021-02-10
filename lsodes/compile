@@ -1,30 +1,30 @@
-gfortran -ffixed-line-length-none -c 0driver.for
+gfortran -ffixed-line-length-none -w -c 0driver.for
 
-gfortran -ffixed-line-length-none -c cdrv.for
-gfortran -ffixed-line-length-none -c cfode.for
-gfortran -ffixed-line-length-none -c cntnzu.for
-gfortran -ffixed-line-length-none -c ewset.for
-gfortran -ffixed-line-length-none -c intdy.for
-gfortran -ffixed-line-length-none -c iprep.for
-gfortran -ffixed-line-length-none -c jgroup.for
-gfortran -ffixed-line-length-none -c lsodes.for
-gfortran -ffixed-line-length-none -c md.for
-gfortran -ffixed-line-length-none -c mdi.for
-gfortran -ffixed-line-length-none -c mdm.for
-gfortran -ffixed-line-length-none -c mdp.for
-gfortran -ffixed-line-length-none -c mdu.for
-gfortran -ffixed-line-length-none -c nnfc.for
-gfortran -ffixed-line-length-none -c nnsc.for
-gfortran -ffixed-line-length-none -c nntc.for
-gfortran -ffixed-line-length-none -c nroc.for
-gfortran -ffixed-line-length-none -c nsfc.for
-gfortran -ffixed-line-length-none -c odrv.for
-gfortran -ffixed-line-length-none -c prep.for
-gfortran -ffixed-line-length-none -c prjs.for
-gfortran -ffixed-line-length-none -c slss.for
-gfortran -ffixed-line-length-none -c sro.for
-gfortran -ffixed-line-length-none -c stode.for
-gfortran -ffixed-line-length-none -c vnorm.for
-gfortran -ffixed-line-length-none -c xerrwv.for
+gfortran -ffixed-line-length-none -w -c cdrv.for
+gfortran -ffixed-line-length-none -w -c cfode.for
+gfortran -ffixed-line-length-none -w -c cntnzu.for
+gfortran -ffixed-line-length-none -w -c ewset.for
+gfortran -ffixed-line-length-none -w -c intdy.for
+gfortran -ffixed-line-length-none -w -c iprep.for
+gfortran -ffixed-line-length-none -w -c jgroup.for
+gfortran -ffixed-line-length-none -w -c lsodes.for
+gfortran -ffixed-line-length-none -w -c md.for
+gfortran -ffixed-line-length-none -w -c mdi.for
+gfortran -ffixed-line-length-none -w -c mdm.for
+gfortran -ffixed-line-length-none -w -c mdp.for
+gfortran -ffixed-line-length-none -w -c mdu.for
+gfortran -ffixed-line-length-none -w -c nnfc.for
+gfortran -ffixed-line-length-none -w -c nnsc.for
+gfortran -ffixed-line-length-none -w -c nntc.for
+gfortran -ffixed-line-length-none -w -c nroc.for
+gfortran -ffixed-line-length-none -w -c nsfc.for
+gfortran -ffixed-line-length-none -w -c odrv.for
+gfortran -ffixed-line-length-none -w -c prep.for
+gfortran -ffixed-line-length-none -w -c prjs.for
+gfortran -ffixed-line-length-none -w -c slss.for
+gfortran -ffixed-line-length-none -w -c sro.for
+gfortran -ffixed-line-length-none -w -c stode.for
+gfortran -ffixed-line-length-none -w -c vnorm.for
+gfortran -ffixed-line-length-none -w -c xerrwv.for
 
 gfortran -o lsodes.exe *.o

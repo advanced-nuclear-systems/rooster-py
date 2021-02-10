@@ -83,7 +83,7 @@
       stop
       end
      
-      subroutine rhs(neq, t, y, ydot)
+      subroutine f(neq, t, y, ydot)
       double precision t, y, ydot
       double precision rk1, rk2, rk3, rk4, rk5, rk6, rk7, rk8, rk9, rk10, rk11, rk12, rk13, rk14, rk15, rk16, rk17
       dimension y(12), ydot(12)
@@ -92,7 +92,7 @@
      +   rk11/50.0d0/, rk12/50.0d0/, rk13/50.0d0/, rk14/30.0d0/,
      +   rk15/100.0d0/, rk16/2.5d0/, rk17/100.0d0/, rk18/2.5d0/,
      +   rk19/50.0d0/, rk20/50.0d0/
-
+     
       ydot(1)  = -rk1*y(1)
       ydot(2)  = rk1*y(1) + rk11*rk14*y(4) + rk19*rk14*y(5) - rk3*y(2)*y(3) - rk15*y(2)*y(12) - rk2*y(2)
       ydot(3)  = rk2*y(2) - rk5*y(3) - rk3*y(2)*y(3) - rk7*y(10)*y(3) + rk11*rk14*y(4) + rk12*rk14*y(6)
@@ -108,7 +108,7 @@
       return
       end
      
-      subroutine fjac(neq, t, y, j, ia, ja, pdj)
+      subroutine jac(neq, t, y, j, ia, ja, pdj)
       double precision t, y, pdj
       double precision rk1, rk2, rk3, rk4, rk5, rk6, rk7, rk8, rk9, rk10, rk11, rk12, rk13, rk14, rk15, rk16, rk17
       dimension y(100), ia(100), ja(100), pdj(100)

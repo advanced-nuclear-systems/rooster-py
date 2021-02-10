@@ -4,7 +4,7 @@
       integer i
       double precision wk, x, tem
       double precision di, hl0, phl0, r
-      dimension wk(n), iwk(1), x(1), tem(1)                                   
+      dimension wk(1), iwk(1), x(1), tem(1)
 
       double precision conit, crate, el, elco, hold, rmax, tesco, 
      +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround

@@ -1,6 +1,8 @@
 
-      subroutine lsodes (f, neq, y, t, tout, itol, rtol, atol, itask,
-     1            istate, iopt, rwork, lrw, iwork, liw, jac, mf)
+!      subroutine lsodes (f, neq, y, t, tout, itol, rtol, atol, itask,
+!     1            istate, iopt, rwork, lrw, iwork, liw, jac, mf)
+      subroutine lsodes (neq, y, t, tout, itol, rtol, atol, itask,
+     1            istate, iopt, rwork, lrw, iwork, liw, mf)
       external f, jac
       integer neq, itol, itask, istate, iopt, lrw, iwork, liw, mf
       double precision y, t, tout, rtol, atol, rwork
