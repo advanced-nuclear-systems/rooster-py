@@ -1316,7 +1316,7 @@
 !        next process and check the optional inputs.
          if(iopt .eq. 0)then
             maxord = mord(meth)
-            mxstep = 500
+            mxstep = 1000000
             mxhnil = mxhnl0
             if(istate .eq. 1) h0 = 0.0d0
             hmxi = 0.0d0
@@ -1484,7 +1484,7 @@
                if(h0 .ne. 0.0d0 .and. (t + h0 - tcrit)*h0 .gt. 0.0d0) h0 = tcrit - t
             end if
 !           initialize all remaining parameters.
-            uround = 1.0e-14
+            uround = 2.2204460492503131E-016
             jstart = 0
             if(miter .ne. 0) rwork(lwm) = dsqrt(uround)
             msbj = 50
@@ -1607,7 +1607,7 @@
             jstart = -1
             if(n .ne. nyh)then
 !              neq was reduced.  zero part of yh to avoid undefined references.
-               i1 = lyh + l*nyh
+               i1 = lyh + (nq+1)*nyh
                i2 = lyh + (maxord + 1)*nyh - 1
                if(i1 .le. i2)then
                   do i = i1,i2
@@ -1682,7 +1682,7 @@
 !     first check for too many steps being taken, update ewt (if not at start of problem), check for too much accuracy being requested, and
 !     check for h below the roundoff level in t.
       do while(.true.)
-         if(istate .ne. 1)then
+!         if(istate .ne. 1)then
             if((nst-nslast) .ge. mxstep)then
                go to 500
             end if
@@ -1693,7 +1693,7 @@
                end if
                rwork(i+lewt-1) = 1.0d0/rwork(i+lewt-1)
             end do
-         end if
+!         end if
          tolsf = uround*vnorm (n, rwork(lyh), rwork(lewt))
          if(tolsf .gt. 1.0d0)then
             tolsf = tolsf*2.0d0

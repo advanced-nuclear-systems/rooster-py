@@ -36,8 +36,11 @@
 ! during the run and at the end, statistical quantities of interest
 ! are printed (see optional outputs in the full description below).
 !
-      double precision atol, rtol, rwork, t, tout, y
-      dimension y(12), rwork(500), iwork(300)
+      implicit none
+      integer i, istate, itask, iopt, iout, itol, leniw, lenrw, liw, lrw, mf, neq, nfe, nje, nlu, nnz, nnzlu, nst
+      integer iwork(300)
+      double precision  atol, rtol, t, tout
+      double precision  rwork(500), y(12)
       data lrw/500/, liw/300/
 
       neq = 12

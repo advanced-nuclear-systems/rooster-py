@@ -1,4 +1,8 @@
-      subroutine ewset (n, itol, rtol, atol, ycur, ewt)
+
+! this subroutine sets the error weight vector ewt according to ewt(i) = rtol(i)*abs(ycur(i)) + atol(i),  i = 1,...,n,
+! with the subscript on rtol and/or atol possibly replaced by 1 above, depending on the value of itol.
+
+      subroutine ewset(n, itol, rtol, atol, ycur, ewt)
       integer n, itol
       integer i
       double precision rtol, atol, ycur, ewt
@@ -21,6 +25,5 @@
              ewt(i) = rtol(i)*dabs(ycur(i)) + atol(i)
           end do
       end if
-
       RETURN
       end

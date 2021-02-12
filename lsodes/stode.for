@@ -61,7 +61,7 @@
 
       integer neq, nnyh, iwm
       integer i, i1, j, jb, m, ncf, newq
-      double precision y, yh, yh1, ewt, savf, acor, wm
+      double precision y, yh, yh1, ewt, savf, acor, wm, rmx
       double precision dcon, ddn, del, delp, dsm, dup, exdn, exsm, exup, r, rh, rhdn, rhsm, rhup, told, vnorm
       dimension neq(1), y(1), yh(nnyh,1), yh1(1), ewt(1), savf(1), acor(1), wm(1), iwm(1)
 
@@ -80,6 +80,7 @@
 
       logical exit1, exit2, exit3
 
+!      write(*,*)'jstart ', jstart
       kflag = 0
       told = tn
       ncf = 0
@@ -92,6 +93,7 @@
       if(jstart .eq. 0)then
 !        on the first call, the order is set to 1, and other variables are initialized.  
          nq = 1
+         ialth = 2
 !        rmax is the maximum ratio by which h can be increased in a single step.  
 !        it is initially 1.e4 to compensate for the small initial h, but then is normally equal to 10.
 !        if a failure occurs (in corrector convergence or error test), rmax is set at 2 for the next increase.
@@ -117,14 +119,15 @@
 !        if an order increase is about to be considered (ialth = 1), ialth is reset to 2 to postpone consideration one more step.
          if(ialth .eq. 1) ialth = 2
 !        if the caller has changed meth, cfode is called to reset the coefficients of the method.
-         if(meth .ne. meo)then
-            call cfode(meth, elco, tesco)
-            meo = meth
-            if(nq .le. maxord)then
-!              el vector and related constants are reset when the order nq is changed.
-               call order_changed()
-            end if
-         end if
+!         if(meth .ne. meo)then
+!            call cfode(meth, elco, tesco)
+!            meo = meth
+!!           el vector and related constants are reset when the order nq is changed.
+!            if(nq .le. maxord)then
+!               ialth = l
+!               call order_changed()
+!            end if
+!         end if
          if(nq .le. maxord)then
 !           if h is being changed, the h ratio rh is reset.  
             if(h .ne. hold)then
@@ -169,12 +172,15 @@
 
 !        the predicted values is computed by effectively multiplying the yh array by the pascal triangle matrix.
          i1 = nqnyh + 1
+!         write(*,*)'yh1 ',(yh1(i), i=1,nq+1)
          do jb = 1,nq
             i1 = i1 - nnyh
             do i = i1,nqnyh
+!               write(*,*)'i ', i
                yh1(i) = yh1(i) + yh1(i+nnyh)
             end do
          end do
+!         write(*,*)'yh1, nq ',(yh1(i), i=1,nq)
 
          exit1 = .false.
          do while(.not. exit1)
@@ -186,6 +192,7 @@
                y(i) = yh(i,1)
             end do
             call rhs(neq, tn, y, savf)
+!            write(*,*)'tn, y(1), h, savf(1), ipup ',tn, y(1), h, savf(1), ipup
             nfe = nfe + 1
             if(ipup .gt. 0)then
 !              if indicated, the matrix p = i - h*el(1)*j is reevaluated and preprocessed before starting the corrector iteration.  
@@ -216,7 +223,6 @@
             exit2 = .false.
             exit3 = .false.
             do while(.not. exit2)
-270            continue
                if(miter .eq. 0)then
 !                 in case of functional iteration, update y directly from the result of the last function evaluation.
                   do i = 1,n
@@ -251,6 +257,7 @@
 !                 slss was successful
                   if(iersl .eq. 0)then
                      del = vnorm(n, y, ewt)
+                     
                      do i = 1,n
                         acor(i) = acor(i) + y(i)
                         y(i) = yh(i,1) + el(1)*acor(i)
@@ -263,7 +270,8 @@
 !                 if m.gt.0, an estimate of the convergence rate constant is stored in crate, and this is used in the test.
                   if(m .gt. 0) crate = dmax1(0.2d0*crate,del/delp)
                   dcon = del*dmin1(1.0d0,1.5d0*crate)/(tesco(2,nq)*conit)
-                  
+
+
                   if(dcon .le. 1.0d0)then
 !                    the corrector has converged.  jcur is set to 0 to signal that the jacobian involved may need updating later.
 !                    the local error test is made
@@ -314,14 +322,14 @@
                               rhdn = 1.0d0/(1.3d0*ddn**exdn + 0.0000013d0)
                            end if
 
-                           rmax = max(rhdn, rhsm, rhup)  
-                           if(rmax == rhdn)then
+                           rmx = max(rhdn, rhsm, rhup)  
+                           if(rmx .eq. rhdn)then
                               newq = nq - 1
                               rh = rhdn
-                           else if(rmax == rhsm)then
+                           else if(rmx .eq. rhsm)then
                               newq = nq
                               rh = rhsm
-                           else if(rmax == rhup)then
+                           else
                               newq = nq + 1
                               rh = rhup
                               r = el(newq)/dfloat(newq)
@@ -329,6 +337,15 @@
                                  yh(i,newq+1) = acor(i)*r
                               end do
                            end if
+
+!                          if there is a change of order, reset nq and the coefficients.
+                           if(newq .ne. nq)then
+                              nq = newq
+!                             el vector and related constants are reset when the order nq is changed.
+                              call order_changed()
+                           end if
+
+!                           write(*,*)'newq ', newq
 !                          if h is being changed, the h ratio rh is checked against rmax, hmin, and hmxi, and the yh array rescaled.  
                            if(rh .ne. 1.0d0)then
                               rh = dmax1(rh,hmin/dabs(h))
@@ -337,7 +354,7 @@
                               if(rh .lt. 1.1d0) ialth = 3
                               rmax = 10.0d0
                            end if
-
+                           
                         else if(ialth .eq. 1 .and. nq .lt. maxord)then
                            do i = 1,n
                               yh(i,maxord+1) = acor(i)
@@ -356,9 +373,9 @@
    
                      else !dsm .gt. 1
 
-!                       the local error test failed. kflag keeps track of multiple failures.
+!                       the local error test failed. kflag is a count of failures.
                         kflag = kflag - 1
-
+!                        write(*,*)'kflag ', kflag
 !                       restore tn and the yh array to their previous values, and prepare to try the step again.
                         call set_back(told, yh1)
                         if(dabs(h) .le. hmin*1.00001d0)then
@@ -408,36 +425,30 @@
                            
                         else ! less than 3 failures...
 
-!                          failure of the step, factors rhdn, rhsm, and rhup are computed, 
-!                          by which h could be multiplied at order nq - 1, order nq, or order nq + 1, respectively.
-!                          in the case of failure, rhup = 0.0 to avoid an order increase. the largest of these is determined and the new order chosen accordingly.
-!                          if the order is to be increased, we compute one additional scaled derivative.
-                           rhup = 0.0d0
+                              write(*,*)'1 or 2 consecutive failures occurred.'
+!                          1 or 2 failures of the step
+!                          factor rhsm by which h could be multiplied at order nq
                            exsm = 1.0d0/dfloat(nq + 1)
                            rhsm = 1.0d0/(1.2d0*dsm**exsm + 0.0000012d0)
+
+!                          factor rhdn by which h could be multiplied at order nq-1
                            rhdn = 0.0d0 
                            if(nq .ne. 1)then
-                              ddn = vnorm (n, yh(1,nq+1), ewt)/tesco(1,nq)
+                              ddn = vnorm(n, yh(1,nq+1), ewt)/tesco(1,nq)
                               exdn = 1.0d0/dfloat(nq)
                               rhdn = 1.0d0/(1.3d0*ddn**exdn + 0.0000013d0)
                            end if
 
-                           rmax = max(rhdn, rhsm)  
-                           if(rmax == rhdn)then
+!                          the largest of these is determined and the new order chosen accordingly.
+                           if(rhdn .gt. rhsm)then
                               newq = nq - 1
                               rh = rhdn
-                           else if(rmax == rhsm)then
+                           else
                               newq = nq
                               rh = rhsm
                            end if
                            if(rh .gt. 1.0d0) rh = 1.0d0
                            if(kflag .eq. -2) rh = dmin1(rh,0.2d0)
-
-!                          if h is being changed, the h ratio rh is checked against rmax, hmin, and hmxi, and the yh array rescaled.
-                           if(rh .lt. 1.0d0)then
-                              rh = dmax1(rh,hmin/dabs(h))
-                              call step_changed(rh, nyh, yh)
-                           end if
 
 !                          if there is a change of order, reset nq and the coefficients.
 !                          h is reset according to rh and the yh array is rescaled. then redo the step otherwise.
@@ -446,11 +457,18 @@
 !                             el vector and related constants are reset when the order nq is changed.
                               call order_changed()
                            end if
+
+!                          if h is being changed, the h ratio rh is checked against rmax, hmin, and hmxi, and the yh array rescaled.
+                           if(rh .lt. 1.0d0)then
+                              rh = dmax1(rh,hmin/dabs(h))
+                              call step_changed(rh, nyh, yh)
+                           end if
+                           GO TO 200
                         end if ! number of failures
                      end if ! local error test (dsm)
                      
                   else ! dcon > 1
-   
+
 !                    the corrector iteration failed to converge.
                      m = m + 1
                      if(m .lt. maxcor .and. (m .eq. 1 .or. del .le. 2.0d0*delp))then
@@ -525,7 +543,7 @@
       do i = 1,nq+1
          el(i) = elco(i,nq)
       end do
-      nqnyh = nq*nnyh
+      nqnyh = nq*nyh
       rc = rc*el(1)/el0
       el0 = el(1)
       conit = 0.5d0/dfloat(nq+2)
@@ -591,6 +609,7 @@
      +   icf, ierpj, iersl, jcur, jstart, kflag, l, meth, miter, 
      +   maxord, maxcor, msbp, mxncf, n, nq, nst, nfe, nje, nqu
 
+      write(*,*)'in set back'
 !     the maximum ratio by which h can be increased in a single step.  
       rmax = 2.0d0
       

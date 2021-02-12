@@ -4,7 +4,8 @@
 ! (see detailed instructions in the usage documentation.)
 !
 ! the computed values in dky are gotten by interpolation using the nordsieck history array yh.
-! this array corresponds uniquely to a vector-valued polynomial of degree nqcur or less, and dky is set to the k-th derivative of this polynomial at t.
+! this array corresponds uniquely to a vector-valued polynomial of degree nqcur or less, 
+! and dky is set to the k-th derivative of this polynomial at t.
 ! the formula for dky is..
 !              q
 !  dky(i)  =  sum  c(j,k) * (t - tn)**(j-k) * h**(-j) * yh(i,j+1)
@@ -13,7 +14,7 @@
 ! the quantities  nq = nqcur, l = nq+1, n = neq, tn, and h are communicated by common.  the above sum is done in reverse order.
 ! iflag is returned negative if either k or t is out of bounds.
 
-      subroutine intdy (t, k, yh, nnyh, dky, iflag)
+      subroutine intdy(t, k, yh, nnyh, dky, iflag)
 
       integer k, nnyh, iflag
       integer i, ic, j, jb, jb2, jj, jj1, jp1
@@ -48,17 +49,17 @@
          RETURN
       end if
 
-      s = (t - tn)/h
+      s = (t - tn)/h      
       ic = 1
       if(k .ne. 0)then
-         jj1 = l - k
+         jj1 = nq + 1 - k
          do jj = jj1,nq
             ic = ic*jj
          end do
       end if
       c = dfloat(ic)
       do i = 1,n
-         dky(i) = c*yh(i,l)
+         dky(i) = c*yh(i,nq+1)
       end do
       if(k .ne. nq)then
          jb2 = nq - k

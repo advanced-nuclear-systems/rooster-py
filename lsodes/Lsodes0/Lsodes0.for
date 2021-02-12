@@ -2454,6 +2454,7 @@ c
  40   continue
       do 45 i = 1,n
  45     ewt(i) = rtol(i)*dabs(ycur(i)) + atol(i)
+
       return
 c----------------------- end of subroutine ewset -----------------------
       end
@@ -4967,12 +4968,15 @@ c-----------------------------------------------------------------------
       if (nst .ge. nslp+msbp) ipup = miter
       tn = tn + h
       i1 = nqnyh + 1
+!         write(*,*)'yh1 ',(yh1(i), i=1,nq+1)
       do 215 jb = 1,nq
         i1 = i1 - nyh
 cdir$ ivdep
         do 210 i = i1,nqnyh
+!          write(*,*)'i ', i
  210      yh1(i) = yh1(i) + yh1(i+nyh)
  215    continue
+!         write(*,*)'yh1, nq ',(yh1(i), i=1,nq)
 c-----------------------------------------------------------------------
 c up to maxcor corrector iterations are taken.  a convergence test is
 c made on the r.m.s. norm of each correction, weighted by the error
@@ -4983,6 +4987,7 @@ c-----------------------------------------------------------------------
       do 230 i = 1,n
  230    y(i) = yh(i,1)
       call f (neq, tn, y, savf)
+!            write(*,*)'tn, y(1), h, savf(1)',tn, y(1), h, savf(1)
       nfe = nfe + 1
       if (ipup .le. 0) go to 250
 c-----------------------------------------------------------------------
@@ -5032,6 +5037,7 @@ c-----------------------------------------------------------------------
  400  if (m .ne. 0) crate = dmax1(0.2d0*crate,del/delp)
       dcon = del*dmin1(1.0d0,1.5d0*crate)/(tesco(2,nq)*conit)
       if (dcon .le. 1.0d0) go to 450
+
       m = m + 1
       if (m .eq. maxcor) go to 410
       if (m .ge. 2 .and. del .gt. 2.0d0*delp) go to 410
@@ -5165,6 +5171,7 @@ c-----------------------------------------------------------------------
       r = el(l)/dfloat(l)
       do 600 i = 1,n
  600    yh(i,newq+1) = acor(i)*r
+!      write(*,*)'yh(1,newq+1), newq+1 ',yh(1,newq+1), newq+1 
       go to 630
  610  ialth = 3
       go to 700
