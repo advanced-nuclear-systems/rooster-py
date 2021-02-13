@@ -61,8 +61,8 @@
         call lsodes(neq, y, t, tout, itol, rtol, atol, itask, istate, iopt, rwork, lrw, iwork, liw, mf)
         write(6,30)t,iwork(11),rwork(11),(y(i),i=1,neq)
   30    format(//7h at t =,e11.3,4x,
-     +    12h no. steps =,i5,4x,12h last step =,e11.3/
-     +    13h  y array =  ,4e14.5/13x,4e14.5/13x,4e14.5)
+     +    12h no. steps =,i5,4x,12h last step =,1pe11.3/
+     +    13h  y array =  ,4(1pe14.5)/13x,4(1pe14.5)/13x,4(1pe14.5))
         if(istate .lt. 0)then
            write(6,90)istate
  90        format(///22h error halt.. istate =,i3)

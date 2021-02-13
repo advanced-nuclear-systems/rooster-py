@@ -5083,6 +5083,8 @@ c-----------------------------------------------------------------------
  450  jcur = 0
       if (m .eq. 0) dsm = del/tesco(2,nq)
       if (m .gt. 0) dsm = vnorm (n, acor, ewt)/tesco(2,nq)
+      write(*,*)'tn, dsm, kflag ', tn, dsm, kflag
+
       if (dsm .gt. 1.0d0) go to 500
 c-----------------------------------------------------------------------
 c after a successful step, update the yh array.
@@ -5117,6 +5119,7 @@ c one lower order.  after 2 or more failures, h is forced to decrease
 c by a factor of 0.2 or less.
 c-----------------------------------------------------------------------
  500  kflag = kflag - 1
+      write(*,*)'failure.'
       tn = told
       i1 = nqnyh + 1
       do 515 jb = 1,nq
@@ -5171,7 +5174,6 @@ c-----------------------------------------------------------------------
       r = el(l)/dfloat(l)
       do 600 i = 1,n
  600    yh(i,newq+1) = acor(i)*r
-!      write(*,*)'yh(1,newq+1), newq+1 ',yh(1,newq+1), newq+1 
       go to 630
  610  ialth = 3
       go to 700
