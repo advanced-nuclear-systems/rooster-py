@@ -1,3 +1,22 @@
+
+! this routine manages the solution of the linear system arising from a chord iteration.
+! it is called if miter .ne. 0. if miter is 1 or 2, it calls cdrv to accomplish this.
+! if miter = 3 it updates the coefficient h*el0 in the diagonal matrix, and then computes the solution.
+! communication with slss uses the following variables..
+! wk    = real work space containing the inverse diagonal matrix if miter = 3 and the lu decomposition of the matrix otherwise.
+!         storage of matrix elements starts at wk(3). wk also contains the following matrix-related data..
+!         wk(1) = sqrt(uround) (not used here),
+!         wk(2) = hl0, the previous value of h*el0, used if miter = 3.
+! iwk   = integer work space for matrix-related data, assumed to be equivalenced to wk.  
+!         in addition, wk(iprsp) and iwk(ipisp) are assumed to have identical locations.
+! x     = the right-hand side vector on input, and the solution vector on output, of length n.
+! tem   = vector of work space of length n, not used in this version.
+! iersl = output flag (in common).
+!         iersl = 0  if no trouble occurred.
+!         iersl = -1 if cdrv returned an error flag (miter = 1 or 2). this should never occur and is considered fatal.
+!         iersl = 1  if a singular matrix arose with miter = 3.
+! this routine also uses other variables in common.
+
       subroutine slss(wk, iwk, x, tem)
 
       integer iwk

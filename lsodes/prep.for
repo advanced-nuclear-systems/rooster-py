@@ -224,7 +224,6 @@
          iptt1 = ipigp + np1
          iptt2 = iptt1 + n
          lreq = iptt2 + n - 1
-         write(*,*)'ipigp ', ipigp
          if(lreq .gt. liwk)then
             ipper = -2
             lreq = (lreq - 1)/2 + 1
@@ -247,7 +246,7 @@
       iesp = lenwk + 1 - iprsp
       if(iesp .lt. 0)then
          ipper = -3
-         call cntnzu (n, iwk(ipian), iwk(ipjan), nzsut)
+         call cntnzu(n, iwk(ipian), iwk(ipjan), nzsut)
          lreq = lenwk - iesp + (3*n + 4*nzsut - 1)/2 + 1
          RETURN
       end if

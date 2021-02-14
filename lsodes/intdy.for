@@ -37,14 +37,13 @@
 
       iflag = 0
       if(k .lt. 0 .or. k .gt. nq)then
-         call xerrwv("intdy--  k (=i1) illegal      ", 30, 51, 0, 1, k, 0, 0, 0.0d0, 0.0d0)
+         write(*,*)'***ERROR lsodes/intdy: k (=', k, ') is illegal'
          iflag = -1
          RETURN
       end if
       tp = tn - hu -  100.0d0*uround*(tn + hu)
       if((t-tp)*(t-tn) .gt. 0.0d0)then
-         call xerrwv("intdy--  t (=r1) illegal      ", 30, 52, 0, 0, 0, 0, 1, t, 0.0d0)
-         call xerrwv("      t not in interval tcur - hu (= r1) to tcur (=r2)      ", 60, 52, 0, 0, 0, 0, 2, tp, tn)
+         write(*,*)'***ERROR lsodes/intdy: t (=', t, ') is illegal, i.e. not in interval tcur - hu (=', tp, ') to tcur (=', tn, ')'
          iflag = -2
          RETURN
       end if

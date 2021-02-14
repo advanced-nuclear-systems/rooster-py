@@ -120,57 +120,62 @@
      +   rk11/50.0d0/, rk12/50.0d0/, rk13/50.0d0/, rk14/30.0d0/,
      +   rk15/100.0d0/, rk16/2.5d0/, rk17/100.0d0/, rk18/2.5d0/,
      +   rk19/50.0d0/, rk20/50.0d0/
-      go to (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), j
- 1    pdj(1) = -rk1
-      pdj(2) = rk1
-      return
- 2    pdj(2) = -rk3*y(3) - rk15*y(12) - rk2
-      pdj(3) = rk2 - rk3*y(3)
-      pdj(4) = rk3*y(3)
-      pdj(5) = rk15*y(12)
-      pdj(12) = -rk15*y(12)
-      return
- 3    pdj(2) = -rk3*y(2)
-      pdj(3) = -rk5 - rk3*y(2) - rk7*y(10)
-      pdj(4) = rk3*y(2)
-      pdj(6) = rk7*y(10)
-      pdj(10) = rk5 - rk7*y(10)
-      return
- 4    pdj(2) = rk11*rk14
-      pdj(3) = rk11*rk14
-      pdj(4) = -rk11*rk14 - rk4
-      pdj(9) = rk4
-      return
- 5    pdj(2) = rk19*rk14
-      pdj(5) = -rk19*rk14 - rk16
-      pdj(9) = rk16
-      pdj(12) = rk19*rk14
-      return
- 6    pdj(3) = rk12*rk14
-      pdj(6) = -rk12*rk14 - rk8
-      pdj(9) = rk8
-      pdj(10) = rk12*rk14
-      return
- 7    pdj(7) = -rk20*rk14 - rk18
-      pdj(9) = rk18
-      pdj(10) = rk20*rk14
-      pdj(12) = rk20*rk14
-      return
- 8    pdj(8) = -rk13*rk14 - rk10
-      pdj(10) = rk13*rk14
-      pdj(11) = rk10
- 9    return
- 10   pdj(3) = -rk7*y(3)
-      pdj(6) = rk7*y(3)
-      pdj(7) = rk17*y(12)
-      pdj(8) = rk9
-      pdj(10) = -rk7*y(3) - rk17*y(12) - rk6 - rk9
-      pdj(12) = rk6 - rk17*y(12)
- 11   return
- 12   pdj(2) = -rk15*y(2)
-      pdj(5) = rk15*y(2)
-      pdj(7) = rk17*y(10)
-      pdj(10) = -rk17*y(10)
-      pdj(12) = -rk15*y(2) - rk17*y(10)
+      if(j .eq. 1)then
+         pdj(1) = -rk1
+         pdj(2) = rk1
+      else if(j .eq. 2)then
+         pdj(2) = -rk3*y(3) - rk15*y(12) - rk2
+         pdj(3) = rk2 - rk3*y(3)
+         pdj(4) = rk3*y(3)
+         pdj(5) = rk15*y(12)
+         pdj(12) = -rk15*y(12)
+      else if(j .eq. 3)then
+         pdj(2) = -rk3*y(2)
+         pdj(3) = -rk5 - rk3*y(2) - rk7*y(10)
+         pdj(4) = rk3*y(2)
+         pdj(6) = rk7*y(10)
+         pdj(10) = rk5 - rk7*y(10)
+      else if(j .eq. 4)then
+         pdj(2) = rk11*rk14
+         pdj(3) = rk11*rk14
+         pdj(4) = -rk11*rk14 - rk4
+         pdj(9) = rk4
+      else if(j .eq. 5)then
+         pdj(2) = rk19*rk14
+         pdj(5) = -rk19*rk14 - rk16
+         pdj(9) = rk16
+         pdj(12) = rk19*rk14
+      else if(j .eq. 6)then
+         pdj(3) = rk12*rk14
+         pdj(6) = -rk12*rk14 - rk8
+         pdj(9) = rk8
+         pdj(10) = rk12*rk14
+      else if(j .eq. 7)then
+         pdj(7) = -rk20*rk14 - rk18
+         pdj(9) = rk18
+         pdj(10) = rk20*rk14
+         pdj(12) = rk20*rk14
+      else if(j .eq. 8)then
+         pdj(8) = -rk13*rk14 - rk10
+         pdj(10) = rk13*rk14
+         pdj(11) = rk10
+      else if(j .eq. 9)then
+         continue
+      else if(j .eq. 10)then
+         pdj(3) = -rk7*y(3)
+         pdj(6) = rk7*y(3)
+         pdj(7) = rk17*y(12)
+         pdj(8) = rk9
+         pdj(10) = -rk7*y(3) - rk17*y(12) - rk6 - rk9
+         pdj(12) = rk6 - rk17*y(12)
+      else if(j .eq. 11)then
+         continue
+      else if(j .eq. 12)then
+         pdj(2) = -rk15*y(2)
+         pdj(5) = rk15*y(2)
+         pdj(7) = rk17*y(10)
+         pdj(10) = -rk17*y(10)
+         pdj(12) = -rk15*y(2) - rk17*y(10)
+      end if
       return
       end

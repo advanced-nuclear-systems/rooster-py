@@ -25,6 +25,5 @@ gfortran -ffixed-line-length-none -w -c slss.for
 gfortran -ffixed-line-length-none -w -c sro.for
 gfortran -ffixed-line-length-none -w -c stode.for
 gfortran -ffixed-line-length-none -w -c vnorm.for
-gfortran -ffixed-line-length-none -w -c xerrwv.for
 
 gfortran -o lsodes.exe *.o
