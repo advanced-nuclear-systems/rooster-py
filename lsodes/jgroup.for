@@ -18,7 +18,9 @@
       integer n, ia, ja, maxg, ngrp, igp, jgp, incl, jdone, ier
       dimension ia(1), ja(1), igp(1), jgp(n), incl(n), jdone(n)
       integer i, j, k, kmin, kmax, ncol, ng
+      logical exit1
 
+      exit1 = .false.
       ier = 0
       do j = 1,n
          jdone(j) = 0
@@ -37,21 +39,29 @@
                 do k = kmin,kmax
 !                  reject column j if it overlaps any column already in this group.
                    i = ja(k)
-                   if(incl(i) .eq. 1) exit
+                   if(incl(i) .eq. 1)then
+                      exit1 = .true.
+                      exit
+                   end if
                 end do
-!               accept column j into group ng.
-                jgp(ncol) = j
-                ncol = ncol + 1
-                jdone(j) = 1
-                do k = kmin,kmax
-                   i = ja(k)
-                   incl(i) = 1
-                end do
+                if(exit1)then
+                   exit1 = .false.
+                else
+!                  accept column j into group ng.
+                   jgp(ncol) = j
+                   ncol = ncol + 1
+                   jdone(j) = 1
+                   do k = kmin,kmax
+                      i = ja(k)
+                      incl(i) = 1
+                   end do
+                end if
              end if
           end do
 !         stop if this group is empty (grouping is complete).
           if(ncol .eq. igp(ng))then
              ngrp = ng - 1
+             write(*,*)'ngrp ', ngrp
              RETURN
           end if
       end do

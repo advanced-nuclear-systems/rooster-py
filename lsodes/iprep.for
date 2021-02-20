@@ -14,7 +14,7 @@
       integer neq, ia, ja, ipflag
       integer i, imax, lewtn, lyhd, lyhn
       double precision y, rwork
-      dimension neq(1), y(1), rwork(1), ia(1), ja(1)
+      dimension y(1), rwork(1), ia(1), ja(1)
 
       double precision conit, crate, el, elco, hold, rmax, tesco, 
      +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround

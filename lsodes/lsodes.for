@@ -422,11 +422,7 @@
 !          subroutine f should not alter y(1),...,y(neq).
 !          f must be declared external in the calling program.
 !
-!          subroutine f may access user-defined quantities in
-!          neq(2),... and/or in y(neq(1)+1),... if neq is an array
-!          (dimensioned in f) and/or y has length exceeding neq(1).
-!          see the descriptions of neq and y below.
-!
+
 !          if quantities computed in the f routine are needed
 !          externally to lsodes, an extra call to f should be made
 !          for this purpose, for consistent and accurate results.
@@ -441,13 +437,8 @@
 !
 !          normally, neq is a scalar, and it is generally referred to
 !          as a scalar in this user interface description.  however,
-!          neq may be an array, with neq(1) set to the system size.
-!          (the lsodes package accesses only neq(1).)  in either case,
-!          this parameter is passed as the neq argument in all calls
-!          to f and jac.  hence, if it is an array, locations
-!          neq(2),... may be used to store other integer data and pass
-!          it to f and/or jac.  subroutines f and/or jac must include
-!          neq in a dimension statement in that case.
+!          neq may be an array, with neq set to the system size.
+!          (the lsodes package accesses only neq.)
 !
 ! y      = a real array for the vector of dependent variables, of
 !          length neq or more.  used for both input and output on the
@@ -754,10 +745,6 @@
 !          saved in a user common block by f and not recomputed by jac,
 !          if desired.  jac must not alter its input arguments.
 !          jac must be declared external in the calling program.
-!               subroutine jac may access user-defined quantities in
-!          neq(2),... and y(neq(1)+1),... if neq is an array
-!          (dimensioned in jac) and y has length exceeding neq(1).
-!          see the descriptions of neq and y above.
 !
 ! mf     = the method flag.  used only for input.
 !          mf has three decimal digits-- moss, meth, miter--
@@ -1205,7 +1192,7 @@
 
       integer neq, itol, itask, istate, iopt, lrw, iwork, liw, mf
       double precision y, t, tout, rtol, atol, rwork
-      dimension neq(1), y(1), rtol(1), atol(1), rwork(lrw), iwork(liw)
+      dimension y(1), rtol(1), atol(1), rwork(lrw), iwork(liw)
       integer i, i1, i2, iflag, imax, imul, imxer, ipflag, ipgo, irem, j, kgo, 
      +        lenyht, leniw, lenrw, lf0, lia, lja, lrtem, lwtem, lyhd, lyhn, mf1, mord, mxhnl0, ncolm
       double precision atoli, ayi, big, ewti, h0, hmax, hmx, rh, rtoli, tcrit, tdist, tnext, tol, tolsf, tp, size, sum, w0, vnorm
@@ -1280,15 +1267,15 @@
 !        it contains checking of all inputs and various initializations. 
 !        if istate = 1, the final setting of work space pointers, the matrix preprocessing, and other initializations are done in block c.
 !        first check legality of the non-optional inputs neq, itol, iopt, mf, ml, and mu.
-         if(neq(1) .le. 0)then
-            write(*,*)'***ERROR lsodes: neq (=', neq(1), ') < 1'
+         if(neq .le. 0)then
+            write(*,*)'***ERROR lsodes: neq (=', neq, ') < 1'
             STOP
          end if
-         if(istate .ne. 1 .and. neq(1) .gt. n)then
-            write(*,*)'***ERROR lsodes: istate = 3 and neq increased (', n, ' to ', neq(1), ')'
+         if(istate .ne. 1 .and. neq .gt. n)then
+            write(*,*)'***ERROR lsodes: istate = 3 and neq increased (', n, ' to ', neq, ')'
             STOP
          end if
-         n = neq(1)
+         n = neq
          if(itol .lt. 1 .or. itol .gt. 4)then
             write(*,*)'***ERROR lsodes: itol (=', itol, ') is illegal'
             STOP

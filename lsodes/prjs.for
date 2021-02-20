@@ -29,7 +29,7 @@
       integer i, imul, j, jj, jok, jmax, jmin, k, kmax, kmin, ng
       double precision y, yh, ewt, ftem, savf, wk
       double precision con, di, fac, hl0, pij, r, r0, rcon, rcont, srur, vnorm
-      dimension neq(1), y(1), yh(nnyh,1), ewt(1), ftem(1), savf(1), wk(1), iwk(1)                                                        
+      dimension y(1), yh(nnyh,1), ewt(1), ftem(1), savf(1), wk(1), iwk(1)                                                        
 
       double precision conit, crate, el, elco, hold, rmax, tesco, 
      +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround

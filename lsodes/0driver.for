@@ -56,7 +56,7 @@
       itask = 1
       istate = 1
       iopt = 0
-      mf = 121
+      mf = 222
       do iout = 1,5
         call lsodes(neq, y, t, tout, itol, rtol, atol, itask, istate, iopt, rwork, lrw, iwork, liw, mf)
         write(6,30)t,iwork(11),rwork(11),(y(i),i=1,neq)

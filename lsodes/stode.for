@@ -6,7 +6,7 @@
 ! communication with stode is done with the following variables..
 !
 ! n      = the number of first-order differential equations.
-! neq    = integer array containing problem size in neq(1), and passed as the neq argument in all calls to f and jac.
+! neq    = integer array containing problem size in neq, and passed as the neq argument in all calls to f and jac.
 ! y      = an array of length .ge. n used as the y argument in all calls to f and jac.
 ! yh     = an nnyh by maxord+1 array containing the dependent variables and their approximate scaled derivatives, where.  
 !          yh(i,j+1) contains the approximate j-th derivative of y(i), scaled by h**j/factorial(j) (j = 0,1,...,nq).  
@@ -63,7 +63,7 @@
       integer i, i1, j, jb, m, ncf, newq
       double precision y, yh, yh1, ewt, savf, acor, wm, rmx
       double precision dcon, ddn, del, delp, dsm, dup, exdn, exsm, exup, r, rh, rhdn, rhsm, rhup, told, vnorm
-      dimension neq(1), y(1), yh(nnyh,1), yh1(1), ewt(1), savf(1), acor(1), wm(1), iwm(1)
+      dimension y(1), yh(nnyh,1), yh1(1), ewt(1), savf(1), acor(1), wm(1), iwm(1)
 
       double precision conit, crate, el, elco, hold, rmax, tesco, 
      +   ccmax, el0, h, hmin, hmxi, hu, rc, tn, uround
