@@ -71,10 +71,10 @@
                   last(vi) = -ek
                end if
             
-!             insert ek in element list of vi
-              v(free) = ek
-              l(free) = l(vi)
-              l(vi) = free
+!              insert ek in element list of vi
+               v(free) = ek
+               l(free) = l(vi)
+               l(vi) = free
             end if
          end do
       end if

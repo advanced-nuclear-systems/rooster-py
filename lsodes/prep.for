@@ -215,7 +215,6 @@
       nnz = iwk(ipian+n) - 1
       lenigp = 0
       ipigp = ipjan + nnz
-      write(*,*)'miter ', miter
       if(miter .eq. 2)then
 !        compute grouping of column indices (miter = 2).
          maxg = np1

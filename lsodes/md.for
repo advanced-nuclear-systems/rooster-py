@@ -59,5 +59,9 @@
          next(k) = -next(k)
          last(next(k)) = k
       end do
+!      write(*,*)'mark ', (mark(vi),vi=1,n)
+!      write(*,*)'next ', (next(vi),vi=1,n)
+!      write(*,*)'last ', (last(vi),vi=1,n)
+!      write(*,*)'head ', (head(vi),vi=1,n)
       return
       end

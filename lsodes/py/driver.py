@@ -4,10 +4,10 @@ input = {}
 
 #number of equations
 neq = 12
-input['y'] = [0.0]*neq
+input['y'] = [0.0]*(neq+1)
 
 #initial values of unknowns
-input['y'][0] = 1.0
+input['y'][1] = 1.0
 
 #initial time
 input['t'] = 0.0

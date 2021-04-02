@@ -3,7 +3,7 @@
       subroutine mdi(n, ia, ja, max, v, l, head, last, next, mark, tag, flag)
 
       integer ia(n), ja(1), v(1), l(1), head(1), last(1), next(1), mark(1), tag, flag, sfs, vi, dvi, vj
-
+   
 !     initialize degrees, element lists, and degree lists
       do vi=1,n
          mark(vi) = 1

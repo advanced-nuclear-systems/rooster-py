@@ -1742,7 +1742,7 @@ def cdrv(n, r, c, ic, ia, ja, a, b, z, nsp, isp, rsp, esp, path, flag)
 #              error.. in nroc, nsfc, nnfc, or nnsc
                return 
             break
-      call  nsfc(n, r, ic, ia, ja, jlmax, isp(il), isp(jl), isp(ijl), jumax, isp(iu), isp(jutmp), isp(iju), isp(q), isp(ira), isp(jra), isp(irac), isp(irl), isp(jrl), isp(iru), isp(jru), flag)
+      call nsfc(n, r, ic, ia, ja, jlmax, isp(il), isp(jl), isp(ijl), jumax, isp(iu), isp(jutmp), isp(iju), isp(q), isp(ira), isp(jra), isp(irac), isp(irl), isp(jrl), isp(iru), isp(jru), flag)
       if flag != 0 :
 #        error.. in nroc, nsfc, nnfc, or nnsc
          return 
@@ -2187,7 +2187,8 @@ def mdi(n, ia, ja, max, v, l, head, last, next, mark, tag, flag)
               l(sfs) = l(vj)
               l(vj) = sfs
               sfs = sfs+1
- 
+
+   write(*,*)'mark ', mark 
 #  сreate degree lists and initialize mark vector
    do vi = 1,n
       dvi = mark(vi)
@@ -2312,10 +2313,10 @@ def mdp(k, ek, tail, v, l, head, last, next, mark)
 #              else mark vi to compute degree
                last(vi) = -ek
          
-#          insert ek in element list of vi
-           v(free) = ek
-           l(free) = l(vi)
-           l(vi) = free
+#           insert ek in element list of vi
+            v(free) = ek
+            l(free) = l(vi)
+            l(vi) = free
 #  terminate boundary list
    l(tail) = 0
    return
@@ -2652,6 +2653,7 @@ def nntc(n, r, c, il, jl, ijl, l, d, iu, ju, iju, u, z, b, tmp)
 #--------------------------------------------------------------------------------------------------
 # reorders rows of a, leaving row order unchanged
 #--------------------------------------------------------------------------------------------------
+#call nroc(n, ic, ia, ja, a, isp(il), rsp(ar), isp(iu), flag)
 def nroc (n, ic, ia, ja, a, jar, ar, p, flag)
 
    integer  ic(1), ia(n), ja(1), jar(1), p(1), flag

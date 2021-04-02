@@ -61,7 +61,9 @@
 !         stop if this group is empty (grouping is complete).
           if(ncol .eq. igp(ng))then
              ngrp = ng - 1
-             write(*,*)'ngrp ', ngrp
+!             write(*,*)'ngrp ',ngrp
+!             write(*,*)'igp ',(igp(jj),jj=1,ng)
+!             write(*,*)'jgp ',jgp
              RETURN
           end if
       end do
