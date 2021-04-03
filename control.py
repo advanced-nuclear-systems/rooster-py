@@ -93,6 +93,15 @@ def construct_input():
         elif key == 'dnplmb' :
             inp['dnplmb'] = word[1:]
         #--------------------------------------------------------------------------------------
+        # fuel grain parameters
+        elif key == 'fgrain' :
+            # grain diameter
+            inp['dgrain'] = word[1]
+            # number of nodes in the grain
+            inp['nrgrain'] = int(word[2])
+            # fission rate
+            inp['frate'] = int(word[3])
+        #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
              lookup = {}

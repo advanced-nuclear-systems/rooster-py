@@ -26,6 +26,7 @@ class PointKinetics:
         self.neq = len(self.state)
 
     def calculate_rhs(self, reactor, t):
+        # read variables
         index_power = reactor.solid.neq + reactor.fluid.neq
         index_cdnp = index_power + 1
         self.power = reactor.state[index_power]
