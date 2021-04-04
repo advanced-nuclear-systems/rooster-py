@@ -48,10 +48,17 @@ class Reactor:
         t0 = self.control.input['t0']
         solver.set_initial_value(self.state, t0)
         solver.set_integrator
+        f = open('output', 'w')
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
             dtout = t_dt[1]
             while solver.successful() and solver.t < tend:
                 time = solver.t + dtout
                 self.state = solver.integrate(time)
-                print(time, self.state)
+                print('time: {0:12.5e}'.format(time))
+                # write time and all unknowns to output file
+                f.write('{0:12.5e} '.format(time))
+                for i in range(len(self.state)):
+                    f.write('{0:12.5e} '.format(self.state[i]))
+                f.write('\n')
+        f.close()
