@@ -8,5 +8,5 @@ One file -- one class.
 
 `solve fuelgrain` : activates calculations of intragranular gas behaviour.
 
-`solve pointkinetics RHO_INS` : activates point reactor kinetics calculations using signal `RHO_INS` as a reactivity input.
+`solve pointkinetics W` : activates point reactor kinetics calculations using signal `W` as a reactivity input.
 
