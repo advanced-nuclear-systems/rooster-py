@@ -3,3 +3,5 @@
 One file -- one class.
 
 ## Input description
+
+`solve`
