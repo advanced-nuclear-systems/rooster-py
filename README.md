@@ -6,11 +6,11 @@ One file -- one class.
 
 The input file should be named `input` and consits of cards (one line -- one card).
 
-\* : comment.
+`*` : comment.
 
-solve fuelgrain : activates calculations of intragranular gas behaviour.
+`solve fuelgrain` : activates calculations of intragranular gas behaviour.
 
-`solve pointkinetics W1` : activates point reactor kinetics calculations using signal `W` as a reactivity input.
+`solve pointkinetics` **REAC_INS** : activates point reactor kinetics calculations using signal `W` as a reactivity input.
 
-`*t0* 0.0` : Initial *time*.
+`t0` **0.0** : Initial *time*.
 
