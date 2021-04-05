@@ -1,3 +1,3 @@
-# ROOSTER: Robust Object-Oriented Solver of Transport Equations in Reactor
+# ROOSTER: Robust Object-Oriented Solver of Transport Equations for Reactor
 
 One file -- one class.
