@@ -6,6 +6,7 @@
 #             Structure
 #             FuelRod
 #                Fuel
+#                   FuelGrain
 #                Gap
 #                Clad
 #         Fluid
@@ -13,16 +14,18 @@
 #             PointKinetics
 #             SpatialKinetics
 #--------------------------------------------------------------------------------------------------
-from B1_control import Control
-from B2_solid import Solid
-from B3_fluid import Fluid
-from B4_neutron import Neutron
+from B0_control import Control
+from B1_solid import Solid
+from B2_fluid import Fluid
+from B3_neutron import Neutron
 
 # SciPy requires installation : python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.integrate import ode
 
 #--------------------------------------------------------------------------------------------------
 class Reactor:
+
+    # constructor: self is a 'reactor' object created in A
     def __init__(self):
         # create objects
         self.control = Control(self)
@@ -37,10 +40,10 @@ class Reactor:
             self.state = y
             self.control.evaluate(self, t)
             rhs = []
+            rhs += self.control.calculate_rhs(self, t)
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)
             rhs += self.neutron.calculate_rhs(self, t)
-            rhs += self.control.calculate_rhs(self, t)
             return rhs
         
         # solve the whole system of ODEs

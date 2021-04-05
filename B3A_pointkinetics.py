@@ -1,7 +1,8 @@
 #--------------------------------------------------------------------------------------------------
 class PointKinetics:
 
-    def __init__(self, solid, reactor):
+    # constructor: self is a 'pointkinetics' object created in B3
+    def __init__(self, reactor):
         self.power = 1
         self.ndnp = len(reactor.control.input['betaeff'])
         self.cdnp = [0] * self.ndnp
@@ -10,6 +11,7 @@ class PointKinetics:
         self.state = [self.power] + self.cdnp
         self.neq = len(self.state)
 
+    # create right-hand side vector: self is a 'pointkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
         # read variables
         index_power = reactor.solid.neq + reactor.fluid.neq
