@@ -4,4 +4,5 @@ One file -- one class.
 
 ## Input description
 
+###Card solve
 `solve pointkinetics RHO_INS` activates point kinetics subsolver using signal `RHO_INS` as a reactivity input.
