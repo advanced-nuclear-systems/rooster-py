@@ -10,5 +10,7 @@ The input file should be named `input` and consits of cards (one line -- one car
 
 `solve fuelgrain` : activates calculations of intragranular gas behaviour.
 
-`solve pointkinetics W` : activates point reactor kinetics calculations using signal `W` as a reactivity input.
+`solve pointkinetics W1` : activates point reactor kinetics calculations using signal `W` as a reactivity input.
+
+`*t0* 0.0` : Initial time.
 
