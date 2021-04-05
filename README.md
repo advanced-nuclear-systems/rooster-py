@@ -4,6 +4,8 @@ One file -- one class.
 
 ## Input description
 
+The input file should be named `input` and consits of cards (one line -- one card).
+
 `*` : comment.
 
 `solve fuelgrain` : activates calculations of intragranular gas behaviour.
