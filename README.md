@@ -4,9 +4,11 @@ One file -- one class.
 
 ## Input description
 
-The input file should be named `input` and consits of cards (one line -- one card).
+The input file should be named `input` and consits of cards (one line -- one card). Bold elements are examples to be replaced by problem-specific values.
 
-`*` : comment.
+`*` : comment, always preceeding the comment.
+
+`&` : line continuation symbol, always the last symbol in the line.
 
 `solve fuelgrain` : activates calculations of intragranular gas behaviour.
 
