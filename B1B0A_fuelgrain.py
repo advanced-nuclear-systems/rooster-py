@@ -1,8 +1,21 @@
 #--------------------------------------------------------------------------------------------------
 class FuelGrain:
 
+    # flag defining if this class is included in calculations or not
+    calculate = False
+    # array of unknowns of this class
+    state = []
+    # number of unknowns/equations of this class   
+    neq = 0
+
     # constructor: self is a 'fuelgrain' object created in B1B0
     def __init__(self, reactor):
+
+        # check if this class is to be solved
+        s = reactor.control.input['solve']
+        self.calculate = any(['fuelgrain' in s[i][0] for i in range(len(s))])
+        if not self.calculate:
+            return
 
         # INPUT PARAMETERS
         # grain diameter
@@ -32,14 +45,18 @@ class FuelGrain:
     # create right-hand side vector: self is a 'fuelgrain' object created in B1B0
     def calculate_rhs(self, reactor, t):
 
+        if not self.calculate:
+            rhs = []
+            return rhs
+
         # READ VARIABLES
         index_c1 = 0
         self.c1 = reactor.state[index_c1:index_c1+self.nr]
 
-        # 1. INTRAGRANULAR PROCESSES
+        # INTRAGRANULAR PROCESSES
         # diffusion constant
         dg = 1e-3 # to be replaced by a correlation
-        # 1.1. MONOATOMS C1
+        # MONOATOMS C1
         # vector of rb**2 * dg * dc1/dr (size = nr-1)
         q1 = [self.rb[i]**2*dg*(self.c1[i] - self.c1[i+1])/self.dr for i in range(0, self.nr-1)]
         # vector of time derivative of monoatom concentrations

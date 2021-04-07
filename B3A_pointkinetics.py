@@ -1,8 +1,21 @@
 #--------------------------------------------------------------------------------------------------
 class PointKinetics:
 
+    # flag defining if this class is included in calculations or not
+    calculate = False
+    # array of unknowns of this class
+    state = []
+    # number of unknowns/equations of this class   
+    neq = 0
+
     # constructor: self is a 'pointkinetics' object created in B3
     def __init__(self, reactor):
+
+        s = reactor.control.input['solve']
+        self.calculate = any(['pointkinetics' in s[i][0] for i in range(len(s))])
+        if not self.calculate:
+            return
+
         self.power = 1
         self.ndnp = len(reactor.control.input['betaeff'])
         self.cdnp = [0] * self.ndnp
@@ -13,6 +26,11 @@ class PointKinetics:
 
     # create right-hand side vector: self is a 'pointkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
+
+        if not self.calculate:
+            rhs = []
+            return rhs
+
         # read variables
         index_power = reactor.solid.neq + reactor.fluid.neq
         index_cdnp = index_power + 1

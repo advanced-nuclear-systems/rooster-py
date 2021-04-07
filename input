@@ -38,15 +38,19 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     
-solve     neutron   point     RHO_INS
+solve     fuelgrain
+*solve     pointkinetics       RHO_INS
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     dgrain    nr        frate
-*(units)  m         -         1/m3s
-fgrain    10e-6     20        1
+*****
+fgrain    10e-6 &   * dgrain (m)
+          20 &      * nr
+          1         *frate (1/m3s)
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     name      type      dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
-pipe      inlet     freelevel 0.1       1.0       0         0.22      2
-junction  inlet     chan01
-pipe      chan01    normal    0.01      -1.0      0         1.1       10
+pipe      PLENUM    freelevel 0.1       1.0       0         0.22      1
+junction  PLENUM    DOWN
+pipe      DOWN      normal    0.01      -1.0      0         1.1       10
+junction  DOWN      UP
+pipe      UP        normal    0.01      1.0       0         1.1       10
