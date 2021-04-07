@@ -41,11 +41,14 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
-    inp['lookup'] = [] #no default
-    inp['signal'] = [] #no default
-    inp['t0'] = 0 #default
-    inp['t_dt'] = [] #no default
-    inp['pnltime'] = '' #no default
+    inp['lookup'] = [] # no default
+    inp['pnltime'] = '' # no default
+    inp['signal'] = [] # no default
+    inp['solve'] = [] # no default
+    inp['t0'] = 0 # default
+    inp['pipe'] = {'name':[], 'type':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
+    inp['junction'] = {'from':[], 'to':[]} # no default
+    inp['t_dt'] = [] # no default
 
     #read input file as a whole
     f = open('input', mode = 'r')
@@ -119,9 +122,24 @@ def construct_input():
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction
+        elif key == 'junction' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic pipe
+        elif key == 'pipe' :
+             inp['pipe']['name'].append(word[1])
+             inp['pipe']['type'].append(word[2])
+             inp['pipe']['dhyd'].append(word[3])
+             inp['pipe']['elev'].append(word[4])
+             inp['pipe']['len'].append(word[5])
+             inp['pipe']['areaz'].append(word[6])
+             inp['pipe']['nnodes'].append(int(word[7]))
+        #--------------------------------------------------------------------------------------
         # 
         elif key == 'solve' :
-            inp['solve'] = word[1:]
+            inp['solve'].append(word[1:])
         #--------------------------------------------------------------------------------------
         # integration starting time
         elif key == 't0' :
@@ -139,6 +157,10 @@ def construct_input():
     if inp['t_dt'] == [] :
         sys.exit('****ERROR: obligatory card t_dt specifying time_end and dtime_out is absent.')
 
+    # verify that there is at least one solve card
+    if len(inp['solve']) == 0:
+        print('****ERROR: input file should have at least one solve card.')
+        sys.exit()
     # verify that lookup tables use existing signals
     signal_userid = []
     for s in inp['signal'] :
@@ -149,5 +171,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-#    print(inp)
+    #print(inp)
     return inp

@@ -44,3 +44,9 @@ solve     neutron   point     RHO_INS
 *****     dgrain    nr        frate
 *(units)  m         -         1/m3s
 fgrain    10e-6     20        1
+*
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+*****     name      type      dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
+pipe      inlet     freelevel 0.1       1.0       0         0.22      2
+junction  inlet     chan01
+pipe      chan01    normal    0.01      -1.0      0         1.1       10
