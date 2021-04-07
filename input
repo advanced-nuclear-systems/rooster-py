@@ -50,7 +50,7 @@ fgrain    10e-6 &   * dgrain (m)
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     name      type      dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
 pipe      PLENUM    freelevel 0.1       1.0       0         0.22      1
-junction  PLENUM    DOWN
+junction  PLENUM    DOWN      independent
 pipe      DOWN      normal    0.01      -1.0      0         1.1       10
-junction  DOWN      UP
+junction  DOWN      UP        dependent
 pipe      UP        normal    0.01      1.0       0         1.1       10

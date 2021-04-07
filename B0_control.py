@@ -47,7 +47,7 @@ def construct_input():
     inp['solve'] = [] # no default
     inp['t0'] = 0 # default
     inp['pipe'] = {'name':[], 'type':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
-    inp['junction'] = {'from':[], 'to':[]} # no default
+    inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['t_dt'] = [] # no default
 
     #read input file as a whole
@@ -107,6 +107,12 @@ def construct_input():
             # fission rate
             inp['frate'] = int(word[3])
         #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction
+        elif key == 'junction' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+             inp['junction']['type'].append(word[3])
+        #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
              lookup = {}
@@ -121,11 +127,6 @@ def construct_input():
              signal['userid'] = word[2]
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
-        #--------------------------------------------------------------------------------------
-        # thermal-hydraulic junction
-        elif key == 'junction' :
-             inp['junction']['from'].append(word[1])
-             inp['junction']['to'].append(word[2])
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
@@ -171,5 +172,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    #print(inp)
+    print(inp)
     return inp
