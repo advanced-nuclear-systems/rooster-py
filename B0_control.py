@@ -41,13 +41,14 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
+    inp['coolant'] = {'name':[], 'type':[], 'p0':[], 'temp0':[]} # no default
+    inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
+    inp['pipe'] = {'name':[], 'type':[], 'cool':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
     inp['solve'] = [] # no default
     inp['t0'] = 0 # default
-    inp['pipe'] = {'name':[], 'type':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
-    inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['t_dt'] = [] # no default
 
     #read input file as a whole
@@ -98,6 +99,13 @@ def construct_input():
         elif key == 'dnplmb' :
             inp['dnplmb'] = word[1:]
         #--------------------------------------------------------------------------------------
+        # coolant
+        elif key == 'coolant' :
+             inp['coolant']['name'].append(word[1])
+             inp['coolant']['type'].append(word[2])
+             inp['coolant']['p0'].append(word[3])
+             inp['coolant']['temp0'].append(word[4])
+        #--------------------------------------------------------------------------------------
         # fuel grain parameters
         elif key == 'fgrain' :
             # grain diameter
@@ -132,11 +140,12 @@ def construct_input():
         elif key == 'pipe' :
              inp['pipe']['name'].append(word[1])
              inp['pipe']['type'].append(word[2])
-             inp['pipe']['dhyd'].append(word[3])
-             inp['pipe']['elev'].append(word[4])
-             inp['pipe']['len'].append(word[5])
-             inp['pipe']['areaz'].append(word[6])
-             inp['pipe']['nnodes'].append(int(word[7]))
+             inp['pipe']['cool'].append(word[3])
+             inp['pipe']['dhyd'].append(word[4])
+             inp['pipe']['elev'].append(word[5])
+             inp['pipe']['len'].append(word[6])
+             inp['pipe']['areaz'].append(word[7])
+             inp['pipe']['nnodes'].append(int(word[8]))
         #--------------------------------------------------------------------------------------
         # 
         elif key == 'solve' :
@@ -172,5 +181,5 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    print(inp)
+    #print(inp)
     return inp
