@@ -51,7 +51,7 @@ class FuelGrain:
 
         # READ VARIABLES
         index_c1 = 0
-        self.c1 = reactor.state[index_c1:index_c1+self.nr]
+        self.c1 = self.state[index_c1:index_c1+self.nr]
 
         # INTRAGRANULAR PROCESSES
         # diffusion constant

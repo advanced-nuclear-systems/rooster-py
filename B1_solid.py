@@ -17,6 +17,10 @@ class Solid:
 
     # create right-hand side vector: self is a 'solid' object created in B
     def calculate_rhs(self, reactor, t):
+        # split vector of unknowns
+        self.structure.state = self.state[0:self.structure.neq]
+        self.fuelrod.state = self.state[len(self.structure.state):len(self.structure.state)+self.fuelrod.neq]
+        # construct right-hand side vector
         rhs = []
         rhs += self.structure.calculate_rhs(reactor, t)
         rhs += self.fuelrod.calculate_rhs(reactor, t)

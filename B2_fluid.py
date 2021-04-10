@@ -90,5 +90,7 @@ class Fluid:
 
     # create right-hand side vector: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
+
+        # create vector of pressure
         rhs = []
         return rhs

@@ -32,10 +32,11 @@ class PointKinetics:
             return rhs
 
         # read variables
-        index_power = reactor.solid.neq + reactor.fluid.neq
+        index_power = 0
         index_cdnp = index_power + 1
-        self.power = reactor.state[index_power]
-        self.cdnp = reactor.state[index_cdnp:index_cdnp+self.ndnp]
+        self.power = self.state[index_power]
+        self.cdnp = self.state[index_cdnp:index_cdnp+self.ndnp]
+        # rename input parameters
         rho = reactor.control.signal['RHO_INS']
         betaeff = reactor.control.input['betaeff']
         tlife = reactor.control.input['tlife']

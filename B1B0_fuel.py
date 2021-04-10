@@ -15,6 +15,9 @@ class Fuel:
 
     # create right-hand side vector: self is a 'fuel' object created in B1B
     def calculate_rhs(self, reactor, t):
+        # split vector of unknowns
+        self.fuelgrain.state = self.state[0:self.fuelgrain.neq]
+        # construct right-hand side vector
         rhs = []
         rhs += self.fuelgrain.calculate_rhs(reactor, t)
         return rhs

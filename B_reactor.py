@@ -37,7 +37,13 @@ class Reactor:
         
         # function returning the vector of the right-hand sides and called by the ODE solver
         def construct_rhs(t, y):
+            # read vector of unknowns and split it
             self.state = y
+            self.control.state = y[0:self.control.neq]
+            self.solid.state = y[len(self.control.state):len(self.control.state)+self.solid.neq]
+            self.fluid.state = y[len(self.solid.state):len(self.solid.state)+self.fluid.neq]
+            self.neutron.state = y[len(self.fluid.state):len(self.fluid.state)+self.neutron.neq]
+
             self.control.evaluate(self, t)
             rhs = []
             rhs += self.control.calculate_rhs(self, t)

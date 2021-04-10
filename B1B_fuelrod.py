@@ -19,6 +19,10 @@ class FuelRod:
 
     # create right-hand side vector: self is a 'fuelrod' object created in B1
     def calculate_rhs(self, reactor, t):
+        # split vector of unknowns
+        self.fuel.state = self.state[0:self.fuel.neq]
+        self.clad.state = self.state[len(self.fuel.state):len(self.fuel.state)+self.clad.neq]
+        # construct right-hand side vector
         rhs = []
         rhs += self.fuel.calculate_rhs(reactor, t)
         return rhs
