@@ -59,3 +59,4 @@ junction  PLENUM    DOWN      independent
 pipe      DOWN      normal    NA        0.01      -1.0      0         1.1       10
 junction  DOWN      UP        dependent
 pipe      UP        normal    NA        0.01      1.0       0         1.1       10
+junction  UP        PLENUM    dependent

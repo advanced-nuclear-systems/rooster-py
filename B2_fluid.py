@@ -13,6 +13,9 @@ class Fluid:
     p = []
     # pipe temperature array
     temp = []
+    # from and to dictionary
+    f = {'id':[],'i':[]}
+    t = {'id':[],'i':[]}
 
     # constructor: self is a 'fluid' object created in B
     def __init__(self, reactor):
@@ -56,14 +59,26 @@ class Fluid:
                 sys.exit()
             p0 = reactor.control.input['coolant']['p0'][icool]
             temp0 = reactor.control.input['coolant']['temp0'][icool]
-            # vector of pressures in pipe nodes
+            # vector of initial pressures in pipe nodes
             self.p.append([p0]*self.pipennodes[i])
-            # vector of temperatures in pipe nodes
+            # vector of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
 
         # vector of junction types
         self.juntype = reactor.control.input['junction']['type']
-        self.juntype += ['internal'] 
+        # construct from and to dictionaries
+        self.f['id'] = [self.pipename.index(reactor.control.input['junction']['from'][i]) for i in range(len(self.juntype))]
+        self.t['id'] = [self.pipename.index(reactor.control.input['junction']['to'][i]) for i in range(len(self.juntype))]
+        self.f['i'] = [self.pipennodes[self.f['id'][i]]-1 for i in range(len(self.juntype))]
+        self.t['i'] = [0 for i in range(len(self.juntype))]
+        # add internal junctions
+        for i in range(self.npipe):
+            self.juntype += ['internal']*(self.pipennodes[i] - 1)
+            # append from and to dictionaries
+            self.f['id'] += [i]*(self.pipennodes[i]-1)
+            self.t['id'] += [i]*(self.pipennodes[i]-1)
+            self.f['i'] += range(self.pipennodes[i]-1)
+            self.t['i'] += range(1,self.pipennodes[i])
         # number of junctions
         self.njun = len(self.juntype)
         # number of independent junctions

@@ -128,7 +128,7 @@ def construct_input():
              lookup['f(x)'] = word[2::2]
              inp['lookup'].append(lookup)
         #--------------------------------------------------------------------------------------
-        # signal varibale
+        # signal variable
         elif key == 'signal' :
              signal = {}
              signal['type'] = word[1]
