@@ -38,9 +38,9 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
-*solve     fluid
+solve     fluid
 *solve     fuelgrain
-solve     pointkinetics       RHO_INS
+*solve     pointkinetics       RHO_INS
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
@@ -55,8 +55,11 @@ coolant   NA        na        1e5       673
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     name      type      coolant   dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
 pipe      PLENUM    freelevel NA        0.1       1.0       0         0.22      1
-junction  PLENUM    DOWN      independent
+junction  PLENUM    DOWN      dependent
 pipe      DOWN      normal    NA        0.01      -1.0      0         1.1       10
-junction  DOWN      UP        dependent
-pipe      UP        normal    NA        0.01      1.0       0         1.1       10
-junction  UP        PLENUM    dependent
+junction  DOWN      UP1       independent
+pipe      UP1       normal    NA        0.01      1.0       0         1.1       10
+junction  UP1       PLENUM    dependent
+junction  DOWN      UP2       independent
+pipe      UP2       normal    NA        0.01      1.0       0         1.1       10
+junction  UP2       PLENUM    dependent

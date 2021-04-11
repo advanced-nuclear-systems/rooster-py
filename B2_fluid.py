@@ -1,3 +1,5 @@
+from scipy import linalg
+
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -13,7 +15,7 @@ class Fluid:
     p = []
     # pipe temperature array
     temp = []
-    # from and to dictionary
+    # from and to dictionaries
     f = {'id':[],'i':[]}
     t = {'id':[],'i':[]}
 
@@ -83,14 +85,57 @@ class Fluid:
         self.njun = len(self.juntype)
         # number of independent junctions
         self.njuni = self.juntype.count('independent')
+        # number of dependent junctions
+        self.njund = self.juntype.count('dependent')
+
+        # create and inverse a matrix A linking dependent and independent junctions
+        A = [[0]*(self.njuni+self.njund) for i in range(self.njuni+self.njund)]
+        i = 0
+        for j in range(self.njuni+self.njund):
+            if self.juntype[j] == 'independent':
+                A[j][j] = 1
+            elif self.juntype[j] == 'dependent':
+                while self.pipetype[i] == 'freelevel':
+                    i += 1
+                for jj in range(self.njuni+self.njund):
+                    if self.f['id'][jj] == i:
+                        A[j][jj] = -1
+                    if self.t['id'][jj] == i:
+                        A[j][jj] = 1
+                i += 1
+        self.invA = linalg.inv(A)
+
+        # initialize vector of flowrate in independent junctions
+        mdoti = [0]*self.njuni
 
         # initialize state: a vector of unknowns
-        self.state = []
+        self.state = mdoti
         self.neq = len(self.state)
 
+    #----------------------------------------------------------------------------------------------
     # create right-hand side vector: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
 
-        # create vector of pressure
-        rhs = []
+        if not self.calculate:
+            rhs = []
+            return rhs
+
+        # READ VARIABLES
+        # flowrate in independent junctions
+        mdoti = self.state[0:self.njuni]
+
+        # find flowrates in dependent junctions
+        # first construct right hand side of system invA*mdot = b
+        i = 0
+        b = [0]*(self.njuni+self.njund)
+        for j in range(self.njuni+self.njund):
+            if self.juntype[j] == 'independent':
+                b[j] = mdoti[i]
+                i += 1
+            elif self.juntype[j] == 'dependent':
+                b[j] = 0
+        # then multiply matrix by vector: invA*mdot = b
+        mdot = self.invA.dot(b)
+        
+        rhs = [0.1]*self.njuni
         return rhs
