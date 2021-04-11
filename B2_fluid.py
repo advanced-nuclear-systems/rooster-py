@@ -134,7 +134,7 @@ class Fluid:
                 i += 1
             elif self.juntype[j] == 'dependent':
                 b[j] = 0
-        # then multiply matrix by vector: invA*mdot = b
+        # then multiply matrix by vector: invA*mdot = b and convert to list
         mdot = self.invA.dot(b).tolist()
         # finally calculate flowrates in internal junctions
         for i in range(self.npipe):
@@ -144,6 +144,5 @@ class Fluid:
                     mdotpipe += mdot[j]
             for j in range(self.pipennodes[i]-1):
                 mdot.append(mdotpipe)
-        print(mdot)
         rhs = [0.1]*self.njuni
         return rhs
