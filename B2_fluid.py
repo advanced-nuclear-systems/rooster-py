@@ -1,5 +1,6 @@
 from scipy import linalg
 
+import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -11,6 +12,8 @@ class Fluid:
     state = []
     # number of unknowns/equations of this class   
     neq = 0
+    # pipe coolant name array
+    cool = []
     # pipe pressure array
     p = []
     # pipe temperature array
@@ -59,8 +62,11 @@ class Fluid:
             except:
                 print('****ERROR: input coolant name ' + cool + ' is not specified in the \'coolant\' card.')
                 sys.exit()
+            type = reactor.control.input['coolant']['type'][icool]
             p0 = reactor.control.input['coolant']['p0'][icool]
             temp0 = reactor.control.input['coolant']['temp0'][icool]
+            # vector of coolant names in pipe
+            self.cool.append(type)
             # vector of initial pressures in pipe nodes
             self.p.append([p0]*self.pipennodes[i])
             # vector of initial temperatures in pipe nodes
@@ -120,11 +126,11 @@ class Fluid:
             rhs = []
             return rhs
 
-        # READ VARIABLES
+        # VARIABLES:
         # flowrate in independent junctions
         mdoti = self.state[0:self.njuni]
 
-        # find flowrates in dependent junctions
+        # FLOWRATES IN DEPENDENT JUNCTIONS:
         # first construct right hand side of system invA*mdot = b
         i = 0
         b = [0]*(self.njuni+self.njund)
@@ -144,5 +150,21 @@ class Fluid:
                     mdotpipe += mdot[j]
             for j in range(self.pipennodes[i]-1):
                 mdot.append(mdotpipe)
+
+        # FLUID PROPERTIES:
+        prop = []
+        for i in range(self.npipe):
+            dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
+            if self.cool[i] == 'na':
+                for j in range(self.pipennodes[i]):
+                    t = self.temp[i][j]
+                    # J.K. Fink and L. Leibowitz "Thermodynamic and Transport Properties of Sodium Liquid and Vapor", ANL/RE-95/2, 1995, https://www.ne.anl.gov/eda/ANL-RE-95-2.pdf
+                    dict['rhol'].append(219.0 + 275.32*(1.0 - t/2503.7) + 511.58*(1.0 - t/2503.7)**0.5)
+                    dict['visl'].append(math.exp(-6.4406 - 0.3958*math.log(t) + 556.835/t)/dict['rhol'][j])
+                    dict['kl'].append(124.67 - 0.11381*t + 5.5226e-5*t**2 - 1.1842e-8*t**3)
+                    # Based on fit from J.K. Fink, etal."Properties for Reactor Safety Analysis", ANL-CEN-RSD-82-2, May 1982.
+                    dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
+            prop.append(dict)
+
         rhs = [0.1]*self.njuni
         return rhs
