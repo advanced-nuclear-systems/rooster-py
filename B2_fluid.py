@@ -19,8 +19,10 @@ class Fluid:
     # pipe temperature array
     temp = []
     # from and to dictionaries
-    f = {'id':[],'i':[]}
-    t = {'id':[],'i':[]}
+    f = []
+    t = []
+    # pipe node index dictionaries
+    indx = []
 
     # constructor: self is a 'fluid' object created in B
     def __init__(self, reactor):
@@ -71,28 +73,35 @@ class Fluid:
             self.p.append([p0]*self.pipennodes[i])
             # vector of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
+        # assign index to every pipe node
+        for i in range(self.npipe):
+            for j in range(self.pipennodes[i]):
+                self.indx.append((i,j))
 
         # vector of junction types
         self.juntype = reactor.control.input['junction']['type']
-        # construct from and to dictionaries
-        self.f['id'] = [self.pipename.index(reactor.control.input['junction']['from'][i]) for i in range(len(self.juntype))]
-        self.t['id'] = [self.pipename.index(reactor.control.input['junction']['to'][i]) for i in range(len(self.juntype))]
-        self.f['i'] = [self.pipennodes[self.f['id'][i]]-1 for i in range(len(self.juntype))]
-        self.t['i'] = [0 for i in range(len(self.juntype))]
-        # add internal junctions
-        for i in range(self.npipe):
-            self.juntype += ['internal']*(self.pipennodes[i] - 1)
-            # append from and to dictionaries
-            self.f['id'] += [i]*(self.pipennodes[i]-1)
-            self.t['id'] += [i]*(self.pipennodes[i]-1)
-            self.f['i'] += range(self.pipennodes[i]-1)
-            self.t['i'] += range(1,self.pipennodes[i])
         # number of junctions
         self.njun = len(self.juntype)
         # number of independent junctions
         self.njuni = self.juntype.count('independent')
         # number of dependent junctions
         self.njund = self.juntype.count('dependent')
+
+        # construct from and to arrays of tulips
+        for j in range(self.njun):
+            idf = reactor.control.input['junction']['from'][j]
+            indx = self.pipename.index(idf)
+            self.f.append((indx, self.pipennodes[indx]-1))
+            idt = reactor.control.input['junction']['to'][j]
+            indx = self.pipename.index(idt)
+            self.t.append((indx, 0))
+        # add internal junctions
+        for i in range(self.npipe):
+            self.juntype += ['internal']*(self.pipennodes[i] - 1)
+            # append from and to vectors
+            self.f += [(i,j) for j in range(self.pipennodes[i]-1)]
+            self.t += [(i,j) for j in range(1,self.pipennodes[i])]
+        self.njun = len(self.f)
 
         # create and inverse a matrix A linking dependent and independent junctions
         A = [[0]*(self.njuni+self.njund) for i in range(self.njuni+self.njund)]
@@ -104,12 +113,34 @@ class Fluid:
                 while self.pipetype[i] == 'freelevel':
                     i += 1
                 for jj in range(self.njuni+self.njund):
-                    if self.f['id'][jj] == i:
+                    if self.f[jj][0] == i:
                         A[j][jj] = -1
-                    if self.t['id'][jj] == i:
+                    if self.t[jj][0] == i:
                         A[j][jj] = 1
                 i += 1
         self.invA = linalg.inv(A)
+
+        # create and inverse a matrix B of left-hand sides of momentum conservation equations (self.njun) and 
+        # mass conservation equations differentiated w.r.t. time (self.npipe-self.npipef)
+        n = self.njun + sum(self.pipennodes)
+        B = [[0]*n for i in range(n)]
+        for j in range(self.njun):
+            B[j][j] = 1 # dmdot/dt
+
+            i = self.njun + self.indx.index(self.f[j])
+            B[j][i] = -1 # -P_from
+            if self.pipetype[self.f[j][0]] != 'freelevel':
+                B[i][j] = -1 # -dmdot/dt_out
+
+            i = self.njun + self.indx.index(self.t[j])
+            B[j][i] = 1 # +P_to
+            if self.pipetype[self.t[j][0]] != 'freelevel':
+                B[i][j] = 1 # +dmdot/dt_in
+        for i in range(sum(self.pipennodes)):
+            if self.pipetype[self.indx[i][0]] == 'freelevel':
+                print('freelevel', i)
+                B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
+        self.invB = linalg.inv(B)
 
         # initialize vector of flowrate in independent junctions
         mdoti = [0]*self.njuni
@@ -146,13 +177,13 @@ class Fluid:
         for i in range(self.npipe):
             mdotpipe = 0
             for j in range(self.njuni+self.njund):
-                if self.t['id'][j] == i:
+                if self.t[j][0] == i:
                     mdotpipe += mdot[j]
             for j in range(self.pipennodes[i]-1):
                 mdot.append(mdotpipe)
 
         # FLUID PROPERTIES:
-        prop = []
+        self.prop = []
         for i in range(self.npipe):
             dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
             if self.cool[i] == 'na':
@@ -164,7 +195,16 @@ class Fluid:
                     dict['kl'].append(124.67 - 0.11381*t + 5.5226e-5*t**2 - 1.1842e-8*t**3)
                     # Based on fit from J.K. Fink, etal."Properties for Reactor Safety Analysis", ANL-CEN-RSD-82-2, May 1982.
                     dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
-            prop.append(dict)
+            self.prop.append(dict)
+
+        # TIME DERIVATIVES OF FLOWRATES AND PRESSURES:
+        # first construct right hand side of system invB*[mdot, P] = b
+        b = [0]*(self.njun + sum(self.pipennodes))
+        for j in range(self.njun):
+            b[j] = 0
+        for i in range(sum(self.pipennodes)):
+            if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
+        invBb = self.invB.dot(b).tolist()
 
         rhs = [0.1]*self.njuni
         return rhs
