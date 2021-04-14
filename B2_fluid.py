@@ -138,7 +138,6 @@ class Fluid:
                 B[i][j] = 1 # +dmdot/dt_in
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel':
-                print('freelevel', i)
                 B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
         self.invB = linalg.inv(B)
 

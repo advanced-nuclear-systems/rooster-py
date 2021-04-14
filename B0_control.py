@@ -42,8 +42,10 @@ def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
     inp['coolant'] = {'name':[], 'type':[], 'p0':[], 'temp0':[]} # no default
+    inp['fuel'] = {'name':[], 'type':[], 'b':[], 'x':[], 'por':[], 'temp0':[]} # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
+    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'nnodes':[]} # no default
     inp['pipe'] = {'name':[], 'type':[], 'cool':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
@@ -95,16 +97,25 @@ def construct_input():
         elif key == 'betaeff' :
             inp['betaeff'] = word[1:]
         #--------------------------------------------------------------------------------------
-        # delayed neutron precursor decay time constants
-        elif key == 'dnplmb' :
-            inp['dnplmb'] = word[1:]
-        #--------------------------------------------------------------------------------------
         # coolant
         elif key == 'coolant' :
              inp['coolant']['name'].append(word[1])
              inp['coolant']['type'].append(word[2])
              inp['coolant']['p0'].append(word[3])
              inp['coolant']['temp0'].append(word[4])
+        #--------------------------------------------------------------------------------------
+        # delayed neutron precursor decay time constants
+        elif key == 'dnplmb' :
+            inp['dnplmb'] = word[1:]
+        #--------------------------------------------------------------------------------------
+        # fuel
+        elif key == 'fuel' :
+             inp['fuel']['name'].append(word[1])
+             inp['fuel']['type'].append(word[2])
+             inp['fuel']['b'].append(word[3]) # burnup (MWd/kgU)
+             inp['fuel']['x'].append(word[4]) # deviation from stoechiometry
+             inp['fuel']['por'].append(word[5]) # porosity
+             inp['fuel']['temp0'].append(word[6]) # initial temperature (K)
         #--------------------------------------------------------------------------------------
         # fuel grain parameters
         elif key == 'fgrain' :
@@ -128,13 +139,12 @@ def construct_input():
              lookup['f(x)'] = word[2::2]
              inp['lookup'].append(lookup)
         #--------------------------------------------------------------------------------------
-        # signal variable
-        elif key == 'signal' :
-             signal = {}
-             signal['type'] = word[1]
-             signal['userid'] = word[2]
-             signal['sign'] = word[3:]
-             inp['signal'].append(signal)
+        # fuel pellet
+        elif key == 'pellet' :
+             inp['pellet']['name'].append(word[1])
+             inp['pellet']['ri'].append(word[2])
+             inp['pellet']['ro'].append(word[3])
+             inp['pellet']['nnodes'].append(int(word[4]))
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
@@ -150,6 +160,14 @@ def construct_input():
         # 
         elif key == 'solve' :
             inp['solve'].append(word[1:])
+        #--------------------------------------------------------------------------------------
+        # signal variable
+        elif key == 'signal' :
+             signal = {}
+             signal['type'] = word[1]
+             signal['userid'] = word[2]
+             signal['sign'] = word[3:]
+             inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
         # integration starting time
         elif key == 't0' :
