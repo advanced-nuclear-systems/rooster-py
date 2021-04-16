@@ -7,7 +7,7 @@
 #             FuelRod
 #                FuelPellet
 #                   FuelGrain
-#                Gap
+#                InnerGas
 #                Clad
 #         Fluid
 #         Neutron

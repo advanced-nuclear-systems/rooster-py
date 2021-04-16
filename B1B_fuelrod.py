@@ -1,5 +1,5 @@
 from B1B0_fuelpellet import FuelPellet
-from B1B1_gap import Gap
+from B1B1_innergas import InnerGas
 from B1B2_clad import Clad
 
 #--------------------------------------------------------------------------------------------------
@@ -23,11 +23,11 @@ class FuelRod:
 
         # create objects
         self.fuelpellet = FuelPellet(reactor)
-        self.gap = Gap(reactor)
+        self.innergas = InnerGas(reactor)
         self.clad = Clad(reactor)
 
         # initialize state: a vector of unknowns
-        self.state = self.fuelpellet.state + self.gap.state + self.clad.state
+        self.state = self.fuelpellet.state + self.innergas.state + self.clad.state
         self.neq = len(self.state)
 
     # create right-hand side vector: self is a 'fuelrod' object created in B1

@@ -1,7 +1,7 @@
 #--------------------------------------------------------------------------------------------------
-class Gap:
+class InnerGas:
 
-    # constructor: self is a 'gap' object created in B1B
+    # constructor: self is a 'innergas' object created in B1B
     def __init__(self, reactor):
 
         # create objects
