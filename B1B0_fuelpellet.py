@@ -4,7 +4,7 @@ import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
-class Fuel:
+class FuelPellet:
 
     # pellet Pu content array
     pu = []

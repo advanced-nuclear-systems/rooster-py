@@ -5,7 +5,7 @@
 #         Solid
 #             Structure
 #             FuelRod
-#                Fuel
+#                FuelPellet
 #                   FuelGrain
 #                Gap
 #                Clad
