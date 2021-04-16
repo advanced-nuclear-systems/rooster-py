@@ -45,7 +45,7 @@ def construct_input():
     inp['fuel'] = {'name':[], 'type':[], 'pu':[], 'b':[], 'x':[], 'por':[], 'temp0':[]} # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
-    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'nr':[]} # no default
+    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'dz':[], 'nr':[]} # no default
     inp['pipe'] = {'name':[], 'type':[], 'cool':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
@@ -145,7 +145,8 @@ def construct_input():
              inp['pellet']['name'].append(word[1])
              inp['pellet']['ri'].append(word[2])
              inp['pellet']['ro'].append(word[3])
-             inp['pellet']['nr'].append(int(word[4]))
+             inp['pellet']['dz'].append(word[4])
+             inp['pellet']['nr'].append(int(word[5]))
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :

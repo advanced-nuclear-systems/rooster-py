@@ -7,12 +7,12 @@ class FuelRod:
 
     # flag defining if this class is included in calculations or not
     calculate = False
+    # number of unknowns/equations of this class   
+    neq = 0
     # number of fuel pellets
     nfuelpellets = 0
     # array of unknowns of this class
     state = []
-    # number of unknowns/equations of this class   
-    neq = 0
 
     # constructor: self is a 'fuelrod' object created in B1
     def __init__(self, reactor):
@@ -57,5 +57,5 @@ class FuelRod:
         # construct right-hand side vector
         rhs = []
         for i in range(self.nfuelpellets):
-            rhs += self.fuelpellet[i].calculate_rhs(i, reactor, t)
+            rhs += self.fuelpellet[i].calculate_rhs(reactor, t)
         return rhs

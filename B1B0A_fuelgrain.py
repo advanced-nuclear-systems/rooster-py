@@ -58,10 +58,10 @@ class FuelGrain:
         dg = 1e-3 # to be replaced by a correlation
         # MONOATOMS C1
         # vector of rb**2 * dg * dc1/dr (size = nr-1)
-        q1 = [self.rb[i]**2*dg*(self.c1[i] - self.c1[i+1])/self.dr for i in range(0, self.nr-1)]
+        q1 = [self.rb[i]**2*dg*(self.c1[i] - self.c1[i+1])/self.dr for i in range(self.nr-1)]
         # vector of time derivative of monoatom concentrations
         dc1dt = [-q1[0]/self.vol[0]] + [(q1[i-1] - q1[i])/self.vol[i] for i in range(1, self.nr-1)] + [q1[self.nr-2]/self.vol[self.nr-1]]
-        dc1dt = [dc1dt[i] + 0.31*self.frate for i in range(0, self.nr)]
+        dc1dt = [dc1dt[i] + 0.31*self.frate for i in range(self.nr)]
         #dc1dt[self.nr-1] = 0
         rhs = dc1dt
         return rhs

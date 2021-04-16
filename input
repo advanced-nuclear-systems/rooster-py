@@ -69,5 +69,5 @@ junction  UP2       PLENUM    dependent
 *****     name      type      pu(-)     b(MWD/kg) x(-)      por(-)    temp0(K)
 fuel      MOX       mox       0.15      0         0.02      0.05      673
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      ri(m)     ro(m)     nr
-pellet    MOX       1e-3      4e-3      20
+*****     name      ri(m)     ro(m)     dz(m)     nr
+pellet    MOX       1e-3      4e-3      0.01      20
