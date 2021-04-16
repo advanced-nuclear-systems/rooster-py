@@ -12,8 +12,9 @@ class Fluid:
     state = []
     # number of unknowns/equations of this class   
     neq = 0
-    # pipe coolant name array
-    cool = []
+
+    # pipe coolant type array
+    type = []
     # pipe pressure array
     p = []
     # pipe temperature array
@@ -67,8 +68,8 @@ class Fluid:
             type = reactor.control.input['coolant']['type'][icool]
             p0 = reactor.control.input['coolant']['p0'][icool]
             temp0 = reactor.control.input['coolant']['temp0'][icool]
-            # vector of coolant names in pipe
-            self.cool.append(type)
+            # vector of coolant types in pipe
+            self.type.append(type)
             # vector of initial pressures in pipe nodes
             self.p.append([p0]*self.pipennodes[i])
             # vector of initial temperatures in pipe nodes
@@ -185,7 +186,7 @@ class Fluid:
         self.prop = []
         for i in range(self.npipe):
             dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
-            if self.cool[i] == 'na':
+            if self.type[i] == 'na':
                 for j in range(self.pipennodes[i]):
                     t = self.temp[i][j]
                     # J.K. Fink and L. Leibowitz "Thermodynamic and Transport Properties of Sodium Liquid and Vapor", ANL/RE-95/2, 1995, https://www.ne.anl.gov/eda/ANL-RE-95-2.pdf

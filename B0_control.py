@@ -42,10 +42,10 @@ def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
     inp['coolant'] = {'name':[], 'type':[], 'p0':[], 'temp0':[]} # no default
-    inp['fuel'] = {'name':[], 'type':[], 'b':[], 'x':[], 'por':[], 'temp0':[]} # no default
+    inp['fuel'] = {'name':[], 'type':[], 'pu':[], 'b':[], 'x':[], 'por':[], 'temp0':[]} # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
-    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'nnodes':[]} # no default
+    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'nr':[]} # no default
     inp['pipe'] = {'name':[], 'type':[], 'cool':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
@@ -112,10 +112,11 @@ def construct_input():
         elif key == 'fuel' :
              inp['fuel']['name'].append(word[1])
              inp['fuel']['type'].append(word[2])
-             inp['fuel']['b'].append(word[3]) # burnup (MWd/kgU)
-             inp['fuel']['x'].append(word[4]) # deviation from stoechiometry
-             inp['fuel']['por'].append(word[5]) # porosity
-             inp['fuel']['temp0'].append(word[6]) # initial temperature (K)
+             inp['fuel']['pu'].append(word[3]) # Pu content (-)
+             inp['fuel']['b'].append(word[4]) # burnup (MWd/kgU)
+             inp['fuel']['x'].append(word[5]) # deviation from stoechiometry
+             inp['fuel']['por'].append(word[6]) # porosity
+             inp['fuel']['temp0'].append(word[7]) # initial temperature (K)
         #--------------------------------------------------------------------------------------
         # fuel grain parameters
         elif key == 'fgrain' :
@@ -144,7 +145,7 @@ def construct_input():
              inp['pellet']['name'].append(word[1])
              inp['pellet']['ri'].append(word[2])
              inp['pellet']['ro'].append(word[3])
-             inp['pellet']['nnodes'].append(int(word[4]))
+             inp['pellet']['nr'].append(int(word[4]))
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
@@ -160,6 +161,17 @@ def construct_input():
         # 
         elif key == 'solve' :
             inp['solve'].append(word[1:])
+            # verify that solve card has correct value
+            correct_values = {'fluid','fuelgrain','fuelrod','pointkinetics'}
+            values = set([word[1]])
+            diff = values.difference(correct_values)
+            if diff != set():
+                print('****ERROR: solve card contains wrong value: ', list(diff)[0], '\nCorrect values are: ')
+                sorted = list(correct_values)
+                sorted.sort()
+                for v in sorted:
+                    print('solve', v)
+                sys.exit()
         #--------------------------------------------------------------------------------------
         # signal variable
         elif key == 'signal' :
@@ -189,6 +201,7 @@ def construct_input():
     if len(inp['solve']) == 0:
         print('****ERROR: input file should have at least one solve card.')
         sys.exit()
+    
     # verify that lookup tables use existing signals
     signal_userid = []
     for s in inp['signal'] :
