@@ -51,7 +51,6 @@ class Reactor:
             rhs += self.fluid.calculate_rhs(self, t)
             rhs += self.neutron.calculate_rhs(self, t)
             return rhs
-        
         # solve the whole system of ODEs
         solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
         t0 = self.control.input['t0']

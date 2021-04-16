@@ -7,6 +7,8 @@ class FuelRod:
 
     # flag defining if this class is included in calculations or not
     calculate = False
+    # number of fuel pellets
+    nfuelpellets = 0
     # array of unknowns of this class
     state = []
     # number of unknowns/equations of this class   
@@ -21,13 +23,22 @@ class FuelRod:
         if not self.calculate:
             return
 
-        # create objects
-        self.fuelpellet = FuelPellet(reactor)
+        # INITIALIZATION
+        # number of fuel pellets specified in input
+        self.nfuelpellets = len(reactor.control.input['pellet']['name'])
+        # create an object for every fuel pellet
+        self.fuelpellet = []
+        for i in range(self.nfuelpellets):
+            self.fuelpellet.append(FuelPellet(i, reactor))
         self.innergas = InnerGas(reactor)
         self.clad = Clad(reactor)
 
         # initialize state: a vector of unknowns
-        self.state = self.fuelpellet.state + self.innergas.state + self.clad.state
+        self.state = []
+        for i in range(self.nfuelpellets):
+            self.state += self.fuelpellet[i].state 
+        self.state += self.innergas.state 
+        self.state += self.clad.state
         self.neq = len(self.state)
 
     # create right-hand side vector: self is a 'fuelrod' object created in B1
@@ -38,9 +49,13 @@ class FuelRod:
             return rhs
 
         # split vector of unknowns
-        self.fuelpellet.state = self.state[0:self.fuelpellet.neq]
-        self.clad.state = self.state[len(self.fuelpellet.state):len(self.fuelpellet.state)+self.clad.neq]
+        k = 0
+        for i in range(self.nfuelpellets):
+            self.fuelpellet[i].state = self.state[k:k+self.fuelpellet[i].neq]
+            k += self.fuelpellet[i].neq
+        self.clad.state = self.state[k:k+self.clad.neq]
         # construct right-hand side vector
         rhs = []
-        rhs += self.fuelpellet.calculate_rhs(reactor, t)
+        for i in range(self.nfuelpellets):
+            rhs += self.fuelpellet[i].calculate_rhs(i, reactor, t)
         return rhs
