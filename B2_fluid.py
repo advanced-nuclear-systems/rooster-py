@@ -36,29 +36,29 @@ class Fluid:
 
         # INITIALIZATION
         # vector of pipe id's
-        self.pipeid = reactor.control.input['pipe']['id']
+        self.pipeid = [x['id'] for x in reactor.control.input['pipe']]
         # vector of pipe types
-        self.pipetype = reactor.control.input['pipe']['type']
+        self.pipetype = [x['type'] for x in reactor.control.input['pipe']]
         # number of pipes
         self.npipe = len(self.pipetype)
         # number of freelevel pipes
         self.npipef = self.pipetype.count('freelevel')
         # vector of pipe hydraulic diameters
-        self.dhyd = reactor.control.input['pipe']['dhyd']
+        self.dhyd = [x['dhyd'] for x in reactor.control.input['pipe']]
         # vector of pipe elevations
-        self.elev = reactor.control.input['pipe']['elev']
+        self.elev = [x['elev'] for x in reactor.control.input['pipe']]
         # vector of pipe length
-        self.len = reactor.control.input['pipe']['len']
+        self.len = [x['len'] for x in reactor.control.input['pipe']]
         for i in range(self.npipe):
             if self.len[i] == 0:
                 self.len[i] = abs(self.elev[i])
         # vector of pipe flow area
-        self.areaz = reactor.control.input['pipe']['areaz']
+        self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
         # vector of numbers of pipe nodes
-        self.pipennodes = reactor.control.input['pipe']['nnodes']
+        self.pipennodes = [x['nnodes'] for x in reactor.control.input['pipe']]
         # process coolant names
         for i in range(self.npipe):
-            cool = reactor.control.input['pipe']['matid'][i]
+            cool = reactor.control.input['pipe'][i]['matid']
             # find the coolant id in the vector of coolants
             try:
                 icool = [x['id'] for x in reactor.control.input['mat']].index(cool)

@@ -28,15 +28,15 @@ class FuelPellet:
 
         # INITIALIZATION
         # fuel pellet material id
-        self.matid = reactor.control.input['pellet']['matid'][indx]
+        self.matid = reactor.control.input['pellet'][indx]['matid']
         # fuel pellet inner radius
-        self.ri = reactor.control.input['pellet']['ri'][indx]
+        self.ri = reactor.control.input['pellet'][indx]['ri']
         # fuel pellet outer radius
-        self.ro = reactor.control.input['pellet']['ro'][indx]
+        self.ro = reactor.control.input['pellet'][indx]['ro']
         # number of fuel pellet radial nodes
-        self.nr = reactor.control.input['pellet']['nr'][indx]
+        self.nr = reactor.control.input['pellet'][indx]['nr']
         # process material id
-        matid = reactor.control.input['pellet']['matid'][indx]
+        matid = reactor.control.input['pellet'][indx]['matid']
         # find the material id in the vector of fuels
         try:
             ifuel = [x['id'] for x in reactor.control.input['mat']].index(matid)
@@ -58,7 +58,7 @@ class FuelPellet:
 
         # GEOMETRY
         # height of fuel pellet
-        self.dz = reactor.control.input['pellet']['dz'][indx]
+        self.dz = reactor.control.input['pellet'][indx]['dz']
         # mesh grid step
         self.dr = (self.ro - self.ri)/(self.nr-1)
         # vector of node radii (size = nr)

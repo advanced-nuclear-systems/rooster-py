@@ -45,8 +45,8 @@ def construct_input():
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
     inp['mat'] = [] # no default
-    inp['pellet'] = {'id':[], 'matid':[], 'ri':[], 'ro':[], 'dz':[], 'nr':[]} # no default
-    inp['pipe'] = {'id':[], 'type':[], 'matid':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
+    inp['pellet'] = [] # no default
+    inp['pipe'] = [] # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
     inp['solve'] = [] # no default
@@ -124,7 +124,6 @@ def construct_input():
                         x['pipenodeid'].append(int(word[7]))
             else:
                 inp['fuelrod'].append({'id':id, 'pelletid':[word[2]], 'gasid':[word[3]], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
-            print(inp['fuelrod'])
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction
         elif key == 'junction' :
@@ -148,23 +147,11 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # fuel pellet
         elif key == 'pellet' :
-             inp['pellet']['id'].append(word[1])
-             inp['pellet']['matid'].append(word[2])
-             inp['pellet']['ri'].append(word[3])
-             inp['pellet']['ro'].append(word[4])
-             inp['pellet']['dz'].append(word[5])
-             inp['pellet']['nr'].append(int(word[6]))
+             inp['pellet'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'dz':word[5], 'nr':int(word[6])} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
-             inp['pipe']['id'].append(word[1])
-             inp['pipe']['type'].append(word[2])
-             inp['pipe']['matid'].append(word[3])
-             inp['pipe']['dhyd'].append(word[4])
-             inp['pipe']['elev'].append(word[5])
-             inp['pipe']['len'].append(word[6])
-             inp['pipe']['areaz'].append(word[7])
-             inp['pipe']['nnodes'].append(int(word[8]))
+             inp['pipe'].append( {'id':word[1], 'type':word[2], 'matid':word[3], 'dhyd':word[4], 'elev':word[5], 'len':word[6], 'areaz':word[7], 'nnodes':int(word[8])} )
         #--------------------------------------------------------------------------------------
         # 
         elif key == 'solve' :
