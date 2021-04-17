@@ -41,10 +41,10 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
-#    inp['mat'] = {'id':[], 'type':[], 'p0':[], 'temp0':[], 'pu':[], 'b':[], 'x':[], 'por':[]} # no default
-    inp['mat'] = [] # no default
+    inp['fuelrod'] = [] # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
+    inp['mat'] = [] # no default
     inp['pellet'] = {'id':[], 'matid':[], 'ri':[], 'ro':[], 'dz':[], 'nr':[]} # no default
     inp['pipe'] = {'id':[], 'type':[], 'matid':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
@@ -97,26 +97,6 @@ def construct_input():
         elif key == 'betaeff' :
             inp['betaeff'] = word[1:]
         #--------------------------------------------------------------------------------------
-        # material
-        elif key == 'mat' :
-#             if word[2] == 'na':
-#                 inp['mat']['id'].append(word[1])
-#                 inp['mat']['type'].append(word[2])
-#                 inp['mat']['p0'].append(word[3])
-#                 inp['mat']['temp0'].append(word[4])
-#             elif word[2] == 'mox':
-#                 inp['mat']['id'].append(word[1])
-#                 inp['mat']['type'].append(word[2])
-#                 inp['mat']['pu'].append(word[3]) # Pu content (-)
-#                 inp['mat']['b'].append(word[4]) # burnup (MWd/kgU)
-#                 inp['mat']['x'].append(word[5]) # deviation from stoechiometry
-#                 inp['mat']['por'].append(word[6]) # porosity
-#                 inp['mat']['temp0'].append(word[7]) # initial temperature (K)
-             if word[2] == 'na':
-                 inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
-             elif word[2] == 'mox':
-                 inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
-        #--------------------------------------------------------------------------------------
         # delayed neutron precursor decay time constants
         elif key == 'dnplmb' :
             inp['dnplmb'] = word[1:]
@@ -130,6 +110,22 @@ def construct_input():
             # fission rate
             inp['frate'] = int(word[3])
         #--------------------------------------------------------------------------------------
+        # fuel rod card
+        elif key == 'fuelrod' :
+            id = word[1]
+            if any([id in x['id'] for x in inp['fuelrod']]):
+                for x in inp['fuelrod']:
+                    if x['id'] == id:
+                        x['pelletid'].append(word[2])
+                        x['gasid'].append(word[3])
+                        x['cladid'].append(word[4])
+                        x['mltpl'].append(word[5])
+                        x['pipeid'].append(word[6])
+                        x['pipenodeid'].append(int(word[7]))
+            else:
+                inp['fuelrod'].append({'id':id, 'pelletid':[word[2]], 'gasid':[word[3]], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
+            print(inp['fuelrod'])
+        #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction
         elif key == 'junction' :
              inp['junction']['from'].append(word[1])
@@ -142,6 +138,13 @@ def construct_input():
              lookup['x'] = word[1::2]
              lookup['f(x)'] = word[2::2]
              inp['lookup'].append(lookup)
+        #--------------------------------------------------------------------------------------
+        # material
+        elif key == 'mat' :
+             if word[2] == 'na':
+                 inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
+             elif word[2] == 'mox':
+                 inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
         #--------------------------------------------------------------------------------------
         # fuel pellet
         elif key == 'pellet' :
