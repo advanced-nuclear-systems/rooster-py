@@ -20,45 +20,54 @@ class FuelPellet:
     x = []
 
     #----------------------------------------------------------------------------------------------
-    # constructor: self is a 'fuelpellet' object created in B1B
-    def __init__(self, indx, reactor):
+    # constructor: self is a 'fuelpellet' object created in B1B, indx is the axial index of this object in the fuel rod with index indxfuelrod
+    def __init__(self, indx, indxfuelrod, reactor):
 
-        # create object
+        # create object for fuel grain (to be fixed)
         self.fuelgrain = FuelGrain(reactor)
 
         # INITIALIZATION
-        # fuel pellet material id
-        self.matid = reactor.control.input['pellet'][indx]['matid']
+        # current pellet id
+        fuelpelletid = reactor.control.input['fuelrod'][indxfuelrod]['pelletid'][indx]
+
+        # array of fuel pellet dictionaries specified in input
+        array = reactor.control.input['pellet']
+        # index of the current fuel pellet in 
+        i = [x['id'] for x in array].index(fuelpelletid)
+
         # fuel pellet inner radius
-        self.ri = reactor.control.input['pellet'][indx]['ri']
+        self.ri = array[i]['ri']
         # fuel pellet outer radius
-        self.ro = reactor.control.input['pellet'][indx]['ro']
+        self.ro = array[i]['ro']
         # number of fuel pellet radial nodes
-        self.nr = reactor.control.input['pellet'][indx]['nr']
-        # process material id
-        matid = reactor.control.input['pellet'][indx]['matid']
+        self.nr = array[i]['nr']
+
+        # fuel pellet material id
+        self.matid = array[i]['matid']
         # find the material id in the vector of fuels
         try:
-            ifuel = [x['id'] for x in reactor.control.input['mat']].index(matid)
+            ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
         except:
-            print('****ERROR: input material id ' + matid + ' in pellet is not specified in the \'mat\' card.')
+            print('****ERROR: input material id ' + self.matid + ' in pellet is not specified in the \'mat\' card.')
             sys.exit()
+        # dictionary of material properties of the current fuel pellet
+        mat = reactor.control.input['mat'][ifuel]
         # fuel type of fuel pellet
-        self.type = reactor.control.input['mat'][ifuel]['type']
+        self.type = mat['type']
         # vector of Pu content in fuel pellet radial nodes
-        self.pu = [[reactor.control.input['mat'][ifuel]['pu']][indx]]*self.nr
+        self.pu = [mat['pu']]*self.nr
         # vector of fuel burnup in fuel pellet radial nodes
-        self.b = [[reactor.control.input['mat'][ifuel]['b']][indx]]*self.nr
+        self.b = [mat['b']]*self.nr
         # vector of deviation from stoechiometry in fuel pellet radial nodes
-        self.x = [[reactor.control.input['mat'][ifuel]['x']][indx]]*self.nr
+        self.x = [mat['x']]*self.nr
         # vector of porosity in fuel pellet radial nodes
-        self.por = [[reactor.control.input['mat'][ifuel]['por']][indx]]*self.nr
+        self.por = [mat['por']]*self.nr
         # vector of initial temperatures in fuel pellet radial nodes
-        self.temp = [[reactor.control.input['mat'][ifuel]['temp0']][indx]]*self.nr
+        self.temp = [mat['temp0']]*self.nr
 
         # GEOMETRY
         # height of fuel pellet
-        self.dz = reactor.control.input['pellet'][indx]['dz']
+        self.dz = reactor.control.input['pellet'][i]['dz']
         # mesh grid step
         self.dr = (self.ro - self.ri)/(self.nr-1)
         # vector of node radii (size = nr)
@@ -73,7 +82,7 @@ class FuelPellet:
         self.neq = len(self.state)
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side vector: self is a 'fuel' object created in B1B
+    # create right-hand side vector: self is a 'fuelpellet' object created in B1B
     def calculate_rhs(self, reactor, t):
         # split vector of unknowns
         self.fuelgrain.state = self.state[0:self.fuelgrain.neq]
@@ -81,6 +90,7 @@ class FuelPellet:
         for j in range(self.nr):
             self.temp[j] = self.state[k]
             k += 1
+
         # construct right-hand side vector
         rhs = self.fuelgrain.calculate_rhs(reactor, t)
 

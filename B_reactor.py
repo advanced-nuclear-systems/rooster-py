@@ -63,7 +63,7 @@ class Reactor:
             while solver.successful() and solver.t < tend:
                 time = solver.t + dtout
                 self.state = solver.integrate(time)
-                #print('time: {0:12.5e}'.format(time))
+                print('time: {0:12.5e}'.format(time))
                 # write time and all unknowns to output file
                 f.write('{0:12.5e} '.format(time))
                 for i in range(len(self.state)):

@@ -41,6 +41,7 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
+    inp['clad'] = [] # no default
     inp['fuelrod'] = [] # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
@@ -88,6 +89,10 @@ def construct_input():
         # just placeholder
         if key == '' :
             pass
+        #--------------------------------------------------------------------------------------
+        # cladding
+        elif key == 'clad' :
+             inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
         #--------------------------------------------------------------------------------------
         # constant
         elif key == 'constant' :

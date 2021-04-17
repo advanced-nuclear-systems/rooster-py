@@ -4,24 +4,40 @@ from B1B_fuelrod import FuelRod
 #--------------------------------------------------------------------------------------------------
 class Solid:
 
+    #----------------------------------------------------------------------------------------------
     # constructor: self is a 'solid' object created in B
     def __init__(self, reactor):
 
-        # create objects
+        # INITIALIZATION
+        # number of fuel rods specified in input
+        self.nfuelrods = len([x['id'] for x in reactor.control.input['fuelrod']])
+        # create an object for every fuel rod
+        self.fuelrod = []
+        for i in range(self.nfuelrods):
+            self.fuelrod.append(FuelRod(i, reactor))
+
+        # create structure object
         self.structure = Structure(reactor)
-        self.fuelrod = FuelRod(reactor)
 
         # initialize state: a vector of unknowns
-        self.state = self.structure.state + self.fuelrod.state
+        self.state = []
+        for i in range(self.nfuelrods):
+            self.state += self.fuelrod[i].state 
+        self.state += self.structure.state
         self.neq = len(self.state)
 
+    #----------------------------------------------------------------------------------------------
     # create right-hand side vector: self is a 'solid' object created in B
     def calculate_rhs(self, reactor, t):
         # split vector of unknowns
-        self.structure.state = self.state[0:self.structure.neq]
-        self.fuelrod.state = self.state[len(self.structure.state):len(self.structure.state)+self.fuelrod.neq]
+        k = 0
+        for i in range(self.nfuelrods):
+            self.fuelrod[i].state = self.state[k:k+self.fuelrod[i].neq]
+            k += self.fuelrod[i].neq
+        self.structure.state = self.state[k:k+self.structure.neq]
         # construct right-hand side vector
         rhs = []
+        for i in range(self.nfuelrods):
+            rhs += self.fuelrod[i].calculate_rhs(reactor, t)
         rhs += self.structure.calculate_rhs(reactor, t)
-        rhs += self.fuelrod.calculate_rhs(reactor, t)
         return rhs

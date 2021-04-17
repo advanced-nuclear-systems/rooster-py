@@ -14,8 +14,8 @@ class FuelRod:
     # array of unknowns of this class
     state = []
 
-    # constructor: self is a 'fuelrod' object created in B1
-    def __init__(self, reactor):
+    # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the array of fuelrods
+    def __init__(self, indx, reactor):
 
         # check if this class is to be solved
         s = reactor.control.input['solve']
@@ -24,19 +24,19 @@ class FuelRod:
             return
 
         # INITIALIZATION
-        # number of fuel pellets specified in input
-        self.nfuelpellets = len(reactor.control.input['pellet'])
+        # number of fuel pellets specified in input for fuel rod indx
+        self.nfuelpellets = len(reactor.control.input['fuelrod'][indx]['pelletid'])
         # create an object for every fuel pellet
         self.fuelpellet = []
         for i in range(self.nfuelpellets):
-            self.fuelpellet.append(FuelPellet(i, reactor))
+            self.fuelpellet.append(FuelPellet(i, indx, reactor))
         self.innergas = InnerGas(reactor)
         self.clad = Clad(reactor)
 
         # initialize state: a vector of unknowns
         self.state = []
         for i in range(self.nfuelpellets):
-            self.state += self.fuelpellet[i].state 
+            self.state += self.fuelpellet[i].state
         self.state += self.innergas.state 
         self.state += self.clad.state
         self.neq = len(self.state)
