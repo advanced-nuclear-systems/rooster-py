@@ -35,8 +35,8 @@ class Fluid:
             return
 
         # INITIALIZATION
-        # vector of pipe names
-        self.pipename = reactor.control.input['pipe']['name']
+        # vector of pipe id's
+        self.pipeid = reactor.control.input['pipe']['id']
         # vector of pipe types
         self.pipetype = reactor.control.input['pipe']['type']
         # number of pipes
@@ -58,16 +58,16 @@ class Fluid:
         self.pipennodes = reactor.control.input['pipe']['nnodes']
         # process coolant names
         for i in range(self.npipe):
-            cool = reactor.control.input['pipe']['cool'][i]
-            # find the coolant name in the vector of coolants
+            cool = reactor.control.input['pipe']['matid'][i]
+            # find the coolant id in the vector of coolants
             try:
-                icool = reactor.control.input['coolant']['name'].index(cool)
+                icool = [x['id'] for x in reactor.control.input['mat']].index(cool)
             except:
-                print('****ERROR: input coolant name ' + cool + ' is not specified in the \'coolant\' card.')
+                print('****ERROR: input coolant id ' + cool + ' is not specified in the \'mat\' card.')
                 sys.exit()
-            type = reactor.control.input['coolant']['type'][icool]
-            p0 = reactor.control.input['coolant']['p0'][icool]
-            temp0 = reactor.control.input['coolant']['temp0'][icool]
+            type = reactor.control.input['mat'][icool]['type']
+            p0 = reactor.control.input['mat'][icool]['p0']
+            temp0 = reactor.control.input['mat'][icool]['temp0']
             # vector of coolant types in pipe
             self.type.append(type)
             # vector of initial pressures in pipe nodes
@@ -91,10 +91,10 @@ class Fluid:
         # construct from and to arrays of tulips
         for j in range(self.njun):
             idf = reactor.control.input['junction']['from'][j]
-            indx = self.pipename.index(idf)
+            indx = self.pipeid.index(idf)
             self.f.append((indx, self.pipennodes[indx]-1))
             idt = reactor.control.input['junction']['to'][j]
-            indx = self.pipename.index(idt)
+            indx = self.pipeid.index(idt)
             self.t.append((indx, 0))
         # add internal junctions
         for i in range(self.npipe):

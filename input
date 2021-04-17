@@ -9,7 +9,7 @@ t0        0.0
 t_dt      100000.   10
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     type      userid
+*****     type      name
 signal    time      TIME
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
@@ -39,7 +39,7 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
 solve     fuelrod
-*solve     fluid
+solve     fluid
 *solve     fuelgrain
 *solve     pointkinetics       RHO_INS
 *
@@ -50,24 +50,30 @@ fgrain    10e-6 &   * dgrain (m)
           1         * frate (1/m3s)
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      type      p0(Pa)    temp0(K)
-coolant   NA        na        1e5       673
+*****     id        type      p0(Pa)    temp0(K)
+mat       NA        na        1e5       673
+*****     id        type      pu(-)     b(MWD/kg) x(-)      por(-)    temp0(K)
+mat       MOX1      mox       0.15      0         0.02      0.05      673
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      type      coolant   dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
-pipe      PLENUM    freelevel NA        0.1       1.0       0         0.22      1
-junction  PLENUM    DOWN      dependent
+*****     id        type      matid     dhyd(m)   elev(m)   len(m)    areaz(m2) nnodes
+pipe      PLN       freelevel NA        0.1       1.0       0         0.22      1
+junction  PLN       DOWN      dependent
 pipe      DOWN      normal    NA        0.01      -1.0      0         1.1       10
 junction  DOWN      UP1       independent
 pipe      UP1       normal    NA        0.01      1.0       0         1.1       10
-junction  UP1       PLENUM    dependent
+junction  UP1       PLN       dependent
 junction  DOWN      UP2       independent
 pipe      UP2       normal    NA        0.01      1.0       0         1.1       10
-junction  UP2       PLENUM    dependent
+junction  UP2       PLN       dependent
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      type      pu(-)     b(MWD/kg) x(-)      por(-)    temp0(K)
-fuel      MOX       mox       0.15      0         0.02      0.05      673
+*****     id        matid     ri(m)     ro(m)     dz(m)     nr
+pellet    P01       MOX1      1e-3      4e-3      0.01      20
+*
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     name      ri(m)     ro(m)     dz(m)     nr
-pellet    MOX       1e-3      4e-3      0.01      20
+*****     id        pelletid  gasid     cladid    pipeid    pipenodeid
+fuelrod   FR01      P01       IG01      C01       UP1       2
+fuelrod   FR01      P01       IG01      C01       UP1       3
+fuelrod   FR01      P01       IG01      C01       UP1       4
+fuelrod   FR01      P01       IG01      C01       UP1       5

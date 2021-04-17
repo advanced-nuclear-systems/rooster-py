@@ -41,12 +41,12 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
-    inp['coolant'] = {'name':[], 'type':[], 'p0':[], 'temp0':[]} # no default
-    inp['fuel'] = {'name':[], 'type':[], 'pu':[], 'b':[], 'x':[], 'por':[], 'temp0':[]} # no default
+#    inp['mat'] = {'id':[], 'type':[], 'p0':[], 'temp0':[], 'pu':[], 'b':[], 'x':[], 'por':[]} # no default
+    inp['mat'] = [] # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
-    inp['pellet'] = {'name':[], 'ri':[], 'ro':[], 'dz':[], 'nr':[]} # no default
-    inp['pipe'] = {'name':[], 'type':[], 'cool':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
+    inp['pellet'] = {'id':[], 'matid':[], 'ri':[], 'ro':[], 'dz':[], 'nr':[]} # no default
+    inp['pipe'] = {'id':[], 'type':[], 'matid':[], 'dhyd':[], 'elev':[], 'len':[], 'areaz':[], 'nnodes':[]} # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
     inp['solve'] = [] # no default
@@ -97,26 +97,29 @@ def construct_input():
         elif key == 'betaeff' :
             inp['betaeff'] = word[1:]
         #--------------------------------------------------------------------------------------
-        # coolant
-        elif key == 'coolant' :
-             inp['coolant']['name'].append(word[1])
-             inp['coolant']['type'].append(word[2])
-             inp['coolant']['p0'].append(word[3])
-             inp['coolant']['temp0'].append(word[4])
+        # material
+        elif key == 'mat' :
+#             if word[2] == 'na':
+#                 inp['mat']['id'].append(word[1])
+#                 inp['mat']['type'].append(word[2])
+#                 inp['mat']['p0'].append(word[3])
+#                 inp['mat']['temp0'].append(word[4])
+#             elif word[2] == 'mox':
+#                 inp['mat']['id'].append(word[1])
+#                 inp['mat']['type'].append(word[2])
+#                 inp['mat']['pu'].append(word[3]) # Pu content (-)
+#                 inp['mat']['b'].append(word[4]) # burnup (MWd/kgU)
+#                 inp['mat']['x'].append(word[5]) # deviation from stoechiometry
+#                 inp['mat']['por'].append(word[6]) # porosity
+#                 inp['mat']['temp0'].append(word[7]) # initial temperature (K)
+             if word[2] == 'na':
+                 inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
+             elif word[2] == 'mox':
+                 inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
         #--------------------------------------------------------------------------------------
         # delayed neutron precursor decay time constants
         elif key == 'dnplmb' :
             inp['dnplmb'] = word[1:]
-        #--------------------------------------------------------------------------------------
-        # fuel
-        elif key == 'fuel' :
-             inp['fuel']['name'].append(word[1])
-             inp['fuel']['type'].append(word[2])
-             inp['fuel']['pu'].append(word[3]) # Pu content (-)
-             inp['fuel']['b'].append(word[4]) # burnup (MWd/kgU)
-             inp['fuel']['x'].append(word[5]) # deviation from stoechiometry
-             inp['fuel']['por'].append(word[6]) # porosity
-             inp['fuel']['temp0'].append(word[7]) # initial temperature (K)
         #--------------------------------------------------------------------------------------
         # fuel grain parameters
         elif key == 'fgrain' :
@@ -142,17 +145,18 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # fuel pellet
         elif key == 'pellet' :
-             inp['pellet']['name'].append(word[1])
-             inp['pellet']['ri'].append(word[2])
-             inp['pellet']['ro'].append(word[3])
-             inp['pellet']['dz'].append(word[4])
-             inp['pellet']['nr'].append(int(word[5]))
+             inp['pellet']['id'].append(word[1])
+             inp['pellet']['matid'].append(word[2])
+             inp['pellet']['ri'].append(word[3])
+             inp['pellet']['ro'].append(word[4])
+             inp['pellet']['dz'].append(word[5])
+             inp['pellet']['nr'].append(int(word[6]))
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
-             inp['pipe']['name'].append(word[1])
+             inp['pipe']['id'].append(word[1])
              inp['pipe']['type'].append(word[2])
-             inp['pipe']['cool'].append(word[3])
+             inp['pipe']['matid'].append(word[3])
              inp['pipe']['dhyd'].append(word[4])
              inp['pipe']['elev'].append(word[5])
              inp['pipe']['len'].append(word[6])

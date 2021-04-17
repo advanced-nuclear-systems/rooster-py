@@ -27,34 +27,34 @@ class FuelPellet:
         self.fuelgrain = FuelGrain(reactor)
 
         # INITIALIZATION
-        # fuel pellet name
-        self.name = reactor.control.input['pellet']['name'][indx]
+        # fuel pellet material id
+        self.matid = reactor.control.input['pellet']['matid'][indx]
         # fuel pellet inner radius
         self.ri = reactor.control.input['pellet']['ri'][indx]
         # fuel pellet outer radius
         self.ro = reactor.control.input['pellet']['ro'][indx]
         # number of fuel pellet radial nodes
         self.nr = reactor.control.input['pellet']['nr'][indx]
-        # process fuel name
-        fuelname = reactor.control.input['pellet']['name'][indx]
-        # find the fuel name in the vector of fuels
+        # process material id
+        matid = reactor.control.input['pellet']['matid'][indx]
+        # find the material id in the vector of fuels
         try:
-            ifuel = reactor.control.input['fuel']['name'].index(fuelname)
+            ifuel = [x['id'] for x in reactor.control.input['mat']].index(matid)
         except:
-            print('****ERROR: input fuel name ' + fuelname + ' is not specified in the \'fuel\' card.')
+            print('****ERROR: input material id ' + matid + ' in pellet is not specified in the \'mat\' card.')
             sys.exit()
         # fuel type of fuel pellet
-        self.type = reactor.control.input['fuel']['type'][ifuel]
+        self.type = reactor.control.input['mat'][ifuel]['type']
         # vector of Pu content in fuel pellet radial nodes
-        self.pu = [[reactor.control.input['fuel']['pu'][ifuel]][indx]]*self.nr
+        self.pu = [[reactor.control.input['mat'][ifuel]['pu']][indx]]*self.nr
         # vector of fuel burnup in fuel pellet radial nodes
-        self.b = [[reactor.control.input['fuel']['b'][ifuel]][indx]]*self.nr
+        self.b = [[reactor.control.input['mat'][ifuel]['b']][indx]]*self.nr
         # vector of deviation from stoechiometry in fuel pellet radial nodes
-        self.x = [[reactor.control.input['fuel']['x'][ifuel]][indx]]*self.nr
+        self.x = [[reactor.control.input['mat'][ifuel]['x']][indx]]*self.nr
         # vector of porosity in fuel pellet radial nodes
-        self.por = [[reactor.control.input['fuel']['por'][ifuel]][indx]]*self.nr
+        self.por = [[reactor.control.input['mat'][ifuel]['por']][indx]]*self.nr
         # vector of initial temperatures in fuel pellet radial nodes
-        self.temp = [[reactor.control.input['fuel']['temp0'][ifuel]][indx]]*self.nr
+        self.temp = [[reactor.control.input['mat'][ifuel]['temp0']][indx]]*self.nr
 
         # GEOMETRY
         # height of fuel pellet

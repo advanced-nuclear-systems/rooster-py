@@ -25,7 +25,7 @@ class FuelRod:
 
         # INITIALIZATION
         # number of fuel pellets specified in input
-        self.nfuelpellets = len(reactor.control.input['pellet']['name'])
+        self.nfuelpellets = len(reactor.control.input['pellet']['id'])
         # create an object for every fuel pellet
         self.fuelpellet = []
         for i in range(self.nfuelpellets):
