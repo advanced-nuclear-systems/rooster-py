@@ -44,7 +44,6 @@ class FuelRod:
         self.state = []
         for i in range(self.nfuelpellets):
             self.state += self.fuelpellet[i].state
-        self.state += self.innergas.state 
         for i in range(self.ncladzlayer):
             self.state += self.clad[i].state
         self.neq = len(self.state)

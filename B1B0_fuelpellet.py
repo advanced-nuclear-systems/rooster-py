@@ -63,7 +63,7 @@ class FuelPellet:
             sys.exit()
         # dictionary of material properties of the current fuel pellet
         mat = reactor.control.input['mat'][ifuel]
-        # fuel type of fuel pellet
+        # material type of fuel pellet
         self.type = mat['type']
         # list of Pu content in fuel pellet radial nodes
         self.pu = [mat['pu']]*self.nr
