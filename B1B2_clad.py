@@ -1,3 +1,5 @@
+import sys
+
 #--------------------------------------------------------------------------------------------------
 class Clad:
 
@@ -33,13 +35,18 @@ class Clad:
 
         # clad material id
         self.matid = list[i]['matid']
-        print(self.matid)
+        # find the clad material id in the list of materials
+        try:
+            ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
+        except:
+            print('****ERROR: clad material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
+            sys.exit()
 
-        # initialize state: a vector of unknowns
+        # initialize state: a list of unknowns
         self.state = []
         self.neq = len(self.state)
 
-    # create right-hand side vector: self is a 'clad' object created in B1B
+    # create right-hand side list: self is a 'clad' object created in B1B
     def calculate_rhs(self, reactor, t):
         rhs = []
         return rhs

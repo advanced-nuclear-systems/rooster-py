@@ -24,7 +24,7 @@ class PointKinetics:
         self.state = [self.power] + self.cdnp
         self.neq = len(self.state)
 
-    # create right-hand side vector: self is a 'pointkinetics' object created in B3
+    # create right-hand side list: self is a 'pointkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
 
         if not self.calculate:

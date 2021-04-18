@@ -19,7 +19,7 @@ class Solid:
         # create structure object
         self.structure = Structure(reactor)
 
-        # initialize state: a vector of unknowns
+        # initialize state: a list of unknowns
         self.state = []
         for i in range(self.nfuelrods):
             self.state += self.fuelrod[i].state 
@@ -27,15 +27,15 @@ class Solid:
         self.neq = len(self.state)
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side vector: self is a 'solid' object created in B
+    # create right-hand side list: self is a 'solid' object created in B
     def calculate_rhs(self, reactor, t):
-        # split vector of unknowns
+        # split list of unknowns
         k = 0
         for i in range(self.nfuelrods):
             self.fuelrod[i].state = self.state[k:k+self.fuelrod[i].neq]
             k += self.fuelrod[i].neq
         self.structure.state = self.state[k:k+self.structure.neq]
-        # construct right-hand side vector
+        # construct right-hand side list
         rhs = []
         for i in range(self.nfuelrods):
             rhs += self.fuelrod[i].calculate_rhs(reactor, t)

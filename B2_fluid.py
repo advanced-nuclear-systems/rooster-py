@@ -35,31 +35,31 @@ class Fluid:
             return
 
         # INITIALIZATION
-        # vector of pipe id's
+        # list of pipe id's
         self.pipeid = [x['id'] for x in reactor.control.input['pipe']]
-        # vector of pipe types
+        # list of pipe types
         self.pipetype = [x['type'] for x in reactor.control.input['pipe']]
         # number of pipes
         self.npipe = len(self.pipetype)
         # number of freelevel pipes
         self.npipef = self.pipetype.count('freelevel')
-        # vector of pipe hydraulic diameters
+        # list of pipe hydraulic diameters
         self.dhyd = [x['dhyd'] for x in reactor.control.input['pipe']]
-        # vector of pipe elevations
+        # list of pipe elevations
         self.elev = [x['elev'] for x in reactor.control.input['pipe']]
-        # vector of pipe length
+        # list of pipe length
         self.len = [x['len'] for x in reactor.control.input['pipe']]
         for i in range(self.npipe):
             if self.len[i] == 0:
                 self.len[i] = abs(self.elev[i])
-        # vector of pipe flow area
+        # list of pipe flow area
         self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
-        # vector of numbers of pipe nodes
+        # list of numbers of pipe nodes
         self.pipennodes = [x['nnodes'] for x in reactor.control.input['pipe']]
         # process coolant names
         for i in range(self.npipe):
             cool = reactor.control.input['pipe'][i]['matid']
-            # find the coolant id in the vector of coolants
+            # find the coolant id in the list of coolants
             try:
                 icool = [x['id'] for x in reactor.control.input['mat']].index(cool)
             except:
@@ -68,18 +68,18 @@ class Fluid:
             type = reactor.control.input['mat'][icool]['type']
             p0 = reactor.control.input['mat'][icool]['p0']
             temp0 = reactor.control.input['mat'][icool]['temp0']
-            # vector of coolant types in pipe
+            # list of coolant types in pipe
             self.type.append(type)
-            # vector of initial pressures in pipe nodes
+            # list of initial pressures in pipe nodes
             self.p.append([p0]*self.pipennodes[i])
-            # vector of initial temperatures in pipe nodes
+            # list of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
         # assign index to every pipe node
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
                 self.indx.append((i,j))
 
-        # vector of junction types
+        # list of junction types
         self.juntype = reactor.control.input['junction']['type']
         # number of junctions
         self.njun = len(self.juntype)
@@ -99,7 +99,7 @@ class Fluid:
         # add internal junctions
         for i in range(self.npipe):
             self.juntype += ['internal']*(self.pipennodes[i] - 1)
-            # append from and to vectors
+            # append from and to lists
             self.f += [(i,j) for j in range(self.pipennodes[i]-1)]
             self.t += [(i,j) for j in range(1,self.pipennodes[i])]
         self.njun = len(self.f)
@@ -142,15 +142,15 @@ class Fluid:
                 B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
         self.invB = linalg.inv(B)
 
-        # initialize vector of flowrate in independent junctions
+        # initialize list of flowrate in independent junctions
         mdoti = [0]*self.njuni
 
-        # initialize state: a vector of unknowns
+        # initialize state: a list of unknowns
         self.state = mdoti
         self.neq = len(self.state)
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side vector: self is a 'fluid' object created in B
+    # create right-hand side list: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
 
         if not self.calculate:
@@ -171,7 +171,7 @@ class Fluid:
                 i += 1
             elif self.juntype[j] == 'dependent':
                 b[j] = 0
-        # then multiply matrix by vector: invA*mdot = b and convert to list
+        # then multiply matrix by list: invA*mdot = b and convert to list
         mdot = self.invA.dot(b).tolist()
         # finally calculate flowrates in internal junctions
         for i in range(self.npipe):

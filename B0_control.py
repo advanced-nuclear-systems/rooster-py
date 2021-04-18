@@ -14,7 +14,7 @@ class Control:
         self.state = []
         self.neq = len(self.state)
 
-    # create right-hand side vector: self is a 'control' object created in B
+    # create right-hand side list: self is a 'control' object created in B
     def calculate_rhs(self, reactor, t):
         rhs = []
         return rhs

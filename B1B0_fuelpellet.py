@@ -55,51 +55,51 @@ class FuelPellet:
 
         # fuel pellet material id
         self.matid = list[i]['matid']
-        # find the material id in the vector of fuels
+        # find the fuel pellet material id in the list of materials
         try:
             ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
         except:
-            print('****ERROR: input material id ' + self.matid + ' in pellet is not specified in the \'mat\' card.')
+            print('****ERROR: fuel pellet material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
             sys.exit()
         # dictionary of material properties of the current fuel pellet
         mat = reactor.control.input['mat'][ifuel]
         # fuel type of fuel pellet
         self.type = mat['type']
-        # vector of Pu content in fuel pellet radial nodes
+        # list of Pu content in fuel pellet radial nodes
         self.pu = [mat['pu']]*self.nr
-        # vector of fuel burnup in fuel pellet radial nodes
+        # list of fuel burnup in fuel pellet radial nodes
         self.b = [mat['b']]*self.nr
-        # vector of deviation from stoechiometry in fuel pellet radial nodes
+        # list of deviation from stoechiometry in fuel pellet radial nodes
         self.x = [mat['x']]*self.nr
-        # vector of porosity in fuel pellet radial nodes
+        # list of porosity in fuel pellet radial nodes
         self.por = [mat['por']]*self.nr
-        # vector of initial temperatures in fuel pellet radial nodes
+        # list of initial temperatures in fuel pellet radial nodes
         self.temp = [mat['temp0']]*self.nr
 
         # mesh grid step
         self.dr = (self.ro - self.ri)/(self.nr-1)
-        # vector of node radii (size = nr)
+        # list of node radii (size = nr)
         self.r = [self.ri + i*self.dr for i in range(self.nr)]
-        # vector of node boundary radii (size = nr-1)
+        # list of node boundary radii (size = nr-1)
         self.rb = [self.r[i]+self.dr/2 for i in range(self.nr-1)]
-        # vector of node volume (size = nr)
+        # list of node volume (size = nr)
         self.vol = [(self.rb[0]**2 - self.r[0]**2)*self.dz] + [(self.rb[i]**2 - self.rb[i-1]**2)*self.dz for i in range(1, self.nr-1)] + [(self.r[self.nr-1]**2 - self.rb[self.nr-2]**2)*self.dz]
 
-        # initialize state: a vector of unknowns
+        # initialize state: a list of unknowns
         self.state = self.fuelgrain.state + self.temp
         self.neq = len(self.state)
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side vector: self is a 'fuelpellet' object created in B1B
+    # create right-hand side list: self is a 'fuelpellet' object created in B1B
     def calculate_rhs(self, reactor, t):
-        # split vector of unknowns
+        # split list of unknowns
         self.fuelgrain.state = self.state[0:self.fuelgrain.neq]
         k = self.fuelgrain.neq
         for j in range(self.nr):
             self.temp[j] = self.state[k]
             k += 1
 
-        # construct right-hand side vector
+        # construct right-hand side list
         rhs = self.fuelgrain.calculate_rhs(reactor, t)
 
         # FUEL PROPERTIES:
@@ -121,7 +121,7 @@ class FuelPellet:
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
         # thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # vector of heat balance (W) at node boundaries: 2*rb*dz * kb * dT/dr (size = nr-1)
+        # list of heat balance (W) at node boundaries: 2*rb*dz * kb * dT/dr (size = nr-1)
         Q = [2*self.rb[i]*self.dz*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
         dTdt = [-Q[0]/(self.prop['rho'][0]*self.prop['cp'][0]*self.vol[0])] + [(Q[i-1] - Q[i])/(self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i]) for i in range(1, self.nr-1)] + [Q[self.nr-2]/(self.prop['rho'][self.nr-1]*self.prop['cp'][self.nr-1]*self.vol[self.nr-1])]
         dTdt = [dTdt[i] + 1e2 for i in range(self.nr)]

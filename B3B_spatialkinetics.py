@@ -7,7 +7,7 @@ class SpatialKinetics:
         self.state = []
         self.neq = len(self.state)
 
-    # create right-hand side vector: self is a 'spatialkinetics' object created in B3
+    # create right-hand side list: self is a 'spatialkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
         rhs = []
         return rhs

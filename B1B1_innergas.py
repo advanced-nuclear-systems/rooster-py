@@ -6,6 +6,6 @@ class InnerGas:
 
         # create objects
 
-        # initialize state: a vector of unknowns
+        # initialize state: a list of unknowns
         self.state = []
         self.neq = len(self.state)
