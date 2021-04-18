@@ -6,44 +6,55 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class FuelPellet:
 
-    # fuel pellet Pu content array
+    # fuel pellet Pu content list
     pu = []
-    # fuel pellet burnup array
+    # fuel pellet burnup list
     b = []
-    # fuel pellet porosity array
+    # fuel pellet porosity list
     por = []
-    # fuel pellet temperature array
+    # fuel pellet temperature list
     temp = []
-    # fuel pellet fuel types array
+    # fuel pellet fuel types list
     type = []
-    # fuel pellet deviation from stoechiometry array
+    # fuel pellet deviation from stoechiometry list
     x = []
 
     #----------------------------------------------------------------------------------------------
-    # constructor: self is a 'fuelpellet' object created in B1B, indx is the axial index of this object in the fuel rod with index indxfuelrod
+    # constructor: self is a 'fuelpellet' object created in B1B, 
+    # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def __init__(self, indx, indxfuelrod, reactor):
 
         # create object for fuel grain (to be fixed)
         self.fuelgrain = FuelGrain(reactor)
 
         # INITIALIZATION
+        # dictionary of the fuel rod to which the fuel pellet belongs
+        dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # current pellet id
-        fuelpelletid = reactor.control.input['fuelrod'][indxfuelrod]['pelletid'][indx]
+        fuelpelletid = dictfuelrod['pelletid'][indx]
+        # id of the pipe cooling the fuel pellet
+        pipeid = dictfuelrod['pipeid'][indx]
+        # list of pipe dictionaries
+        pipelist = reactor.control.input['pipe']
+        # index of the pipe in the list of pipe dictionaries
+        self.indxpipe = [x['id'] for x in pipelist].index(pipeid)
+        # current pellet height
+        self.dz = abs(pipelist[self.indxpipe]['elev']) / pipelist[self.indxpipe]['nnodes']
 
-        # array of fuel pellet dictionaries specified in input
-        array = reactor.control.input['pellet']
-        # index of the current fuel pellet in 
-        i = [x['id'] for x in array].index(fuelpelletid)
+        # list of fuel pellet dictionaries specified in input
+        list = reactor.control.input['pellet']
+        # index of the current fuel pellet in the list of fuel pellet dictionaries
+        i = [x['id'] for x in list].index(fuelpelletid)
 
         # fuel pellet inner radius
-        self.ri = array[i]['ri']
+        self.ri = list[i]['ri']
         # fuel pellet outer radius
-        self.ro = array[i]['ro']
+        self.ro = list[i]['ro']
         # number of fuel pellet radial nodes
-        self.nr = array[i]['nr']
+        self.nr = list[i]['nr']
 
         # fuel pellet material id
-        self.matid = array[i]['matid']
+        self.matid = list[i]['matid']
         # find the material id in the vector of fuels
         try:
             ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
@@ -65,9 +76,6 @@ class FuelPellet:
         # vector of initial temperatures in fuel pellet radial nodes
         self.temp = [mat['temp0']]*self.nr
 
-        # GEOMETRY
-        # height of fuel pellet
-        self.dz = reactor.control.input['pellet'][i]['dz']
         # mesh grid step
         self.dr = (self.ro - self.ri)/(self.nr-1)
         # vector of node radii (size = nr)

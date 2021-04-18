@@ -76,8 +76,8 @@ junction  UP2       PLN       dependent
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * FUEL PELLETS
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        matid     ri(m)     ro(m)     dz(m)     nr
-pellet    P01       MOX1      1e-3      4e-3      0.01      20
+*****     id        matid     ri(m)     ro(m)     nr
+pellet    P01       MOX1      1e-3      4e-3      20
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CLADDINGS
@@ -94,7 +94,7 @@ fuelrod   FR01      P01       IG01      C01       1         UP1       3
 fuelrod   FR01      P01       IG01      C01       1         UP1       4
 fuelrod   FR01      P01       IG01      C01       1         UP1       5
 *
-fuelrod   FR02      P01       IG01      C01       1         UP1       2
-fuelrod   FR02      P01       IG01      C01       1         UP1       3
-fuelrod   FR02      P01       IG01      C01       1         UP1       4
-fuelrod   FR02      P01       IG01      C01       1         UP1       5
+fuelrod   FR02      P01       IG01      C01       1         UP2       2
+fuelrod   FR02      P01       IG01      C01       1         UP2       3
+fuelrod   FR02      P01       IG01      C01       1         UP2       4
+fuelrod   FR02      P01       IG01      C01       1         UP2       5

@@ -152,7 +152,7 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # fuel pellet
         elif key == 'pellet' :
-             inp['pellet'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'dz':word[5], 'nr':int(word[6])} )
+             inp['pellet'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :

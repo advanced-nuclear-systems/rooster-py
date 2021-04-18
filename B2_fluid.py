@@ -8,16 +8,16 @@ class Fluid:
 
     # flag defining if this class is included in calculations or not
     calculate = False
-    # array of unknowns of this class
+    # list of unknowns of this class
     state = []
     # number of unknowns/equations of this class   
     neq = 0
 
-    # pipe coolant type array
+    # pipe coolant type list
     type = []
-    # pipe pressure array
+    # pipe pressure list
     p = []
-    # pipe temperature array
+    # pipe temperature list
     temp = []
     # from and to dictionaries
     f = []
@@ -88,7 +88,7 @@ class Fluid:
         # number of dependent junctions
         self.njund = self.juntype.count('dependent')
 
-        # construct from and to arrays of tulips
+        # construct from and to lists of tulips
         for j in range(self.njun):
             idf = reactor.control.input['junction']['from'][j]
             indx = self.pipeid.index(idf)

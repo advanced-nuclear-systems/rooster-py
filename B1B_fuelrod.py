@@ -11,10 +11,10 @@ class FuelRod:
     neq = 0
     # number of fuel pellets
     nfuelpellets = 0
-    # array of unknowns of this class
+    # list of unknowns of this class
     state = []
 
-    # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the array of fuelrods
+    # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the list of fuelrods
     def __init__(self, indx, reactor):
 
         # check if this class is to be solved

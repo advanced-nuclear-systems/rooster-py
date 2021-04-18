@@ -3,7 +3,7 @@ class FuelGrain:
 
     # flag defining if this class is included in calculations or not
     calculate = False
-    # array of unknowns of this class
+    # list of unknowns of this class
     state = []
     # number of unknowns/equations of this class   
     neq = 0
