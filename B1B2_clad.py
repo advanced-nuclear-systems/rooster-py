@@ -3,6 +3,7 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class Clad:
 
+    #----------------------------------------------------------------------------------------------
     # constructor: self is a 'clad' object created in B1B,
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def __init__(self, indx, indxfuelrod, reactor):
@@ -52,8 +53,10 @@ class Clad:
         self.state = self.temp
         self.neq = len(self.state)
 
+    #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'clad' object created in B1B
-    def calculate_rhs(self, reactor, t):
+    # indx is the axial index of this object in the fuel rod with index indxfuelrod
+    def calculate_rhs(self, indx, indxfuelrod, reactor, t):
         # split list of unknowns
         k = 0
         for j in range(self.nr):
@@ -71,6 +74,16 @@ class Clad:
                 self.prop['cp'].append((6.181 + 1.788e-3*t)*10.165*4.184)
                 # thermal conductivity (W/m-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.104.
                 self.prop['k'].append(9.248 + 1.571e-2*t)
-        #print(self.prop)
+
+        # TIME DERIVATIVE OF CLAD TEMPERATURE:
+        # fuel surface temperature
+        # thermal conductivity between nodes
+        kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
+        # list of heat balance (W) at node boundaries: 2*rb*dz * kb * dT/dr (size = nr-1)
+        #Q = [2*self.rb[i]*self.dz*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        #dTdt = [-Q[0]/(self.prop['rho'][0]*self.prop['cp'][0]*self.vol[0])] + [(Q[i-1] - Q[i])/(self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i]) for i in range(1, self.nr-1)] + [Q[self.nr-2]/(self.prop['rho'][self.nr-1]*self.prop['cp'][self.nr-1]*self.vol[self.nr-1])]
+        #dTdt = [dTdt[i] + 1e2 for i in range(self.nr)]
+        #dTdt[self.nr-1] = 0
+
         rhs = [0]*self.neq
         return rhs

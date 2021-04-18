@@ -91,7 +91,8 @@ class FuelPellet:
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuelpellet' object created in B1B
-    def calculate_rhs(self, reactor, t):
+    # indx is the axial index of this object in the fuel rod with index indxfuelrod
+    def calculate_rhs(self, indx, indxfuelrod, reactor, t):
         # split list of unknowns
         self.fuelgrain.state = self.state[0:self.fuelgrain.neq]
         k = self.fuelgrain.neq

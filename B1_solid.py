@@ -35,9 +35,10 @@ class Solid:
             self.fuelrod[i].state = self.state[k:k+self.fuelrod[i].neq]
             k += self.fuelrod[i].neq
         self.structure.state = self.state[k:k+self.structure.neq]
+
         # construct right-hand side list
         rhs = []
         for i in range(self.nfuelrods):
-            rhs += self.fuelrod[i].calculate_rhs(reactor, t)
+            rhs += self.fuelrod[i].calculate_rhs(i, reactor, t)
         rhs += self.structure.calculate_rhs(reactor, t)
         return rhs

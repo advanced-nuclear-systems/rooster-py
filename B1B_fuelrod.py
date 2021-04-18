@@ -48,8 +48,9 @@ class FuelRod:
             self.state += self.clad[i].state
         self.neq = len(self.state)
 
-    # create right-hand side list: self is a 'fuelrod' object created in B1
-    def calculate_rhs(self, reactor, t):
+    # create right-hand side list: self is a 'fuelrod' object created in B1,
+    # indx is the fuel rod index
+    def calculate_rhs(self, indx, reactor, t):
 
         if not self.calculate:
             rhs = []
@@ -63,10 +64,11 @@ class FuelRod:
         for i in range(self.ncladzlayer):
             self.clad[i].state = self.state[k:k+self.clad[i].neq]
             k += self.clad[i].neq
+
         # construct right-hand side list
         rhs = []
         for i in range(self.nfuelpellets):
-            rhs += self.fuelpellet[i].calculate_rhs(reactor, t)
+            rhs += self.fuelpellet[i].calculate_rhs(i, indx, reactor, t)
         for i in range(self.ncladzlayer):
-            rhs += self.clad[i].calculate_rhs(reactor, t)
+            rhs += self.clad[i].calculate_rhs(i, indx, reactor, t)
         return rhs
