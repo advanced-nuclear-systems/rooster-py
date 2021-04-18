@@ -6,17 +6,17 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class FuelPellet:
 
-    # fuel pellet Pu content list
-    pu = []
-    # fuel pellet burnup list
+    # burnup list
     b = []
-    # fuel pellet porosity list
+    # porosity list
     por = []
-    # fuel pellet temperature list
+    # Pu content list
+    pu = []
+    # temperature list
     temp = []
-    # fuel pellet fuel types list
+    # fuel types list
     type = []
-    # fuel pellet deviation from stoechiometry list
+    # deviation from stoechiometry list
     x = []
 
     #----------------------------------------------------------------------------------------------

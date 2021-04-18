@@ -30,15 +30,23 @@ class FuelRod:
         self.fuelpellet = []
         for i in range(self.nfuelpellets):
             self.fuelpellet.append(FuelPellet(i, indx, reactor))
+
         self.innergas = InnerGas(reactor)
-        self.clad = Clad(reactor)
+
+        # number of clad axial layers specified in input for fuel rod indx
+        self.ncladzlayer = len(reactor.control.input['fuelrod'][indx]['cladid'])
+        # create an object for every cald axial layer
+        self.clad = []
+        for i in range(self.ncladzlayer):
+            self.clad.append(Clad(i, indx, reactor))
 
         # initialize state: a vector of unknowns
         self.state = []
         for i in range(self.nfuelpellets):
             self.state += self.fuelpellet[i].state
         self.state += self.innergas.state 
-        self.state += self.clad.state
+        for i in range(self.ncladzlayer):
+            self.state += self.clad[i].state
         self.neq = len(self.state)
 
     # create right-hand side vector: self is a 'fuelrod' object created in B1
@@ -53,9 +61,13 @@ class FuelRod:
         for i in range(self.nfuelpellets):
             self.fuelpellet[i].state = self.state[k:k+self.fuelpellet[i].neq]
             k += self.fuelpellet[i].neq
-        self.clad.state = self.state[k:k+self.clad.neq]
+        for i in range(self.ncladzlayer):
+            self.clad[i].state = self.state[k:k+self.clad[i].neq]
+            k += self.clad[i].neq
         # construct right-hand side vector
         rhs = []
         for i in range(self.nfuelpellets):
             rhs += self.fuelpellet[i].calculate_rhs(reactor, t)
+        for i in range(self.ncladzlayer):
+            rhs += self.clad[i].calculate_rhs(reactor, t)
         return rhs
