@@ -120,8 +120,11 @@ class Reactor:
         if 'fuelrod' in self.solve:
             for i in range(self.solid.nfuelrods):
                 for j in range(self.solid.fuelrod[i].nfuelpellets):
-                    fid.append(open(path4results + os.sep + 'fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
+                    fid.append(open(path4results + os.sep + 'temp-fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
                     fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+        if 'fluid' in self.solve:
+            fid.append(open(path4results + os.sep + 'mdot.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
 
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
@@ -132,12 +135,18 @@ class Reactor:
 
                 print('time: {0:12.5e}'.format(time))
 
+                # print output
                 indx = 0
                 if 'fuelrod' in self.solve:
                     for i in range(self.solid.nfuelrods):
+                        # fuel and clad temperatures
                         for j in range(self.solid.fuelrod[i].nfuelpellets):
                             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuelpellet[j].temp[k]) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
                             indx += 1
+                if 'fluid' in self.solve:
+                    # flowrate in dependent and independent junctions (no internal junctions)
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.mdot[i]) for i in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
+                    indx += 1
 
         # close all output files
         for f in fid:

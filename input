@@ -41,7 +41,7 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
 solve     fuelrod
-*solve     fluid
+solve     fluid
 *solve     fuelgrain
 *solve     pointkinetics       RHO_INS
 *
