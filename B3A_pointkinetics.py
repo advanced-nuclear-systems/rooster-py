@@ -7,11 +7,6 @@ class PointKinetics:
     # constructor: self is a 'pointkinetics' object created in B3
     def __init__(self, reactor):
 
-        s = reactor.control.input['solve']
-        self.calculate = any(['pointkinetics' in s[i][0] for i in range(len(s))])
-        if not self.calculate:
-            return
-
         self.power = 1
         self.ndnp = len(reactor.control.input['betaeff'])
         self.cdnp = [0] * self.ndnp
@@ -20,10 +15,6 @@ class PointKinetics:
 
     # create right-hand side list: self is a 'pointkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
-
-        if not self.calculate:
-            rhs = []
-            return rhs
 
         # read input parameters
         rho = reactor.control.signal['RHO_INS']

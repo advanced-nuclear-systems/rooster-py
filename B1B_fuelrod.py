@@ -5,21 +5,11 @@ from B1B2_clad import Clad
 #--------------------------------------------------------------------------------------------------
 class FuelRod:
 
-    # flag defining if this class is included in calculations or not
-    calculate = False
-    # number of unknowns/equations of this class   
-    neq = 0
     # number of fuel pellets
     nfuelpellets = 0
 
     # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the list of fuelrods
     def __init__(self, indx, reactor):
-
-        # check if this class is to be solved
-        s = reactor.control.input['solve']
-        self.calculate = any(['fuelrod' in s[i][0] for i in range(len(s))])
-        if not self.calculate:
-            return
 
         # INITIALIZATION
         # number of fuel pellets specified in input for fuel rod indx
@@ -41,10 +31,6 @@ class FuelRod:
     # create right-hand side list: self is a 'fuelrod' object created in B1,
     # indx is the fuel rod index
     def calculate_rhs(self, indx, reactor, t):
-
-        if not self.calculate:
-            rhs = []
-            return rhs
 
         # construct right-hand side list
         rhs = []

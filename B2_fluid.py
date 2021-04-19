@@ -25,10 +25,7 @@ class Fluid:
     # constructor: self is a 'fluid' object created in B
     def __init__(self, reactor):
 
-        # check if this class is to be solved
-        s = reactor.control.input['solve']
-        self.calculate = any(['fluid' in s[i][0] for i in range(len(s))])
-        if not self.calculate:
+        if 'fluid' not in reactor.solve:
             return
 
         # INITIALIZATION
@@ -146,7 +143,7 @@ class Fluid:
     # create right-hand side list: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
 
-        if not self.calculate:
+        if 'fluid' not in reactor.solve:
             rhs = []
             return rhs
 

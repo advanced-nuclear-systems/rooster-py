@@ -153,12 +153,12 @@ def construct_input():
              inp['pipe'].append( {'id':word[1], 'type':word[2], 'matid':word[3], 'dhyd':word[4], 'elev':word[5], 'len':word[6], 'areaz':word[7], 'nnodes':int(word[8])} )
         #--------------------------------------------------------------------------------------
         # 
-        elif key == 'solve' :
-            inp['solve'].append(word[1:])
+        elif key == 'solve':
+            inp['solve'].append(word[1])
             # verify that solve card has correct value
             correct_values = {'fluid','fuelgrain','fuelrod','pointkinetics'}
-            values = set([word[1]])
-            diff = values.difference(correct_values)
+            value = set([word[1]])
+            diff = value.difference(correct_values)
             if diff != set():
                 print('****ERROR: solve card contains wrong value: ', list(diff)[0], '\nCorrect values are: ')
                 sorted = list(correct_values)

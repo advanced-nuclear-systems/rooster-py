@@ -27,49 +27,66 @@ class Reactor:
 
     # constructor: self is a 'reactor' object created in A
     def __init__(self):
-        # create objects
+
+        # create control object
         self.control = Control(self)
+
+        # list of objects to be solved
+        self.solve = self.control.input['solve']
+        
+        # create objects
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.neutron = Neutron(self)
 
         # write list of unknowns to y0
         y0 = []
-        for i in range(self.solid.nfuelrods):
-            for j in range(self.solid.fuelrod[i].nfuelpellets):
-                for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
-                    # fuel temperature
-                    y0.append(self.solid.fuelrod[i].fuelpellet[j].temp[k])
-                for k in range(self.solid.fuelrod[i].clad[j].nr):
-                    # clad temperature
-                    y0.append(self.solid.fuelrod[i].clad[j].temp[k])
-        #for i in range(self.fluid.njuni):
-        #    # flowrate in independent junctions
-        #    y0.append(self.fluid.mdoti[i])
-        #y0.append(self.neutron.pointkinetics.power)
-        #for i in range(self.neutron.pointkinetics.ndnp):
-        #    y0.append(self.neutron.pointkinetics.cdnp[i])
+        if 'fuelrod' in self.solve:
+            for i in range(self.solid.nfuelrods):
+                for j in range(self.solid.fuelrod[i].nfuelpellets):
+                    for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
+                        # fuel temperature
+                        y0.append(self.solid.fuelrod[i].fuelpellet[j].temp[k])
+                    for k in range(self.solid.fuelrod[i].clad[j].nr):
+                        # clad temperature
+                        y0.append(self.solid.fuelrod[i].clad[j].temp[k])
+        if 'fluid' in self.solve:
+            for i in range(self.fluid.njuni):
+                # flowrate in independent junctions
+                y0.append(self.fluid.mdoti[i])
+        if 'pointkinetics' in self.solve:
+            y0.append(self.neutron.pointkinetics.power)
+            for i in range(self.neutron.pointkinetics.ndnp):
+                y0.append(self.neutron.pointkinetics.cdnp[i])
 
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
         def construct_rhs(t, y):
             # read list of unknowns from y
             indx = 0
-            for i in range(self.solid.nfuelrods):
-                for j in range(self.solid.fuelrod[i].nfuelpellets):
-                    for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
-                        # fuel temperature
-                        self.solid.fuelrod[i].fuelpellet[j].temp[k] = y[indx]
-                        indx += 1
-                for j in range(self.solid.fuelrod[i].nfuelpellets):
-                    for k in range(self.solid.fuelrod[i].clad[j].nr):
-                        # clad temperature
-                        self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
-                        indx += 1
-            for i in range(self.fluid.njuni):
-                # flowrate in independent junctions
-                self.fluid.mdoti[i] = y[indx]
+            if 'fuelrod' in self.solve:
+                for i in range(self.solid.nfuelrods):
+                    for j in range(self.solid.fuelrod[i].nfuelpellets):
+                        for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
+                            # fuel temperature
+                            self.solid.fuelrod[i].fuelpellet[j].temp[k] = y[indx]
+                            indx += 1
+                    for j in range(self.solid.fuelrod[i].nfuelpellets):
+                        for k in range(self.solid.fuelrod[i].clad[j].nr):
+                            # clad temperature
+                            self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
+                            indx += 1
+            if 'fluid' in self.solve:
+                for i in range(self.fluid.njuni):
+                    # flowrate in independent junctions
+                    self.fluid.mdoti[i] = y[indx]
+                    indx += 1
+            if 'pointkinetics' in self.solve:
+                self.neutron.pointkinetics.power = y[indx]
                 indx += 1
+                for i in range(self.neutron.pointkinetics.ndnp):
+                    y0.append(self.neutron.pointkinetics.cdnp[i])
+                    indx += 1
 
             self.control.evaluate(self, t)
             rhs = []
@@ -90,7 +107,7 @@ class Reactor:
             while solver.successful() and solver.t < tend:
                 time = solver.t + dtout
                 y = solver.integrate(time)
-                print('time: {0:12.5e}'.format(time))
+                #print('time: {0:12.5e}'.format(time))
                 # write time and all unknowns to output file
                 f.write('{0:12.5e} '.format(time))
                 for i in range(len(y)):
