@@ -22,6 +22,9 @@ from B3_neutron import Neutron
 # SciPy requires installation : python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.integrate import ode
 
+import datetime
+import os
+
 #--------------------------------------------------------------------------------------------------
 class Reactor:
 
@@ -95,12 +98,21 @@ class Reactor:
             rhs += self.neutron.calculate_rhs(self, t)
             return rhs
 
+        # prepare an output folder
+        path4results = 'output'
+        if os.path.isfile(path4results): os.remove(path4results)
+        if not os.path.isdir(path4results): os.mkdir(path4results)
+        path4results += os.sep + str(datetime.datetime.now())[0:21].replace(' ','-').replace(':','-').replace('.','-')
+        if os.path.isfile(path4results): os.remove(path4results)
+        if not os.path.isdir(path4results): os.mkdir(path4results)
+        print(path4results)
+
         # solve the whole system of ODEs
         solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
         t0 = self.control.input['t0']
         solver.set_initial_value(y0, t0)
         solver.set_integrator
-        f = open('output', 'w')
+        f = open(path4results + os.sep + 'output.dat', 'w')
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
             dtout = t_dt[1]
@@ -113,4 +125,4 @@ class Reactor:
                 for i in range(len(y)):
                     f.write('{0:12.5e} '.format(y[i]))
                 f.write('\n')
-        f.close()
+        #f.close()
