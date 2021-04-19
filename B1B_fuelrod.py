@@ -21,11 +21,9 @@ class FuelRod:
 
         self.innergas = InnerGas(reactor)
 
-        # number of clad axial layers specified in input for fuel rod indx
-        self.ncladzlayer = len(reactor.control.input['fuelrod'][indx]['cladid'])
         # create an object for every cald axial layer
         self.clad = []
-        for i in range(self.ncladzlayer):
+        for i in range(self.nz):
             self.clad.append(Clad(i, indx, reactor))
 
     # create right-hand side list: self is a 'fuelrod' object created in B1,
@@ -36,6 +34,5 @@ class FuelRod:
         rhs = []
         for i in range(self.nz):
             rhs += self.fuel[i].calculate_rhs(i, indx, reactor, t)
-        for i in range(self.ncladzlayer):
             rhs += self.clad[i].calculate_rhs(i, indx, reactor, t)
         return rhs

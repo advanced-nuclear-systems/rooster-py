@@ -75,7 +75,6 @@ class Reactor:
                             # fuel temperature
                             self.solid.fuelrod[i].fuel[j].temp[k] = y[indx]
                             indx += 1
-                    for j in range(self.solid.fuelrod[i].nz):
                         for k in range(self.solid.fuelrod[i].clad[j].nr):
                             # clad temperature
                             self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
@@ -89,7 +88,7 @@ class Reactor:
                 self.neutron.pointkinetics.power = y[indx]
                 indx += 1
                 for i in range(self.neutron.pointkinetics.ndnp):
-                    y0.append(self.neutron.pointkinetics.cdnp[i])
+                    self.neutron.pointkinetics.cdnp[i] = y[indx]
                     indx += 1
 
             self.control.evaluate(self, t)
@@ -123,8 +122,13 @@ class Reactor:
                     fid.append(open(path4results + os.sep + 'temp-fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
                     fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
         if 'fluid' in self.solve:
-            fid.append(open(path4results + os.sep + 'mdot.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'mdot-fluid.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
+        if 'pointkinetics' in self.solve:
+            fid.append(open(path4results + os.sep + 'power-pointkinetics.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
+            fid.append(open(path4results + os.sep + 'cdnp-pointkinetics.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
 
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
@@ -146,6 +150,13 @@ class Reactor:
                 if 'fluid' in self.solve:
                     # flowrate in dependent and independent junctions (no internal junctions)
                     fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.mdot[i]) for i in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
+                    indx += 1
+                if 'pointkinetics' in self.solve:
+                    # point kinetics power
+                    fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(self.neutron.pointkinetics.power) + '\n')
+                    indx += 1
+                    # point kinetics cdnp
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.neutron.pointkinetics.cdnp[i]) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
                     indx += 1
 
         # close all output files
