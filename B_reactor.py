@@ -23,6 +23,7 @@ from B3_neutron import Neutron
 from scipy.integrate import ode
 
 import datetime
+import shutil
 import os
 
 #--------------------------------------------------------------------------------------------------
@@ -105,24 +106,39 @@ class Reactor:
         path4results += os.sep + str(datetime.datetime.now())[0:21].replace(' ','-').replace(':','-').replace('.','-')
         if os.path.isfile(path4results): os.remove(path4results)
         if not os.path.isdir(path4results): os.mkdir(path4results)
-        print(path4results)
 
         # solve the whole system of ODEs
         solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
         t0 = self.control.input['t0']
         solver.set_initial_value(y0, t0)
         solver.set_integrator
-        f = open(path4results + os.sep + 'output.dat', 'w')
+
+        # copy input and open output files
+        shutil.copyfile('input', path4results + os.sep + 'input')
+        # open files for output
+        fid = []
+        if 'fuelrod' in self.solve:
+            for i in range(self.solid.nfuelrods):
+                for j in range(self.solid.fuelrod[i].nfuelpellets):
+                    fid.append(open(path4results + os.sep + 'fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
+                    fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
             dtout = t_dt[1]
             while solver.successful() and solver.t < tend:
                 time = solver.t + dtout
                 y = solver.integrate(time)
-                #print('time: {0:12.5e}'.format(time))
-                # write time and all unknowns to output file
-                f.write('{0:12.5e} '.format(time))
-                for i in range(len(y)):
-                    f.write('{0:12.5e} '.format(y[i]))
-                f.write('\n')
-        #f.close()
+
+                print('time: {0:12.5e}'.format(time))
+
+                indx = 0
+                if 'fuelrod' in self.solve:
+                    for i in range(self.solid.nfuelrods):
+                        for j in range(self.solid.fuelrod[i].nfuelpellets):
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuelpellet[j].temp[k]) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                            indx += 1
+
+        # close all output files
+        for f in fid:
+            f.close()
