@@ -76,10 +76,10 @@ pipe      UP2       normal    NA        0.01      1.0       0         1.1       
 junction  UP2       PLN       dependent
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-* FUEL PELLETS
+* FUEL
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     ri(m)     ro(m)     nr
-pellet    P01       MOX1      1e-3      4e-3      20
+fuel      F01       MOX1      1e-3      4e-3      20
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CLADDINGS
@@ -90,13 +90,13 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * FUEL RODS
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        pelletid  gasid     cladid    mltpl     pipeid    pipenodid
-fuelrod   FR01      P01       IG01      C01       1         UP1       2
-fuelrod   FR01      P01       IG01      C01       1         UP1       3
-fuelrod   FR01      P01       IG01      C01       1         UP1       4
-fuelrod   FR01      P01       IG01      C01       1         UP1       5
+*****     id        fuelid    gasid     cladid    mltpl     pipeid    pipenodid
+fuelrod   FR01      F01       IG01      C01       1         UP1       2
+fuelrod   FR01      F01       IG01      C01       1         UP1       3
+fuelrod   FR01      F01       IG01      C01       1         UP1       4
+fuelrod   FR01      F01       IG01      C01       1         UP1       5
 *
-fuelrod   FR02      P01       IG01      C01       1         UP2       2
-fuelrod   FR02      P01       IG01      C01       1         UP2       3
-fuelrod   FR02      P01       IG01      C01       1         UP2       4
-fuelrod   FR02      P01       IG01      C01       1         UP2       5
+fuelrod   FR02      F01       IG01      C01       1         UP2       2
+fuelrod   FR02      F01       IG01      C01       1         UP2       3
+fuelrod   FR02      F01       IG01      C01       1         UP2       4
+fuelrod   FR02      F01       IG01      C01       1         UP2       5

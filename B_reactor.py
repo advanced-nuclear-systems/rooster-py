@@ -5,7 +5,7 @@
 #         Solid
 #             Structure
 #             FuelRod
-#                FuelPellet
+#                Fuel
 #                   FuelGrain
 #                InnerGas
 #                Clad
@@ -47,10 +47,10 @@ class Reactor:
         y0 = []
         if 'fuelrod' in self.solve:
             for i in range(self.solid.nfuelrods):
-                for j in range(self.solid.fuelrod[i].nfuelpellets):
-                    for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
+                for j in range(self.solid.fuelrod[i].nz):
+                    for k in range(self.solid.fuelrod[i].fuel[j].nr):
                         # fuel temperature
-                        y0.append(self.solid.fuelrod[i].fuelpellet[j].temp[k])
+                        y0.append(self.solid.fuelrod[i].fuel[j].temp[k])
                     for k in range(self.solid.fuelrod[i].clad[j].nr):
                         # clad temperature
                         y0.append(self.solid.fuelrod[i].clad[j].temp[k])
@@ -70,12 +70,12 @@ class Reactor:
             indx = 0
             if 'fuelrod' in self.solve:
                 for i in range(self.solid.nfuelrods):
-                    for j in range(self.solid.fuelrod[i].nfuelpellets):
-                        for k in range(self.solid.fuelrod[i].fuelpellet[j].nr):
+                    for j in range(self.solid.fuelrod[i].nz):
+                        for k in range(self.solid.fuelrod[i].fuel[j].nr):
                             # fuel temperature
-                            self.solid.fuelrod[i].fuelpellet[j].temp[k] = y[indx]
+                            self.solid.fuelrod[i].fuel[j].temp[k] = y[indx]
                             indx += 1
-                    for j in range(self.solid.fuelrod[i].nfuelpellets):
+                    for j in range(self.solid.fuelrod[i].nz):
                         for k in range(self.solid.fuelrod[i].clad[j].nr):
                             # clad temperature
                             self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
@@ -119,9 +119,9 @@ class Reactor:
         fid = []
         if 'fuelrod' in self.solve:
             for i in range(self.solid.nfuelrods):
-                for j in range(self.solid.fuelrod[i].nfuelpellets):
+                for j in range(self.solid.fuelrod[i].nz):
                     fid.append(open(path4results + os.sep + 'temp-fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
-                    fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                    fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
         if 'fluid' in self.solve:
             fid.append(open(path4results + os.sep + 'mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
@@ -140,8 +140,8 @@ class Reactor:
                 if 'fuelrod' in self.solve:
                     for i in range(self.solid.nfuelrods):
                         # fuel and clad temperatures
-                        for j in range(self.solid.fuelrod[i].nfuelpellets):
-                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuelpellet[j].temp[k]) for k in range(self.solid.fuelrod[i].fuelpellet[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                        for j in range(self.solid.fuelrod[i].nz):
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].temp[k]) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
                             indx += 1
                 if 'fluid' in self.solve:
                     # flowrate in dependent and independent junctions (no internal junctions)

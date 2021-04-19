@@ -78,10 +78,10 @@ class Clad:
         # TIME DERIVATIVE OF CLAD TEMPERATURE:
         # clad thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # fuel pellet object
-        fuelpellet = reactor.solid.fuelrod[indxfuelrod].fuelpellet[indx]
+        # fuel object
+        fuel = reactor.solid.fuelrod[indxfuelrod].fuel[indx]
         # heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
-        Q = [(fuelpellet.ro + self.ri) * 1e4 * (fuelpellet.temp[fuelpellet.nr-1] - self.temp[0])]
+        Q = [(fuel.ro + self.ri) * 1e4 * (fuel.temp[fuel.nr-1] - self.temp[0])]
         # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
         Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [0]
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]

@@ -4,7 +4,7 @@ import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
-class FuelPellet:
+class Fuel:
 
     # burnup list
     b = []
@@ -20,7 +20,7 @@ class FuelPellet:
     x = []
 
     #----------------------------------------------------------------------------------------------
-    # constructor: self is a 'fuelpellet' object created in B1B, 
+    # constructor: self is a 'fuel' object created in B1B, 
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def __init__(self, indx, indxfuelrod, reactor):
 
@@ -28,52 +28,52 @@ class FuelPellet:
         self.fuelgrain = FuelGrain(reactor)
 
         # INITIALIZATION
-        # dictionary of the fuel rod to which the fuel pellet belongs
+        # dictionary of the fuel rod to which the fuel belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
-        # current pellet id
-        fuelpelletid = dictfuelrod['pelletid'][indx]
-        # id of the pipe cooling the fuel pellet
+        # current fuel id
+        fuelid = dictfuelrod['fuelid'][indx]
+        # id of the pipe cooling the fuel
         pipeid = dictfuelrod['pipeid'][indx]
         # list of pipe dictionaries
         pipelist = reactor.control.input['pipe']
         # index of the pipe in the list of pipe dictionaries
         self.indxpipe = [x['id'] for x in pipelist].index(pipeid)
-        # current pellet height
+        # current fuel height
         self.dz = abs(pipelist[self.indxpipe]['elev']) / pipelist[self.indxpipe]['nnodes']
 
-        # list of fuel pellet dictionaries specified in input
-        list = reactor.control.input['pellet']
-        # index of the current fuel pellet in the list of fuel pellet dictionaries
-        i = [x['id'] for x in list].index(fuelpelletid)
+        # list of fuel dictionaries specified in input
+        list = reactor.control.input['fuel']
+        # index of the current fuel in the list of fuel dictionaries
+        i = [x['id'] for x in list].index(fuelid)
 
-        # fuel pellet inner radius
+        # fuel inner radius
         self.ri = list[i]['ri']
-        # fuel pellet outer radius
+        # fuel outer radius
         self.ro = list[i]['ro']
-        # number of fuel pellet radial nodes
+        # number of fuel radial nodes
         self.nr = list[i]['nr']
 
-        # fuel pellet material id
+        # fuel material id
         self.matid = list[i]['matid']
-        # find the fuel pellet material id in the list of materials
+        # find the fuel material id in the list of materials
         try:
             ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
         except:
-            print('****ERROR: fuel pellet material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
+            print('****ERROR: fuel material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
             sys.exit()
-        # dictionary of material properties of the current fuel pellet
+        # dictionary of material properties of the current fuel
         mat = reactor.control.input['mat'][ifuel]
-        # material type of fuel pellet
+        # material type of fuel
         self.type = mat['type']
-        # list of Pu content in fuel pellet radial nodes
+        # list of Pu content in fuel radial nodes
         self.pu = [mat['pu']]*self.nr
-        # list of fuel burnup in fuel pellet radial nodes
+        # list of fuel burnup in fuel radial nodes
         self.b = [mat['b']]*self.nr
-        # list of deviation from stoechiometry in fuel pellet radial nodes
+        # list of deviation from stoechiometry in fuel radial nodes
         self.x = [mat['x']]*self.nr
-        # list of porosity in fuel pellet radial nodes
+        # list of porosity in fuel radial nodes
         self.por = [mat['por']]*self.nr
-        # list of initial temperatures in fuel pellet radial nodes
+        # list of initial temperatures in fuel radial nodes
         self.temp = [mat['temp0']]*self.nr
 
         # mesh grid step
@@ -86,7 +86,7 @@ class FuelPellet:
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side list: self is a 'fuelpellet' object created in B1B
+    # create right-hand side list: self is a 'fuel' object created in B1B
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def calculate_rhs(self, indx, indxfuelrod, reactor, t):
 

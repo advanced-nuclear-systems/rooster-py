@@ -34,11 +34,11 @@ def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
     inp['clad'] = [] # no default
+    inp['fuel'] = [] # no default
     inp['fuelrod'] = [] # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
     inp['mat'] = [] # no default
-    inp['pellet'] = [] # no default
     inp['pipe'] = [] # no default
     inp['pnltime'] = '' # no default
     inp['signal'] = [] # no default
@@ -113,14 +113,14 @@ def construct_input():
             if any([id in x['id'] for x in inp['fuelrod']]):
                 for x in inp['fuelrod']:
                     if x['id'] == id:
-                        x['pelletid'].append(word[2])
+                        x['fuelid'].append(word[2])
                         x['gasid'].append(word[3])
                         x['cladid'].append(word[4])
                         x['mltpl'].append(word[5])
                         x['pipeid'].append(word[6])
                         x['pipenodeid'].append(int(word[7]))
             else:
-                inp['fuelrod'].append({'id':id, 'pelletid':[word[2]], 'gasid':[word[3]], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
+                inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'gasid':[word[3]], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction
         elif key == 'junction' :
@@ -144,9 +144,9 @@ def construct_input():
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
         #--------------------------------------------------------------------------------------
-        # fuel pellet
-        elif key == 'pellet' :
-             inp['pellet'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
+        # fuel
+        elif key == 'fuel' :
+             inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
