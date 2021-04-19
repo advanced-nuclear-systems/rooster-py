@@ -8,11 +8,8 @@ class Fluid:
 
     # flag defining if this class is included in calculations or not
     calculate = False
-    # list of unknowns of this class
-    state = []
-    # number of unknowns/equations of this class   
-    neq = 0
-
+    # number of independent junctions
+    njuni = 0
     # pipe coolant type list
     type = []
     # pipe pressure list
@@ -143,11 +140,7 @@ class Fluid:
         self.invB = linalg.inv(B)
 
         # initialize list of flowrate in independent junctions
-        mdoti = [0]*self.njuni
-
-        # initialize state: a list of unknowns
-        self.state = mdoti
-        self.neq = len(self.state)
+        self.mdoti = [0]*self.njuni
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fluid' object created in B
@@ -157,17 +150,13 @@ class Fluid:
             rhs = []
             return rhs
 
-        # VARIABLES:
-        # flowrate in independent junctions
-        mdoti = self.state[0:self.njuni]
-
         # FLOWRATES IN DEPENDENT JUNCTIONS:
         # first construct right hand side of system invA*mdot = b
         i = 0
         b = [0]*(self.njuni+self.njund)
         for j in range(self.njuni+self.njund):
             if self.juntype[j] == 'independent':
-                b[j] = mdoti[i]
+                b[j] = self.mdoti[i]
                 i += 1
             elif self.juntype[j] == 'dependent':
                 b[j] = 0

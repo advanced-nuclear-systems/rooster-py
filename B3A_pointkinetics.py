@@ -3,10 +3,6 @@ class PointKinetics:
 
     # flag defining if this class is included in calculations or not
     calculate = False
-    # list of unknowns of this class
-    state = []
-    # number of unknowns/equations of this class   
-    neq = 0
 
     # constructor: self is a 'pointkinetics' object created in B3
     def __init__(self, reactor):
@@ -21,8 +17,6 @@ class PointKinetics:
         self.cdnp = [0] * self.ndnp
         for i in range(self.ndnp) :
             self.cdnp[i] = reactor.control.input['betaeff'][i]*self.power/(reactor.control.input['dnplmb'][i]*reactor.control.input['tlife'])
-        self.state = [self.power] + self.cdnp
-        self.neq = len(self.state)
 
     # create right-hand side list: self is a 'pointkinetics' object created in B3
     def calculate_rhs(self, reactor, t):
@@ -31,12 +25,7 @@ class PointKinetics:
             rhs = []
             return rhs
 
-        # read variables
-        index_power = 0
-        index_cdnp = index_power + 1
-        self.power = self.state[index_power]
-        self.cdnp = self.state[index_cdnp:index_cdnp+self.ndnp]
-        # rename input parameters
+        # read input parameters
         rho = reactor.control.signal['RHO_INS']
         betaeff = reactor.control.input['betaeff']
         tlife = reactor.control.input['tlife']

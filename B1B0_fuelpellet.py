@@ -82,23 +82,13 @@ class FuelPellet:
         self.r = [self.ri + i*self.dr for i in range(self.nr)]
         # list of node boundary radii (size = nr-1)
         self.rb = [self.r[i]+self.dr/2 for i in range(self.nr-1)]
-        # list of node volume (size = nr)
-        self.vol = [(self.rb[0]**2 - self.r[0]**2)*self.dz] + [(self.rb[i]**2 - self.rb[i-1]**2)*self.dz for i in range(1, self.nr-1)] + [(self.r[self.nr-1]**2 - self.rb[self.nr-2]**2)*self.dz]
-
-        # initialize state: a list of unknowns
-        self.state = self.fuelgrain.state + self.temp
-        self.neq = len(self.state)
+        # list of node volume per unit height (size = nr)
+        self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuelpellet' object created in B1B
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def calculate_rhs(self, indx, indxfuelrod, reactor, t):
-        # split list of unknowns
-        self.fuelgrain.state = self.state[0:self.fuelgrain.neq]
-        k = self.fuelgrain.neq
-        for j in range(self.nr):
-            self.temp[j] = self.state[k]
-            k += 1
 
         # construct right-hand side list
         rhs = self.fuelgrain.calculate_rhs(reactor, t)
@@ -120,13 +110,16 @@ class FuelPellet:
                 self.prop['k'].append((1/( 1.528*math.sqrt(x+0.00931) - 0.1055 + 0.44*b + 2.855e-4*t ) + 76.38e-12*t**3) * (1-por)/(1+por)/0.864)
 
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
-        # thermal conductivity between nodes
+        # fuel thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # list of heat balance (W) at node boundaries: 2*rb*dz * kb * dT/dr (size = nr-1)
-        Q = [2*self.rb[i]*self.dz*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
-        dTdt = [-Q[0]/(self.prop['rho'][0]*self.prop['cp'][0]*self.vol[0])] + [(Q[i-1] - Q[i])/(self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i]) for i in range(1, self.nr-1)] + [Q[self.nr-2]/(self.prop['rho'][self.nr-1]*self.prop['cp'][self.nr-1]*self.vol[self.nr-1])]
-        dTdt = [dTdt[i] + 1e2 for i in range(self.nr)]
-        dTdt[self.nr-1] = 0
+        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
+        Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        # clad object
+        clad = reactor.solid.fuelrod[indxfuelrod].clad[indx]
+        # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
+        Q += [(self.ro + clad.ri) * 1e4 * (self.temp[self.nr-1] - clad.temp[0])]
+        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
+        dTdt = [(Q[i] - Q[i+1] + 1e9*self.vol[i])/rhocpv[i] for i in range(self.nr)]
         rhs += dTdt
 
         return rhs

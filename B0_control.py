@@ -5,19 +5,11 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class Control:
     
-    neq = 0
     signal = {}
 
     # constructor: self is a 'control' object created in B
     def __init__(self, reactor):
         self.input = construct_input()
-        self.state = []
-        self.neq = len(self.state)
-
-    # create right-hand side list: self is a 'control' object created in B
-    def calculate_rhs(self, reactor, t):
-        rhs = []
-        return rhs
 
     def evaluate(self, reactor, t):
         # evaluate signals

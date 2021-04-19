@@ -11,8 +11,6 @@ class FuelRod:
     neq = 0
     # number of fuel pellets
     nfuelpellets = 0
-    # list of unknowns of this class
-    state = []
 
     # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the list of fuelrods
     def __init__(self, indx, reactor):
@@ -40,14 +38,6 @@ class FuelRod:
         for i in range(self.ncladzlayer):
             self.clad.append(Clad(i, indx, reactor))
 
-        # initialize state: a list of unknowns
-        self.state = []
-        for i in range(self.nfuelpellets):
-            self.state += self.fuelpellet[i].state
-        for i in range(self.ncladzlayer):
-            self.state += self.clad[i].state
-        self.neq = len(self.state)
-
     # create right-hand side list: self is a 'fuelrod' object created in B1,
     # indx is the fuel rod index
     def calculate_rhs(self, indx, reactor, t):
@@ -55,15 +45,6 @@ class FuelRod:
         if not self.calculate:
             rhs = []
             return rhs
-
-        # split list of unknowns
-        k = 0
-        for i in range(self.nfuelpellets):
-            self.fuelpellet[i].state = self.state[k:k+self.fuelpellet[i].neq]
-            k += self.fuelpellet[i].neq
-        for i in range(self.ncladzlayer):
-            self.clad[i].state = self.state[k:k+self.clad[i].neq]
-            k += self.clad[i].neq
 
         # construct right-hand side list
         rhs = []

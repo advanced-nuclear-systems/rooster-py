@@ -3,10 +3,6 @@ class FuelGrain:
 
     # flag defining if this class is included in calculations or not
     calculate = False
-    # list of unknowns of this class
-    state = []
-    # number of unknowns/equations of this class   
-    neq = 0
 
     # constructor: self is a 'fuelgrain' object created in B1B0
     def __init__(self, reactor):
@@ -38,9 +34,6 @@ class FuelGrain:
         # INITIALIZATION
         # initialize list of monoatom concentrations
         self.c1 = [0]*self.nr
-        # list of unknowns
-        self.state = self.c1
-        self.neq = len(self.state)
 
     # create right-hand side list: self is a 'fuelgrain' object created in B1B0
     def calculate_rhs(self, reactor, t):
@@ -48,10 +41,6 @@ class FuelGrain:
         if not self.calculate:
             rhs = []
             return rhs
-
-        # READ VARIABLES
-        index_c1 = 0
-        self.c1 = self.state[index_c1:index_c1+self.nr]
 
         # INTRAGRANULAR PROCESSES
         # diffusion constant
