@@ -13,14 +13,6 @@ class Clad:
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # current clad id
         cladid = dictfuelrod['cladid'][indx]
-        # id of the pipe cooling the clad
-        pipeid = dictfuelrod['pipeid'][indx]
-        # list of pipe dictionaries
-        pipelist = reactor.control.input['pipe']
-        # index of the pipe in the list of pipe dictionaries
-        self.indxpipe = [x['id'] for x in pipelist].index(pipeid)
-        # current clad height
-        self.dz = abs(pipelist[self.indxpipe]['elev']) / pipelist[self.indxpipe]['nnodes']
 
         # list of clad dictionaries specified in input
         list = reactor.control.input['clad']
@@ -76,12 +68,17 @@ class Clad:
                 self.prop['k'].append(9.248 + 1.571e-2*t)
 
         # TIME DERIVATIVE OF CLAD TEMPERATURE:
-        # clad thermal conductivity between nodes
-        kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # fuel object
         fuel = reactor.solid.fuelrod[indxfuelrod].fuel[indx]
+        # inner gas object
+        innergas = reactor.solid.fuelrod[indxfuelrod].innergas
+        # gap conductance list
+        hgap = innergas.calculate_hgap(indxfuelrod, reactor, t)
+
+        # clad thermal conductivity between nodes
+        kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
-        Q = [(fuel.ro + self.ri) * 1e4 * (fuel.temp[fuel.nr-1] - self.temp[0])]
+        Q = [(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
         # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
         Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [0]
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]

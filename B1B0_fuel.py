@@ -32,14 +32,6 @@ class Fuel:
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # current fuel id
         fuelid = dictfuelrod['fuelid'][indx]
-        # id of the pipe cooling the fuel
-        pipeid = dictfuelrod['pipeid'][indx]
-        # list of pipe dictionaries
-        pipelist = reactor.control.input['pipe']
-        # index of the pipe in the list of pipe dictionaries
-        self.indxpipe = [x['id'] for x in pipelist].index(pipeid)
-        # current fuel height
-        self.dz = abs(pipelist[self.indxpipe]['elev']) / pipelist[self.indxpipe]['nnodes']
 
         # list of fuel dictionaries specified in input
         list = reactor.control.input['fuel']
@@ -110,16 +102,17 @@ class Fuel:
                 self.prop['k'].append((1/( 1.528*math.sqrt(x+0.00931) - 0.1055 + 0.44*b + 2.855e-4*t ) + 76.38e-12*t**3) * (1-por)/(1+por)/0.864)
 
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
-        # fuel thermal conductivity between nodes
-        kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
-        Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        #print(reactor.control.input['fuelrod'])
         # inner gas object
         innergas = reactor.solid.fuelrod[indxfuelrod].innergas
         # gap conductance list
         hgap = innergas.calculate_hgap(indxfuelrod, reactor, t)
         # clad object
         clad = reactor.solid.fuelrod[indxfuelrod].clad[indx]
+        # fuel thermal conductivity between nodes
+        kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
+        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
+        Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
         Q += [(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]

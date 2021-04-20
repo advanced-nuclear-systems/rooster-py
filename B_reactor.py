@@ -118,8 +118,10 @@ class Reactor:
         fid = []
         if 'fuelrod' in self.solve:
             for i in range(self.solid.nfuelrods):
+                fid.append(open(path4results + os.sep + 'fuelrod-hgap-' + [x['id'] for x in self.control.input['fuelrod']][i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('hgap-' + str(j).zfill(3)).ljust(13) for j in range(self.solid.fuelrod[i].nz)]) + '\n')
                 for j in range(self.solid.fuelrod[i].nz):
-                    fid.append(open(path4results + os.sep + 'temp-fuelrod-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
+                    fid.append(open(path4results + os.sep + 'fuelrod-temp-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
                     fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
         if 'fluid' in self.solve:
             fid.append(open(path4results + os.sep + 'mdot-fluid.dat', 'w'))
@@ -143,6 +145,8 @@ class Reactor:
                 indx = 0
                 if 'fuelrod' in self.solve:
                     for i in range(self.solid.nfuelrods):
+                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].innergas.hgap[j]) for j in range(self.solid.fuelrod[i].nz)]) + '\n')
+                        indx += 1
                         # fuel and clad temperatures
                         for j in range(self.solid.fuelrod[i].nz):
                             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].temp[k]) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
