@@ -35,12 +35,12 @@ class Clad:
         self.nr = list[i]['nr']
 
         # clad material id
-        self.matid = list[i]['matid']
+        matid = list[i]['matid']
         # find the clad material id in the list of materials
         try:
-            iclad = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
+            iclad = [x['id'] for x in reactor.control.input['mat']].index(matid)
         except:
-            print('****ERROR: clad material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
+            print('****ERROR: clad material id ' + matid + ' is not specified in the \'mat\' card of input.')
             sys.exit()
         # dictionary of material properties of the current clad
         mat = reactor.control.input['mat'][iclad]

@@ -36,6 +36,7 @@ def construct_input():
     inp['clad'] = [] # no default
     inp['fuel'] = [] # no default
     inp['fuelrod'] = [] # no default
+    inp['innergas'] = [] # no default
     inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
     inp['lookup'] = [] # no default
     inp['mat'] = [] # no default
@@ -107,6 +108,10 @@ def construct_input():
             # fission rate
             inp['frate'] = int(word[3])
         #--------------------------------------------------------------------------------------
+        # fuel
+        elif key == 'fuel' :
+             inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
+        #--------------------------------------------------------------------------------------
         # fuel rod card
         elif key == 'fuelrod' :
             id = word[1]
@@ -114,13 +119,17 @@ def construct_input():
                 for x in inp['fuelrod']:
                     if x['id'] == id:
                         x['fuelid'].append(word[2])
-                        x['gasid'].append(word[3])
+                        x['hgap'].append(float(word[3]))
                         x['cladid'].append(word[4])
                         x['mltpl'].append(word[5])
                         x['pipeid'].append(word[6])
                         x['pipenodeid'].append(int(word[7]))
             else:
-                inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'gasid':[word[3]], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
+                inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
+        #--------------------------------------------------------------------------------------
+        # inner gas
+        elif key == 'innergas' :
+             inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction
         elif key == 'junction' :
@@ -143,10 +152,6 @@ def construct_input():
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
-        #--------------------------------------------------------------------------------------
-        # fuel
-        elif key == 'fuel' :
-             inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :

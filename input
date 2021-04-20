@@ -60,6 +60,8 @@ mat       NA        na        1e5       673
 mat       MOX1      mox       0.15      0         0.02      0.05      673
 *****     id        type      temp0(K)
 mat       SS1       ss316     673
+*****     id        type      p0(Pa)    temp0(K)
+mat       HE1       he        1e6       673
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * COOLING SYSTEMS
@@ -90,13 +92,21 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * FUEL RODS
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        fuelid    gasid     cladid    mltpl     pipeid    pipenodid
-fuelrod   FR01      F01       IG01      C01       1         UP1       2
-fuelrod   FR01      F01       IG01      C01       1         UP1       3
-fuelrod   FR01      F01       IG01      C01       1         UP1       4
-fuelrod   FR01      F01       IG01      C01       1         UP1       5
+*****     id        fuelid    hgap      cladid    mltpl     pipeid    pipenodid
+fuelrod   FR01      F01       1e4       C01       1         UP1       2
+fuelrod   FR01      F01       1e4       C01       1         UP1       3
+fuelrod   FR01      F01       1e4       C01       1         UP1       4
+fuelrod   FR01      F01       1e4       C01       1         UP1       5
 *
-fuelrod   FR02      F01       IG01      C01       1         UP2       2
-fuelrod   FR02      F01       IG01      C01       1         UP2       3
-fuelrod   FR02      F01       IG01      C01       1         UP2       4
-fuelrod   FR02      F01       IG01      C01       1         UP2       5
+fuelrod   FR02      F01       1e4       C01       1         UP2       2
+fuelrod   FR02      F01       1e4       C01       1         UP2       3
+fuelrod   FR02      F01       1e4       C01       1         UP2       4
+fuelrod   FR02      F01       1e4       C01       1         UP2       5
+*
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+* INNER GAS
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+*****     fuelrodid matid     plenv(m3)
+innergas  FR01      HE1       53e-6
+innergas  FR02      HE1       53e-6
+*

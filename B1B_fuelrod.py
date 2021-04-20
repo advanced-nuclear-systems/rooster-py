@@ -19,7 +19,7 @@ class FuelRod:
         for i in range(self.nz):
             self.fuel.append(Fuel(i, indx, reactor))
 
-        self.innergas = InnerGas(reactor)
+        self.innergas = InnerGas(indx, reactor)
 
         # create an object for every cald axial layer
         self.clad = []

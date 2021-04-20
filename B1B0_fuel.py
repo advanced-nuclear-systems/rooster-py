@@ -54,12 +54,12 @@ class Fuel:
         self.nr = list[i]['nr']
 
         # fuel material id
-        self.matid = list[i]['matid']
+        matid = list[i]['matid']
         # find the fuel material id in the list of materials
         try:
-            ifuel = [x['id'] for x in reactor.control.input['mat']].index(self.matid)
+            ifuel = [x['id'] for x in reactor.control.input['mat']].index(matid)
         except:
-            print('****ERROR: fuel material id ' + self.matid + ' is not specified in the \'mat\' card of input.')
+            print('****ERROR: fuel material id ' + matid + ' is not specified in the \'mat\' card of input.')
             sys.exit()
         # dictionary of material properties of the current fuel
         mat = reactor.control.input['mat'][ifuel]
@@ -114,10 +114,14 @@ class Fuel:
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
         Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        # inner gas object
+        innergas = reactor.solid.fuelrod[indxfuelrod].innergas
+        # gap conductance list
+        hgap = innergas.calculate_hgap(indxfuelrod, reactor, t)
         # clad object
         clad = reactor.solid.fuelrod[indxfuelrod].clad[indx]
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
-        Q += [(self.ro + clad.ri) * 1e4 * (self.temp[self.nr-1] - clad.temp[0])]
+        Q += [(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1] + 1e9*self.vol[i])/rhocpv[i] for i in range(self.nr)]
         rhs += dTdt
