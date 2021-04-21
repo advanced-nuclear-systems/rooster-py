@@ -8,6 +8,7 @@ class FuelRod:
     # number of axial layers
     nz = 0
 
+    #----------------------------------------------------------------------------------------------
     # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the list of fuelrods
     def __init__(self, indx, reactor):
 
@@ -26,6 +27,7 @@ class FuelRod:
         for i in range(self.nz):
             self.clad.append(Clad(i, indx, reactor))
 
+    #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuelrod' object created in B1,
     # indx is the fuel rod index
     def calculate_rhs(self, indx, reactor, t):

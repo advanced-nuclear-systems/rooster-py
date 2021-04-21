@@ -15,7 +15,7 @@ class Fuel:
     # temperature list
     temp = []
     # fuel types list
-    type = []
+    type = ''
     # deviation from stoechiometry list
     x = []
 

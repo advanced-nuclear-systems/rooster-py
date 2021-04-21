@@ -124,12 +124,12 @@ class Reactor:
                     fid.append(open(path4results + os.sep + 'fuelrod-temp-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
                     fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
         if 'fluid' in self.solve:
-            fid.append(open(path4results + os.sep + 'mdot-fluid.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
         if 'pointkinetics' in self.solve:
-            fid.append(open(path4results + os.sep + 'power-pointkinetics.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
-            fid.append(open(path4results + os.sep + 'cdnp-pointkinetics.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
 
         for t_dt in self.control.input['t_dt'] :

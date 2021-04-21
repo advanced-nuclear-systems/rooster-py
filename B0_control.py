@@ -146,10 +146,12 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # material
         elif key == 'mat' :
-             if word[2] == 'na':
+             if word[2] == 'he':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
              elif word[2] == 'mox':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
+             elif word[2] == 'na':
+                 inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
         #--------------------------------------------------------------------------------------
