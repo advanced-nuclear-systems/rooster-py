@@ -3,17 +3,6 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class InnerGas:
 
-    # calculated gap conductance
-    hgap = []
-    # user-specified gap conductance
-    hgap0 = []
-    # gas pressure
-    p = 0
-    # gas temperature
-    temp = []
-    # gas type
-    type = ''
-
     #----------------------------------------------------------------------------------------------
     # constructor: self is a 'innergas' object created in B1B
     # indxfuelrod is the index of the fuel rod this object belongs to

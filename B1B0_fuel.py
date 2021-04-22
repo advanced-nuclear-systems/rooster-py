@@ -6,19 +6,6 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class Fuel:
 
-    # burnup list
-    b = []
-    # porosity list
-    por = []
-    # Pu content list
-    pu = []
-    # temperature list
-    temp = []
-    # fuel types list
-    type = ''
-    # deviation from stoechiometry list
-    x = []
-
     #----------------------------------------------------------------------------------------------
     # constructor: self is a 'fuel' object created in B1B, 
     # indx is the axial index of this object in the fuel rod with index indxfuelrod

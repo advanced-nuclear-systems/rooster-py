@@ -5,9 +5,6 @@ from B1B2_clad import Clad
 #--------------------------------------------------------------------------------------------------
 class FuelRod:
 
-    # number of axial layers
-    nz = 0
-
     #----------------------------------------------------------------------------------------------
     # constructor: self is a 'fuelrod' object created in B1 and indx is the index of this object in the list of fuelrods
     def __init__(self, indx, reactor):
@@ -15,14 +12,15 @@ class FuelRod:
         # INITIALIZATION
         # number of axial layers specified in input for fuel rod indx
         self.nz = len(reactor.control.input['fuelrod'][indx]['fuelid'])
-        # create an object for every fuel z-layer
+        # create an object for every axial layer of fuel
         self.fuel = []
         for i in range(self.nz):
             self.fuel.append(Fuel(i, indx, reactor))
 
+        # create an object for inner gas
         self.innergas = InnerGas(indx, reactor)
 
-        # create an object for every cald axial layer
+        # create an object for every axial layer of clad
         self.clad = []
         for i in range(self.nz):
             self.clad.append(Clad(i, indx, reactor))

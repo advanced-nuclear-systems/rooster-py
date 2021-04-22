@@ -6,22 +6,6 @@ import sys
 #--------------------------------------------------------------------------------------------------
 class Fluid:
 
-    # flag defining if this class is included in calculations or not
-    calculate = False
-    # number of independent junctions
-    njuni = 0
-    # pipe coolant type list
-    type = []
-    # pipe pressure list
-    p = []
-    # pipe temperature list
-    temp = []
-    # from and to dictionaries
-    f = []
-    t = []
-    # pipe node index dictionaries
-    indx = []
-
     # constructor: self is a 'fluid' object created in B
     def __init__(self, reactor):
 
@@ -50,6 +34,11 @@ class Fluid:
         self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
         # list of numbers of pipe nodes
         self.pipennodes = [x['nnodes'] for x in reactor.control.input['pipe']]
+
+        # lists for pressure, temperature and type
+        self.p = []
+        self.temp = []
+        self.type = []
         # process coolant names
         for i in range(self.npipe):
             cool = reactor.control.input['pipe'][i]['matid']
@@ -69,6 +58,7 @@ class Fluid:
             # list of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
         # assign index to every pipe node
+        self.indx = []
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
                 self.indx.append((i,j))
@@ -83,6 +73,8 @@ class Fluid:
         self.njund = self.juntype.count('dependent')
 
         # construct from and to lists of tulips
+        self.f = []
+        self.t = []
         for j in range(self.njun):
             idf = reactor.control.input['junction']['from'][j]
             indx = self.pipeid.index(idf)
