@@ -49,10 +49,25 @@ class Reactor:
             for i in range(self.solid.nfuelrods):
                 for j in range(self.solid.fuelrod[i].nz):
                     for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                        if 'fuelgrain' in self.solve and i == 0 and j == 0 and k == 0:
+                        if 'fuelgrain' in self.solve and i + j + k == 0: #i+j+k==0 is a temporal condition to solve fuel grain only for one node
                             # fuel grain monoatoms
                             for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
                                 y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l])
+                            # fuel grain bubble radii
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ri[l])
+                            # fuel grain fractional concentration of irradiation-induced uranium vacancies
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l])
+                            # fuel grain fractional concentration of irradiation-induced uranium interstitials
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l])
+                            # fuel grain fractional concentration of uranium vacancies ejected from intragranular as-fabricated pores
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l])
+                            # fuel grain intragranular bubble concentation
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l])
                     for k in range(self.solid.fuelrod[i].fuel[j].nr):
                         # fuel temperature
                         y0.append(self.solid.fuelrod[i].fuel[j].temp[k])
@@ -81,6 +96,26 @@ class Reactor:
                                 for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
                                     # fuel grain monoatoms
                                     self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l] = y[indx]
+                                    indx += 1
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                    # fuel grain bubble radii
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].rb[l] = y[indx]
+                                    indx += 1
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                    # fuel grain fractional concentration of irradiation-induced uranium vacancies
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l] = y[indx]
+                                    indx += 1
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                    # fuel grain fractional concentration of irradiation-induced uranium interstitials
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l] = y[indx]
+                                    indx += 1
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                    # fuel grain fractional concentration of uranium vacancies ejected from intragranular as-fabricated pores
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l] = y[indx]
+                                    indx += 1
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
+                                    # fuel grain intragranular bubble concentrations
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l] = y[indx]
                                     indx += 1
                         for k in range(self.solid.fuelrod[i].fuel[j].nr):
                             # fuel temperature
@@ -138,6 +173,16 @@ class Reactor:
                         if 'fuelgrain' in self.solve and i + j + k == 0: 
                             fid.append(open(path4results + os.sep + 'fuelrod-c1-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
                             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('c1-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-ri-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('ri-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-cv_irr-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_irr-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-ci_irr-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('ci_irr-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-cv_p-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_p-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-bi-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('bi-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
         if 'fluid' in self.solve:
             fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
@@ -170,6 +215,16 @@ class Reactor:
                             for k in range(self.solid.fuelrod[i].fuel[j].nr):
                                 if 'fuelgrain' in self.solve and i + j + k == 0: 
                                     fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
+                                    indx += 1
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ri[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                                    indx += 1
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                                    indx += 1
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                                    indx += 1
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                                    indx += 1
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
                                     indx += 1
                 if 'fluid' in self.solve:
                     # flowrate in dependent and independent junctions (no internal junctions)
