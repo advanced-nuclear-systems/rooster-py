@@ -38,7 +38,7 @@ class Reactor:
         # list of objects to be solved
         self.solve = self.control.input['solve']
         
-        # create objects
+        # create other objects
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.neutron = Neutron(self)
@@ -48,6 +48,11 @@ class Reactor:
         if 'fuelrod' in self.solve:
             for i in range(self.solid.nfuelrods):
                 for j in range(self.solid.fuelrod[i].nz):
+                    for k in range(self.solid.fuelrod[i].fuel[j].nr):
+                        if 'fuelgrain' in self.solve and i == 0 and j == 0 and k == 0:
+                            # fuel grain monoatoms
+                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
+                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l])
                     for k in range(self.solid.fuelrod[i].fuel[j].nr):
                         # fuel temperature
                         y0.append(self.solid.fuelrod[i].fuel[j].temp[k])
@@ -71,6 +76,12 @@ class Reactor:
             if 'fuelrod' in self.solve:
                 for i in range(self.solid.nfuelrods):
                     for j in range(self.solid.fuelrod[i].nz):
+                        for k in range(self.solid.fuelrod[i].fuel[j].nr):
+                            if 'fuelgrain' in self.solve and i + j + k == 0:
+                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
+                                    # fuel grain monoatoms
+                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l] = y[indx]
+                                    indx += 1
                         for k in range(self.solid.fuelrod[i].fuel[j].nr):
                             # fuel temperature
                             self.solid.fuelrod[i].fuel[j].temp[k] = y[indx]
@@ -112,7 +123,7 @@ class Reactor:
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 
-        # copy input and open output files
+        # copy input and open output files to output folder
         shutil.copyfile('input', path4results + os.sep + 'input')
         # open files for output
         fid = []
@@ -123,6 +134,10 @@ class Reactor:
                 for j in range(self.solid.fuelrod[i].nz):
                     fid.append(open(path4results + os.sep + 'fuelrod-temp-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
                     fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                    for k in range(self.solid.fuelrod[i].fuel[j].nr):
+                        if 'fuelgrain' in self.solve and i + j + k == 0: 
+                            fid.append(open(path4results + os.sep + 'fuelrod-c1-' + [x['id'] for x in self.control.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('c1-' + str(l).zfill(3)).ljust(13) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
         if 'fluid' in self.solve:
             fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
@@ -132,6 +147,7 @@ class Reactor:
             fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
 
+        # main integration loop
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
             dtout = t_dt[1]
@@ -151,6 +167,10 @@ class Reactor:
                         for j in range(self.solid.fuelrod[i].nz):
                             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].temp[k]) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
                             indx += 1
+                            for k in range(self.solid.fuelrod[i].fuel[j].nr):
+                                if 'fuelgrain' in self.solve and i + j + k == 0: 
+                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
+                                    indx += 1
                 if 'fluid' in self.solve:
                     # flowrate in dependent and independent junctions (no internal junctions)
                     fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.mdot[i]) for i in range(self.fluid.njuni + self.fluid.njund)]) + '\n')

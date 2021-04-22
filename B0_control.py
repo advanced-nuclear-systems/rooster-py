@@ -83,6 +83,10 @@ def construct_input():
         if key == '' :
             pass
         #--------------------------------------------------------------------------------------
+        # effective delayed neutron fractions
+        elif key == 'betaeff' :
+            inp['betaeff'] = word[1:]
+        #--------------------------------------------------------------------------------------
         # cladding
         elif key == 'clad' :
              inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
@@ -90,10 +94,6 @@ def construct_input():
         # constant
         elif key == 'constant' :
              inp[word[1]] = float(word[2])
-        #--------------------------------------------------------------------------------------
-        # effective delayed neutron fractions
-        elif key == 'betaeff' :
-            inp['betaeff'] = word[1:]
         #--------------------------------------------------------------------------------------
         # delayed neutron precursor decay time constants
         elif key == 'dnplmb' :
@@ -201,6 +201,9 @@ def construct_input():
     # verify that there is at least one solve card
     if len(inp['solve']) == 0:
         print('****ERROR: input file should have at least one solve card.')
+        sys.exit()
+    if 'fuelgrain' in inp['solve'] and 'fuelrod' not in inp['solve']:
+        print('****ERROR: \'solve fuelgrain\' card requires \'solve fuelrod\' card.')
         sys.exit()
     
     # verify that lookup tables use existing signals

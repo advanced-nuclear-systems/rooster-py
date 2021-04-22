@@ -1,17 +1,9 @@
 #--------------------------------------------------------------------------------------------------
 class FuelGrain:
 
-    # flag defining if this class is included in calculations or not
-    calculate = False
-
+    #----------------------------------------------------------------------------------------------
     # constructor: self is a 'fuelgrain' object created in B1B0
-    def __init__(self, reactor):
-
-        # check if this class is to be solved
-        s = reactor.control.input['solve']
-        self.calculate = any(['fuelgrain' in s[i][0] for i in range(len(s))])
-        if not self.calculate:
-            return
+    def __init__(self, indx, indxfuel, indxfuelrod, reactor):
 
         # INPUT PARAMETERS
         # grain diameter
@@ -35,12 +27,9 @@ class FuelGrain:
         # initialize list of monoatom concentrations
         self.c1 = [0]*self.nr
 
+    #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuelgrain' object created in B1B0
     def calculate_rhs(self, reactor, t):
-
-        if not self.calculate:
-            rhs = []
-            return rhs
 
         # INTRAGRANULAR PROCESSES
         # diffusion constant

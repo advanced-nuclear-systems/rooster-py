@@ -41,9 +41,9 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
 solve     fuelrod
-solve     fluid
-*solve     fuelgrain
-solve     pointkinetics
+*solve     fluid
+solve     fuelgrain
+*solve     pointkinetics
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****
@@ -94,14 +94,14 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        fuelid    hgap      cladid    mltpl     pipeid    pipenodid
 fuelrod   FR01      F01       0         C01       1         UP1       2
-fuelrod   FR01      F01       0         C01       1         UP1       3
-fuelrod   FR01      F01       0         C01       1         UP1       4
-fuelrod   FR01      F01       0         C01       1         UP1       5
-*
-fuelrod   FR02      F01       0         C01       1         UP2       2
-fuelrod   FR02      F01       0         C01       1         UP2       3
-fuelrod   FR02      F01       0         C01       1         UP2       4
-fuelrod   FR02      F01       0         C01       1         UP2       5
+*fuelrod   FR01      F01       0         C01       1         UP1       3
+*fuelrod   FR01      F01       0         C01       1         UP1       4
+*fuelrod   FR01      F01       0         C01       1         UP1       5
+**
+*fuelrod   FR02      F01       0         C01       1         UP2       2
+*fuelrod   FR02      F01       0         C01       1         UP2       3
+*fuelrod   FR02      F01       0         C01       1         UP2       4
+*fuelrod   FR02      F01       0         C01       1         UP2       5
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * INNER GAS

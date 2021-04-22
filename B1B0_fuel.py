@@ -11,9 +11,6 @@ class Fuel:
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def __init__(self, indx, indxfuelrod, reactor):
 
-        # create object for fuel grain (to be fixed)
-        self.fuelgrain = FuelGrain(reactor)
-
         # INITIALIZATION
         # dictionary of the fuel rod to which the fuel belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
@@ -64,13 +61,22 @@ class Fuel:
         # list of node volume per unit height (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
 
+        # create an object fuel grain for every radial node of fuel
+        self.fuelgrain = []
+        for i in range(self.nr):
+            self.fuelgrain.append(FuelGrain(i, indx, indxfuelrod, reactor))
+
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuel' object created in B1B
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
     def calculate_rhs(self, indx, indxfuelrod, reactor, t):
 
         # construct right-hand side list
-        rhs = self.fuelgrain.calculate_rhs(reactor, t)
+        rhs = []
+        if 'fuelgrain' in reactor.solve and indx == 0 and indxfuelrod == 0:
+            for i in range(self.nr):
+                if i == 0:
+                    rhs += self.fuelgrain[indx].calculate_rhs(reactor, t)
 
         # FUEL PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
@@ -89,7 +95,6 @@ class Fuel:
                 self.prop['k'].append((1/( 1.528*math.sqrt(x+0.00931) - 0.1055 + 0.44*b + 2.855e-4*t ) + 76.38e-12*t**3) * (1-por)/(1+por)/0.864)
 
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
-        #print(reactor.control.input['fuelrod'])
         # inner gas object
         innergas = reactor.solid.fuelrod[indxfuelrod].innergas
         # gap conductance list
