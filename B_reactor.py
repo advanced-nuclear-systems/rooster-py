@@ -160,6 +160,7 @@ class Reactor:
 
         # copy input and open output files to output folder
         shutil.copyfile('input', path4results + os.sep + 'input')
+        shutil.copyfile('input.json', path4results + os.sep + 'input.json')
         # open files for output
         fid = []
         if 'fuelrod' in self.solve:

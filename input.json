@@ -1,0 +1,269 @@
+{
+  "clad": [
+    {
+      "id": "C01",
+      "matid": "SS1",
+      "ri": 0.0041,
+      "ro": 0.0045,
+      "nr": 3
+    }
+  ],
+  "fuel": [
+    {
+      "id": "F01",
+      "matid": "MOX1",
+      "ri": 0.001,
+      "ro": 0.004,
+      "nr": 20
+    }
+  ],
+  "fuelrod": [
+    {
+      "id": "FR01",
+      "fuelid": [
+        "F01",
+        "F01",
+        "F01",
+        "F01"
+      ],
+      "hgap": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cladid": [
+        "C01",
+        "C01",
+        "C01",
+        "C01"
+      ],
+      "mltpl": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pipeid": [
+        "UP1",
+        "UP1",
+        "UP1",
+        "UP1"
+      ],
+      "pipenodeid": [
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "FR02",
+      "fuelid": [
+        "F01",
+        "F01",
+        "F01",
+        "F01"
+      ],
+      "hgap": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cladid": [
+        "C01",
+        "C01",
+        "C01",
+        "C01"
+      ],
+      "mltpl": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pipeid": [
+        "UP2",
+        "UP2",
+        "UP2",
+        "UP2"
+      ],
+      "pipenodeid": [
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "innergas": [
+    {
+      "fuelrodid": "FR01",
+      "matid": "HE1",
+      "plenv": 5.3e-05
+    },
+    {
+      "fuelrodid": "FR02",
+      "matid": "HE1",
+      "plenv": 5.3e-05
+    }
+  ],
+  "junction": {
+    "from": [
+      "PLN",
+      "DOWN",
+      "UP1",
+      "DOWN",
+      "UP2"
+    ],
+    "to": [
+      "DOWN",
+      "UP1",
+      "PLN",
+      "UP2",
+      "PLN"
+    ],
+    "type": [
+      "dependent",
+      "independent",
+      "dependent",
+      "independent",
+      "dependent"
+    ]
+  },
+  "lookup": [
+    {
+      "x": [
+        "TIME",
+        0.0,
+        10.0
+      ],
+      "f(x)": [
+        "RHO_INS",
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "mat": [
+    {
+      "id": "NA",
+      "type": "na",
+      "p0": 100000.0,
+      "temp0": 673.0
+    },
+    {
+      "id": "MOX1",
+      "type": "mox",
+      "pu": 0.15,
+      "b": 0.0,
+      "x": 0.02,
+      "por": 0.05,
+      "temp0": 673.0
+    },
+    {
+      "id": "SS1",
+      "type": "ss316",
+      "temp0": 673.0
+    },
+    {
+      "id": "HE1",
+      "type": "he",
+      "p0": 1000000.0,
+      "temp0": 673.0
+    }
+  ],
+  "p2d": [
+    {
+      "fuelrodid": "FR01",
+      "p2d": 1.1
+    },
+    {
+      "fuelrodid": "FR02",
+      "p2d": 1.1
+    }
+  ],
+  "pipe": [
+    {
+      "id": "PLN",
+      "type": "freelevel",
+      "matid": "NA",
+      "dhyd": 0.1,
+      "elev": 1.0,
+      "len": 0.0,
+      "areaz": 0.22,
+      "nnodes": 1
+    },
+    {
+      "id": "DOWN",
+      "type": "normal",
+      "matid": "NA",
+      "dhyd": 0.01,
+      "elev": -1.0,
+      "len": 0.0,
+      "areaz": 1.1,
+      "nnodes": 10
+    },
+    {
+      "id": "UP1",
+      "type": "normal",
+      "matid": "NA",
+      "dhyd": 0.01,
+      "elev": 1.0,
+      "len": 0.0,
+      "areaz": 1.1,
+      "nnodes": 10
+    },
+    {
+      "id": "UP2",
+      "type": "normal",
+      "matid": "NA",
+      "dhyd": 0.01,
+      "elev": 1.0,
+      "len": 0.0,
+      "areaz": 1.1,
+      "nnodes": 10
+    }
+  ],
+  "pnltime": "",
+  "signal": [
+    {
+      "type": "time",
+      "userid": "TIME",
+      "sign": []
+    }
+  ],
+  "solve": [
+    "fuelrod",
+    "fluid"
+  ],
+  "t0": 0.0,
+  "t_dt": [
+    [
+      100.0,
+      1.0
+    ]
+  ],
+  "PI": 3.14159,
+  "tlife": 0.0005,
+  "dnplmb": [
+    0.0127,
+    0.0317,
+    0.115,
+    0.311,
+    1.4,
+    3.87
+  ],
+  "betaeff": [
+    0.000285,
+    0.0015975,
+    0.00141,
+    0.0030525,
+    0.00096,
+    0.000195
+  ],
+  "dgrain": 1e-05,
+  "nrgrain": 20,
+  "frate": 1
+}

@@ -1,5 +1,6 @@
 from scipy.interpolate import interp1d
 
+import json
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -33,19 +34,20 @@ class Control:
 def construct_input():
     #create dictionary inp where all input data will be stored
     inp = {}
-    inp['clad'] = [] # no default
-    inp['fuel'] = [] # no default
-    inp['fuelrod'] = [] # no default
-    inp['innergas'] = [] # no default
-    inp['junction'] = {'from':[], 'to':[], 'type':[]} # no default
-    inp['lookup'] = [] # no default
-    inp['mat'] = [] # no default
-    inp['pipe'] = [] # no default
-    inp['pnltime'] = '' # no default
-    inp['signal'] = [] # no default
-    inp['solve'] = [] # no default
-    inp['t0'] = 0 # default
-    inp['t_dt'] = [] # no default
+    inp['clad'] = []
+    inp['fuel'] = []
+    inp['fuelrod'] = []
+    inp['innergas'] = []
+    inp['junction'] = {'from':[], 'to':[], 'type':[]}
+    inp['lookup'] = []
+    inp['mat'] = []
+    inp['p2d'] = []
+    inp['pipe'] = []
+    inp['pnltime'] = ''
+    inp['signal'] = []
+    inp['solve'] = []
+    inp['t0'] = 0
+    inp['t_dt'] = []
 
     #read input file as a whole
     f = open('input', mode = 'r')
@@ -155,6 +157,10 @@ def construct_input():
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
         #--------------------------------------------------------------------------------------
+        # pitch-to-diameter ratio
+        elif key == 'p2d' :
+             inp['p2d'].append( {'fuelrodid':word[1], 'p2d':word[2]} )
+        #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
              inp['pipe'].append( {'id':word[1], 'type':word[2], 'matid':word[3], 'dhyd':word[4], 'elev':word[5], 'len':word[6], 'areaz':word[7], 'nnodes':int(word[8])} )
@@ -216,5 +222,7 @@ def construct_input():
         if insignal not in signal_userid :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
-    #print(inp)
+    fid = open('input.json', 'w')
+    fid.write(json.dumps(inp, indent=2))
+    fid.close()
     return inp
