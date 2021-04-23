@@ -201,7 +201,7 @@ class Reactor:
                 time = solver.t + dtout
                 y = solver.integrate(time)
 
-                print('time: {0:12.5e}'.format(time))
+                #print('time: {0:12.5e}'.format(time))
 
                 # print output
                 indx = 0

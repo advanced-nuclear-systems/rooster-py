@@ -35,7 +35,7 @@ class Fluid:
         # list of numbers of pipe nodes
         self.pipennodes = [x['nnodes'] for x in reactor.control.input['pipe']]
 
-        # lists for pressure, temperature and type
+        # lists for pressure, temperature, pipeid and type
         self.p = []
         self.temp = []
         self.type = []

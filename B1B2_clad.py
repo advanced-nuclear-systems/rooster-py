@@ -11,6 +11,8 @@ class Clad:
         # INITIALIZATION
         # dictionary of the fuel rod to which the clad belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
+        #pitch-to-diameter ratio of fuel rod lattice
+        self.p2d = dictfuelrod['p2d'][indx]
         # current clad id
         cladid = dictfuelrod['cladid'][indx]
 
@@ -83,7 +85,13 @@ class Clad:
         Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [0]
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]
-        dTdt[self.nr-1] = 0
+
+        # dictionary of the fuel rod to which the clad belongs
+        dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
+        # pipe node indexes
+        ipipe = reactor.fluid.pipeid.index(dictfuelrod['pipeid'][indx])
+        jpipe = dictfuelrod['pipenodeid'][indx]
+        dTdt[self.nr-1] -= 1e3*(self.temp[self.nr-1] - reactor.fluid.temp[ipipe][jpipe])
         rhs = dTdt
 
         return rhs
