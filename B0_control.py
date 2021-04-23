@@ -123,11 +123,12 @@ def construct_input():
                         x['fuelid'].append(word[2])
                         x['hgap'].append(float(word[3]))
                         x['cladid'].append(word[4])
-                        x['mltpl'].append(word[5])
-                        x['pipeid'].append(word[6])
-                        x['pipenodeid'].append(int(word[7]))
+                        x['p2d'].append(word[5])
+                        x['mltpl'].append(word[6])
+                        x['pipeid'].append(word[7])
+                        x['pipenodeid'].append(int(word[8]))
             else:
-                inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'mltpl':[word[5]], 'pipeid':[word[6]], 'pipenodeid':[int(word[7])]})
+                inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenodeid':[int(word[8])]})
         #--------------------------------------------------------------------------------------
         # inner gas
         elif key == 'innergas' :
@@ -156,10 +157,6 @@ def construct_input():
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
-        #--------------------------------------------------------------------------------------
-        # pitch-to-diameter ratio
-        elif key == 'p2d' :
-             inp['p2d'].append( {'fuelrodid':word[1], 'p2d':word[2]} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe
         elif key == 'pipe' :
