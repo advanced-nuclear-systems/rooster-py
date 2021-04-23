@@ -127,6 +127,9 @@ class Fluid:
             if self.pipetype[self.indx[i][0]] == 'freelevel':
                 B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
         self.invB = linalg.inv(B)
+        
+        #for i in range(n):
+        #    print(''.join([str(B[i][j]).rjust(3) + ' ' for j in range(n)]))
 
         # initialize list of flowrate in independent junctions
         self.mdoti = [0]*self.njuni
@@ -179,7 +182,9 @@ class Fluid:
         # first construct right hand side of system invB*[mdot, P] = b
         b = [0]*(self.njun + sum(self.pipennodes))
         for j in range(self.njun):
-            b[j] = 0
+            rhogh_f = 9.81*self.prop[self.f[j][0]]['rhol'][self.f[j][1]]*self.elev[self.f[j][0]]/self.pipennodes[self.f[j][0]]
+            rhogh_t = 9.81*self.prop[self.t[j][0]]['rhol'][self.t[j][1]]*self.elev[self.t[j][0]]/self.pipennodes[self.t[j][0]]
+            b[j] = -0.5*(rhogh_f + rhogh_t) - self.mdot[j]*100
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
         invBb = self.invB.dot(b).tolist()
@@ -189,8 +194,10 @@ class Fluid:
             if self.juntype[j] == 'independent':
                 dmdotdt.append(invBb[j])
         # read from invBb: pressures in pipe nodes
+        indx = 0
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
-                self.p[i][j] = invBb[self.njun+i]
+                self.p[i][j] = invBb[self.njun+indx]
+                indx += 1
         rhs = dmdotdt
         return rhs
