@@ -187,6 +187,9 @@ class Reactor:
         if 'fluid' in self.solve:
             fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.control.input['junction']['from'][j] +'-' + self.control.input['junction']['to'][j]).ljust(13) for j in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
+            for i in range(self.fluid.npipe):
+                fid.append(open(path4results + os.sep + 'fluid-p-' + self.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
         if 'pointkinetics' in self.solve:
             fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
@@ -231,6 +234,9 @@ class Reactor:
                     # flowrate in dependent and independent junctions (no internal junctions)
                     fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.mdot[i]) for i in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
                     indx += 1
+                    for i in range(self.fluid.npipe):
+                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.p[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                        indx += 1
                 if 'pointkinetics' in self.solve:
                     # point kinetics power
                     fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(self.neutron.pointkinetics.power) + '\n')

@@ -183,6 +183,14 @@ class Fluid:
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
         invBb = self.invB.dot(b).tolist()
-
-        rhs = [0.1]*self.njuni
+        # read from invBb: time derivative of flowrate in independent junctions
+        dmdotdt = []
+        for j in range(self.njun):
+            if self.juntype[j] == 'independent':
+                dmdotdt.append(invBb[j])
+        # read from invBb: pressures in pipe nodes
+        for i in range(self.npipe):
+            for j in range(self.pipennodes[i]):
+                self.p[i][j] = invBb[self.njun+i]
+        rhs = dmdotdt
         return rhs
