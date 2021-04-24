@@ -38,7 +38,7 @@ def construct_input():
     inp['fuel'] = []
     inp['fuelrod'] = []
     inp['innergas'] = []
-    inp['junction'] = {'from':[], 'to':[], 'type':[], 'pumphead':[]}
+    inp['junction'] = {'from':[], 'to':[], 'type':[], 'pumphead':[], 'flowrate':[]}
     inp['lookup'] = []
     inp['mat'] = []
     inp['p2d'] = []
@@ -139,18 +139,31 @@ def construct_input():
              inp['junction']['to'].append(word[2])
              inp['junction']['type'].append('dependent')
              inp['junction']['pumphead'].append('')
+             inp['junction']['flowrate'].append('')
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction (independent)
         elif key == 'jun-i' :
              inp['junction']['from'].append(word[1])
              inp['junction']['to'].append(word[2])
              inp['junction']['type'].append('independent')
-             try:
-                 inp['junction']['pumphead'].append(word[3])
-             except:
-                 inp['junction']['pumphead'].append('')
-
-             
+             inp['junction']['pumphead'].append('')
+             inp['junction']['flowrate'].append('')
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction (independent + signal for pump head)
+        elif key == 'jun-i-p' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+             inp['junction']['type'].append('independent')
+             inp['junction']['pumphead'].append(word[3])
+             inp['junction']['flowrate'].append('')
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction (independent + signal for flowrate)
+        elif key == 'jun-i-f' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+             inp['junction']['type'].append('independent')
+             inp['junction']['pumphead'].append('')
+             inp['junction']['flowrate'].append(word[3])
         #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :

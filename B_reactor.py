@@ -75,9 +75,10 @@ class Reactor:
                         # clad temperature
                         y0.append(self.solid.fuelrod[i].clad[j].temp[k])
         if 'fluid' in self.solve:
-            for i in range(self.fluid.njuni):
-                # flowrate in independent junctions
-                y0.append(self.fluid.mdoti[i])
+            for j in range(self.fluid.njun):
+                if self.fluid.juntype[j] == 'independent':
+                    # flowrate in independent junctions
+                    y0.append(self.fluid.mdoti[j])
         if 'pointkinetics' in self.solve:
             y0.append(self.neutron.pointkinetics.power)
             for i in range(self.neutron.pointkinetics.ndnp):
@@ -126,10 +127,11 @@ class Reactor:
                             self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
                             indx += 1
             if 'fluid' in self.solve:
-                for i in range(self.fluid.njuni):
-                    # flowrate in independent junctions
-                    self.fluid.mdoti[i] = y[indx]
-                    indx += 1
+                for j in range(self.fluid.njun):
+                    if self.fluid.juntype[j] == 'independent':
+                        # flowrate in independent junctions
+                        self.fluid.mdoti[j] = y[indx]
+                        indx += 1
             if 'pointkinetics' in self.solve:
                 self.neutron.pointkinetics.power = y[indx]
                 indx += 1
@@ -138,6 +140,12 @@ class Reactor:
                     indx += 1
 
             self.control.evaluate(self, t)
+
+            for j in range(self.fluid.njun):
+                if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
+                    # impose flowrate from the look-up table
+                    self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
+
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)

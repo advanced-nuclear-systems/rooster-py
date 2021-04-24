@@ -58,7 +58,7 @@ class Fluid:
             for j in range(self.pipennodes[i]):
                 self.indx.append((i,j))
 
-        # list of junction types
+        # list of junction types and subtypes
         self.juntype = reactor.control.input['junction']['type']
         # number of junctions
         self.njun = len(self.juntype)
@@ -66,6 +66,7 @@ class Fluid:
         self.njuni = self.juntype.count('independent')
         # number of dependent junctions
         self.njund = self.juntype.count('dependent')
+        
 
         # construct from and to lists of tulips
         self.f = []
@@ -84,8 +85,10 @@ class Fluid:
             self.f += [(i,j) for j in range(self.pipennodes[i]-1)]
             self.t += [(i,j) for j in range(1,self.pipennodes[i])]
         self.njun = len(self.f)
-        # pump heads
+        # pump head signal
         self.junpumphead = reactor.control.input['junction']['pumphead']
+        # user-specified flowrate signal
+        self.junflowrate = reactor.control.input['junction']['flowrate']
 
         # create and inverse a matrix A linking dependent and independent junctions
         A = [[0]*(self.njuni+self.njund) for i in range(self.njuni+self.njund)]
@@ -193,7 +196,10 @@ class Fluid:
         dmdotdt = []
         for j in range(self.njun):
             if self.juntype[j] == 'independent':
-                dmdotdt.append(invBb[j])
+                if self.junflowrate[j] != '':
+                    dmdotdt.append(0)
+                else:
+                    dmdotdt.append(invBb[j])
         # read from invBb: pressures in pipe nodes
         indx = 0
         for i in range(self.npipe):
