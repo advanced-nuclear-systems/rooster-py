@@ -11,10 +11,12 @@ class Clad:
         # INITIALIZATION
         # dictionary of the fuel rod to which the clad belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
-        #pitch-to-diameter ratio of fuel rod lattice
-        self.p2d = dictfuelrod['p2d'][indx]
         # current clad id
         cladid = dictfuelrod['cladid'][indx]
+        # pitch-to-diameter ratio of fuel rod lattice
+        self.p2d = dictfuelrod['p2d'][indx]
+        # fuel rod multiplicity
+        self.mltpl = dictfuelrod['mltpl'][indx]
 
         # list of clad dictionaries specified in input
         list = reactor.control.input['clad']

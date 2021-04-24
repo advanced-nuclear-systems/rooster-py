@@ -130,6 +130,16 @@ class Fluid:
         # initialize list of flowrate in independent junctions
         self.mdoti = [0]*self.njuni
 
+        # prepare lists to map thermal-hydraulic and fuel rods nodes
+        indx_i = [x['pipeid'] for x in reactor.control.input['fuelrod']]
+        indx_j = [x['pipenodeid'] for x in reactor.control.input['fuelrod']]
+        nfuelrods = len(indx_i)
+        self.map_th = []
+        self.map_fr = []
+        for i in range(nfuelrods):
+            for j in range(len(indx_i[i])):
+                self.map_th.append((indx_i[i][j], indx_j[i][j]))
+                self.map_fr.append((i,j))
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
@@ -162,8 +172,7 @@ class Fluid:
                 b[j] = self.mdoti[i]
                 i += 1
             elif self.juntype[j] == 'dependent':
-                b[j] = 0
-        # then multiply matrix by list: invA*mdot = b and convert to list
+                b[j] = 0        # then multiply matrix by list: invA*mdot = b and convert to list
         self.mdot = self.invA.dot(b).tolist()
         # finally calculate flowrates in internal junctions
         for i in range(self.npipe):
@@ -174,7 +183,7 @@ class Fluid:
             for j in range(self.pipennodes[i]-1):
                 self.mdot.append(mdotpipe)
 
-        # VELOCITIES IN PIPE NODES:
+        # VELOCITIES AND DIMENSIONLESS NUMBERS IN PIPE NODES:
         self.vel = [[0]*self.pipennodes[i] for i in range(self.npipe)]
         for j in range(self.njun):
             rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
@@ -218,5 +227,32 @@ class Fluid:
             for j in range(self.pipennodes[i]):
                 self.p[i][j] = invBb[self.njun+indx]
                 indx += 1
-        rhs = dmdotdt
+
+        # TIME DERIVATIVES OF FLUID TEMPERATURES:
+        dtempdt2d = [[0]*self.pipennodes[i] for i in range(self.npipe)]
+        for j in range(self.njun):
+            if self.mdot[j] > 0:
+                cp_temp_mdot = self.prop[self.f[j][0]]['cpl'][self.f[j][1]] *  self.temp[self.f[j][0]][self.f[j][1]] * self.mdot[j]
+            else:
+                cp_temp_mdot = self.prop[self.t[j][0]]['cpl'][self.t[j][1]] *  self.temp[self.t[j][0]][self.t[j][1]] * self.mdot[j]
+            dtempdt2d[self.f[j][0]][self.f[j][1]] -= cp_temp_mdot
+            dtempdt2d[self.t[j][0]][self.t[j][1]] += cp_temp_mdot
+            
+        dtempdt = []
+        for i in range(self.npipe):
+            vol = self.areaz[i] * abs(self.elev[i])/self.pipennodes[i]
+            for j in range(self.pipennodes[i]):
+                # check if there is a fuel rod cooled by the node
+                if (self.pipeid[i],j) in self.map_th:
+                    indx = self.map_th.index((self.pipeid[i],j))
+                    tuple_fr = self.map_fr[indx]
+                    tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
+                    mltpl = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].mltpl
+                    ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
+                    area_ht = 2 * math.pi * ro * mltpl
+                    dtempdt2d[i][j] += 1e3*(tclad - self.temp[i][j]) * area_ht
+                rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
+                dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
+
+        rhs = dmdotdt + dtempdt
         return rhs

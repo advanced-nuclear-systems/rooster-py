@@ -79,6 +79,10 @@ class Reactor:
                 if self.fluid.juntype[j] == 'independent':
                     # flowrate in independent junctions
                     y0.append(self.fluid.mdoti[j])
+            for i in range(self.fluid.npipe):
+                for j in range(self.fluid.pipennodes[i]):
+                    # temperature in pipe nodes
+                    y0.append(self.fluid.temp[i][j])
         if 'pointkinetics' in self.solve:
             y0.append(self.neutron.pointkinetics.power)
             for i in range(self.neutron.pointkinetics.ndnp):
@@ -131,6 +135,11 @@ class Reactor:
                     if self.fluid.juntype[j] == 'independent':
                         # flowrate in independent junctions
                         self.fluid.mdoti[j] = y[indx]
+                        indx += 1
+                for i in range(self.fluid.npipe):
+                    for j in range(self.fluid.pipennodes[i]):
+                        # temperature in pipe nodes
+                        self.fluid.temp[i][j] = y[indx]
                         indx += 1
             if 'pointkinetics' in self.solve:
                 self.neutron.pointkinetics.power = y[indx]
