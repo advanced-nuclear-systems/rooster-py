@@ -202,6 +202,12 @@ class Reactor:
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
                 fid.append(open(path4results + os.sep + 'fluid-vel-' + self.fluid.pipeid[i] + '.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-re-' + self.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pr-' + self.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pe-' + self.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(self.fluid.pipennodes[i])]) + '\n')
         if 'pointkinetics' in self.solve:
             fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
@@ -252,6 +258,12 @@ class Reactor:
                         fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.temp[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
                         indx += 1
                         fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.vel[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                        indx += 1
+                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.re[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                        indx += 1
+                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.pr[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
+                        indx += 1
+                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.pe[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
                         indx += 1
                 if 'pointkinetics' in self.solve:
                     # point kinetics power

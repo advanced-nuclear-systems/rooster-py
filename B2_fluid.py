@@ -179,6 +179,12 @@ class Fluid:
         for j in range(self.njun):
             rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
             self.vel[self.t[j][0]][self.t[j][1]] += self.mdot[j]/rho_t/self.areaz[self.t[j][0]]
+        # Reynolds numbers
+        self.re = [[self.vel[i][j]*self.dhyd[i]/self.prop[i]['visl'][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
+        # Prandtl numbers
+        self.pr = [[self.prop[i]['visl'][j]*self.prop[i]['rhol'][j]*self.prop[i]['cpl'][j]/self.prop[i]['kl'][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
+        # Peclet numbers
+        self.pe = [[self.re[i][j]*self.pr[i][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
 
         # TIME DERIVATIVES OF MASS FLOWRATES:
         # construct right-hand side b of system invB*[dmdotdt, P] = b
