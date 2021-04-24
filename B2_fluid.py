@@ -66,7 +66,6 @@ class Fluid:
         self.njuni = self.juntype.count('independent')
         # number of dependent junctions
         self.njund = self.juntype.count('dependent')
-        
 
         # construct from and to lists of tulips
         self.f = []
@@ -139,8 +138,23 @@ class Fluid:
             rhs = []
             return rhs
 
+        # FLUID PROPERTIES:
+        self.prop = []
+        for i in range(self.npipe):
+            dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
+            if self.type[i] == 'na':
+                for j in range(self.pipennodes[i]):
+                    t = self.temp[i][j]
+                    # J.K. Fink and L. Leibowitz "Thermodynamic and Transport Properties of Sodium Liquid and Vapor", ANL/RE-95/2, 1995, https://www.ne.anl.gov/eda/ANL-RE-95-2.pdf
+                    dict['rhol'].append(219.0 + 275.32*(1.0 - t/2503.7) + 511.58*(1.0 - t/2503.7)**0.5)
+                    dict['visl'].append(math.exp(-6.4406 - 0.3958*math.log(t) + 556.835/t)/dict['rhol'][j])
+                    dict['kl'].append(124.67 - 0.11381*t + 5.5226e-5*t**2 - 1.1842e-8*t**3)
+                    # Based on fit from J.K. Fink, etal."Properties for Reactor Safety Analysis", ANL-CEN-RSD-82-2, May 1982.
+                    dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
+            self.prop.append(dict)
+
         # FLOWRATES IN DEPENDENT JUNCTIONS:
-        # first construct right hand side of system invA*mdot = b
+        # construct right hand side of system invA*mdot = b
         i = 0
         b = [0]*(self.njuni+self.njund)
         for j in range(self.njuni+self.njund):
@@ -160,23 +174,14 @@ class Fluid:
             for j in range(self.pipennodes[i]-1):
                 self.mdot.append(mdotpipe)
 
-        # FLUID PROPERTIES:
-        self.prop = []
-        for i in range(self.npipe):
-            dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
-            if self.type[i] == 'na':
-                for j in range(self.pipennodes[i]):
-                    t = self.temp[i][j]
-                    # J.K. Fink and L. Leibowitz "Thermodynamic and Transport Properties of Sodium Liquid and Vapor", ANL/RE-95/2, 1995, https://www.ne.anl.gov/eda/ANL-RE-95-2.pdf
-                    dict['rhol'].append(219.0 + 275.32*(1.0 - t/2503.7) + 511.58*(1.0 - t/2503.7)**0.5)
-                    dict['visl'].append(math.exp(-6.4406 - 0.3958*math.log(t) + 556.835/t)/dict['rhol'][j])
-                    dict['kl'].append(124.67 - 0.11381*t + 5.5226e-5*t**2 - 1.1842e-8*t**3)
-                    # Based on fit from J.K. Fink, etal."Properties for Reactor Safety Analysis", ANL-CEN-RSD-82-2, May 1982.
-                    dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
-            self.prop.append(dict)
+        # VELOCITIES IN PIPE NODES:
+        self.vel = [[0]*self.pipennodes[i] for i in range(self.npipe)]
+        for j in range(self.njun):
+            rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
+            self.vel[self.t[j][0]][self.t[j][1]] += self.mdot[j]/rho_t/self.areaz[self.t[j][0]]
 
-        # TIME DERIVATIVES OF FLOWRATE:
-        # first construct right hand side of system invB*[dmdotdt, P] = b
+        # TIME DERIVATIVES OF MASS FLOWRATES:
+        # construct right-hand side b of system invB*[dmdotdt, P] = b
         b = [0]*(self.njun + sum(self.pipennodes))
         for j in range(self.njun):
             rho_f = self.prop[self.f[j][0]]['rhol'][self.f[j][1]]
@@ -192,7 +197,8 @@ class Fluid:
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
         invBb = self.invB.dot(b).tolist()
-        # read from invBb: time derivative of flowrate in independent junctions
+
+        # read from invBb: time derivatives of flowrate in independent junctions
         dmdotdt = []
         for j in range(self.njun):
             if self.juntype[j] == 'independent':
