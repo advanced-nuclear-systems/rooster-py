@@ -25,11 +25,6 @@ class Fluid:
         self.dhyd = [x['dhyd'] for x in reactor.control.input['pipe']]
         # list of pipe elevations
         self.elev = [x['elev'] for x in reactor.control.input['pipe']]
-        # list of pipe length
-        self.len = [x['len'] for x in reactor.control.input['pipe']]
-        for i in range(self.npipe):
-            if self.len[i] == 0:
-                self.len[i] = abs(self.elev[i])
         # list of pipe flow area
         self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
         # list of numbers of pipe nodes
@@ -128,9 +123,6 @@ class Fluid:
                 B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
         self.invB = linalg.inv(B)
         
-        #for i in range(n):
-        #    print(''.join([str(B[i][j]).rjust(3) + ' ' for j in range(n)]))
-
         # initialize list of flowrate in independent junctions
         self.mdoti = [0]*self.njuni
 
@@ -178,13 +170,22 @@ class Fluid:
                     dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
             self.prop.append(dict)
 
-        # TIME DERIVATIVES OF FLOWRATES AND PRESSURES:
-        # first construct right hand side of system invB*[mdot, P] = b
+        pumphead = reactor.control.signal['PMPHEAD']
+
+        # TIME DERIVATIVES OF FLOWRATE:
+        # first construct right hand side of system invB*[dmdotdt, P] = b
         b = [0]*(self.njun + sum(self.pipennodes))
         for j in range(self.njun):
-            rhogh_f = 9.81*self.prop[self.f[j][0]]['rhol'][self.f[j][1]]*self.elev[self.f[j][0]]/self.pipennodes[self.f[j][0]]
-            rhogh_t = 9.81*self.prop[self.t[j][0]]['rhol'][self.t[j][1]]*self.elev[self.t[j][0]]/self.pipennodes[self.t[j][0]]
+            rho_f = self.prop[self.f[j][0]]['rhol'][self.f[j][1]]
+            rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
+            # gravitational head
+            rhogh_f = 9.81*rho_f*self.elev[self.f[j][0]]/self.pipennodes[self.f[j][0]]
+            if self.pipetype[self.f[j][0]] != 'freelevel': rhogh_f = - abs(rhogh_f)
+            rhogh_t = 9.81*rho_t*self.elev[self.t[j][0]]/self.pipennodes[self.t[j][0]]
+            if self.pipetype[self.t[j][0]] != 'freelevel': rhogh_t = abs(rhogh_t)
             b[j] = -0.5*(rhogh_f + rhogh_t) - self.mdot[j]*100
+            if self.juntype[j] == 'independent':
+                b[j] = pumphead
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
         invBb = self.invB.dot(b).tolist()

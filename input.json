@@ -137,10 +137,10 @@
       "PLN"
     ],
     "type": [
-      "dependent",
+      "independent",
       "independent",
       "dependent",
-      "independent",
+      "dependent",
       "dependent"
     ]
   },
@@ -155,6 +155,18 @@
         "RHO_INS",
         0.0,
         0.0
+      ]
+    },
+    {
+      "x": [
+        "TIME",
+        0.0,
+        10.0
+      ],
+      "f(x)": [
+        "PMPHEAD",
+        0.0,
+        100000.0
       ]
     }
   ],
@@ -193,8 +205,7 @@
       "type": "freelevel",
       "matid": "NA",
       "dhyd": 0.1,
-      "elev": 0.0,
-      "len": 1.0,
+      "elev": 1.0,
       "areaz": 0.22,
       "nnodes": 1
     },
@@ -204,7 +215,6 @@
       "matid": "NA",
       "dhyd": 0.01,
       "elev": -1.0,
-      "len": 0.0,
       "areaz": 1.1,
       "nnodes": 10
     },
@@ -214,7 +224,6 @@
       "matid": "NA",
       "dhyd": 0.01,
       "elev": 1.0,
-      "len": 0.0,
       "areaz": 1.1,
       "nnodes": 10
     },
@@ -224,16 +233,21 @@
       "matid": "NA",
       "dhyd": 0.01,
       "elev": 1.0,
-      "len": 0.0,
       "areaz": 1.1,
       "nnodes": 10
     }
   ],
-  "pnltime": "",
+  "pump": [
+    {
+      "from": "PLN",
+      "to": "DOWN",
+      "head": "PMPHEAD"
+    }
+  ],
   "signal": [
     {
       "type": "time",
-      "userid": "TIME",
+      "id": "TIME",
       "sign": []
     }
   ],

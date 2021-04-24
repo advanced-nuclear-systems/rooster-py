@@ -16,7 +16,7 @@ class Control:
         # evaluate signals
         for s in self.input['signal'] :
             if s['type'] == 'time' :
-                self.signal[s['userid']] = t
+                self.signal[s['id']] = t
 
         #evaluate output signals of lookup tables
         lookup_table = self.input['lookup']
@@ -43,7 +43,7 @@ def construct_input():
     inp['mat'] = []
     inp['p2d'] = []
     inp['pipe'] = []
-    inp['pnltime'] = ''
+    inp['pump'] = []
     inp['signal'] = []
     inp['solve'] = []
     inp['t0'] = 0
@@ -134,11 +134,17 @@ def construct_input():
         elif key == 'innergas' :
              inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
         #--------------------------------------------------------------------------------------
-        # thermal-hydraulic junction
-        elif key == 'junction' :
+        # thermal-hydraulic junction (dependent)
+        elif key == 'jun' :
              inp['junction']['from'].append(word[1])
              inp['junction']['to'].append(word[2])
-             inp['junction']['type'].append(word[3])
+             inp['junction']['type'].append('dependent')
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction (independent)
+        elif key == 'jun-i' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+             inp['junction']['type'].append('independent')
         #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
@@ -158,9 +164,17 @@ def construct_input():
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
         #--------------------------------------------------------------------------------------
-        # thermal-hydraulic pipe
+        # thermal-hydraulic pipe without free level
         elif key == 'pipe' :
-             inp['pipe'].append( {'id':word[1], 'type':word[2], 'matid':word[3], 'dhyd':word[4], 'elev':word[5], 'len':word[6], 'areaz':word[7], 'nnodes':int(word[8])} )
+             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6])} )
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic pipe with free level
+        elif key == 'pipe-f' :
+             inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':1} )
+        #--------------------------------------------------------------------------------------
+        # pump head
+        elif key == 'pump' :
+             inp['pump'].append( {'from':word[1], 'to':word[2], 'head':word[3]} )
         #--------------------------------------------------------------------------------------
         # 
         elif key == 'solve':
@@ -181,7 +195,7 @@ def construct_input():
         elif key == 'signal' :
              signal = {}
              signal['type'] = word[1]
-             signal['userid'] = word[2]
+             signal['id'] = word[2]
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
@@ -212,7 +226,7 @@ def construct_input():
     # verify that lookup tables use existing signals
     signal_userid = []
     for s in inp['signal'] :
-        signal_userid.append(s['userid'])
+        signal_userid.append(s['id'])
     for table in inp['lookup'] :
         insignal = table['x'][0]
         outsignal = table['f(x)'][0]
