@@ -142,6 +142,13 @@
       "dependent",
       "dependent",
       "dependent"
+    ],
+    "pumphead": [
+      "PMPHEAD",
+      "",
+      "",
+      "",
+      ""
     ]
   },
   "lookup": [
@@ -235,13 +242,6 @@
       "elev": 1.0,
       "areaz": 1.1,
       "nnodes": 10
-    }
-  ],
-  "pump": [
-    {
-      "from": "PLN",
-      "to": "DOWN",
-      "head": "PMPHEAD"
     }
   ],
   "signal": [

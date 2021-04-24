@@ -38,12 +38,11 @@ def construct_input():
     inp['fuel'] = []
     inp['fuelrod'] = []
     inp['innergas'] = []
-    inp['junction'] = {'from':[], 'to':[], 'type':[]}
+    inp['junction'] = {'from':[], 'to':[], 'type':[], 'pumphead':[]}
     inp['lookup'] = []
     inp['mat'] = []
     inp['p2d'] = []
     inp['pipe'] = []
-    inp['pump'] = []
     inp['signal'] = []
     inp['solve'] = []
     inp['t0'] = 0
@@ -139,12 +138,19 @@ def construct_input():
              inp['junction']['from'].append(word[1])
              inp['junction']['to'].append(word[2])
              inp['junction']['type'].append('dependent')
+             inp['junction']['pumphead'].append('')
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction (independent)
         elif key == 'jun-i' :
              inp['junction']['from'].append(word[1])
              inp['junction']['to'].append(word[2])
              inp['junction']['type'].append('independent')
+             try:
+                 inp['junction']['pumphead'].append(word[3])
+             except:
+                 inp['junction']['pumphead'].append('')
+
+             
         #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
@@ -172,11 +178,6 @@ def construct_input():
         elif key == 'pipe-f' :
              inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':1} )
         #--------------------------------------------------------------------------------------
-        # pump head
-        elif key == 'pump' :
-             inp['pump'].append( {'from':word[1], 'to':word[2], 'head':word[3]} )
-        #--------------------------------------------------------------------------------------
-        # 
         elif key == 'solve':
             inp['solve'].append(word[1])
             # verify that solve card has correct value

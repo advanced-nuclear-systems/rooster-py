@@ -84,6 +84,8 @@ class Fluid:
             self.f += [(i,j) for j in range(self.pipennodes[i]-1)]
             self.t += [(i,j) for j in range(1,self.pipennodes[i])]
         self.njun = len(self.f)
+        # pump heads
+        self.junpumphead = reactor.control.input['junction']['pumphead']
 
         # create and inverse a matrix A linking dependent and independent junctions
         A = [[0]*(self.njuni+self.njund) for i in range(self.njuni+self.njund)]
@@ -170,8 +172,6 @@ class Fluid:
                     dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
             self.prop.append(dict)
 
-        pumphead = reactor.control.signal['PMPHEAD']
-
         # TIME DERIVATIVES OF FLOWRATE:
         # first construct right hand side of system invB*[dmdotdt, P] = b
         b = [0]*(self.njun + sum(self.pipennodes))
@@ -184,8 +184,8 @@ class Fluid:
             rhogh_t = 9.81*rho_t*self.elev[self.t[j][0]]/self.pipennodes[self.t[j][0]]
             if self.pipetype[self.t[j][0]] != 'freelevel': rhogh_t = abs(rhogh_t)
             b[j] = -0.5*(rhogh_f + rhogh_t) - self.mdot[j]*100
-            if self.juntype[j] == 'independent':
-                b[j] = pumphead
+            if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
+                b[j] = reactor.control.signal[self.junpumphead[j]]
         for i in range(sum(self.pipennodes)):
             if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
         invBb = self.invB.dot(b).tolist()
