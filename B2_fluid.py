@@ -29,6 +29,8 @@ class Fluid:
         self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
         # list of numbers of pipe nodes
         self.pipennodes = [x['nnodes'] for x in reactor.control.input['pipe']]
+        # list of user-specified pipe temperature signal
+        self.signaltemp = [x['signaltemp'] for x in reactor.control.input['pipe']]
 
         # lists for pressure, temperature, pipeid and type
         self.p = []
@@ -84,9 +86,9 @@ class Fluid:
             self.f += [(i,j) for j in range(self.pipennodes[i]-1)]
             self.t += [(i,j) for j in range(1,self.pipennodes[i])]
         self.njun = len(self.f)
-        # pump head signal
+        # user-specified junction pump head signal
         self.junpumphead = reactor.control.input['junction']['pumphead']
-        # user-specified flowrate signal
+        # user-specified junction flowrate signal
         self.junflowrate = reactor.control.input['junction']['flowrate']
 
         # create and inverse a matrix A linking dependent and independent junctions
@@ -237,22 +239,26 @@ class Fluid:
                 cp_temp_mdot = self.prop[self.t[j][0]]['cpl'][self.t[j][1]] *  self.temp[self.t[j][0]][self.t[j][1]] * self.mdot[j]
             dtempdt2d[self.f[j][0]][self.f[j][1]] -= cp_temp_mdot
             dtempdt2d[self.t[j][0]][self.t[j][1]] += cp_temp_mdot
-            
+
         dtempdt = []
         for i in range(self.npipe):
-            vol = self.areaz[i] * abs(self.elev[i])/self.pipennodes[i]
-            for j in range(self.pipennodes[i]):
-                # check if there is a fuel rod cooled by the node
-                if (self.pipeid[i],j) in self.map_th:
-                    indx = self.map_th.index((self.pipeid[i],j))
-                    tuple_fr = self.map_fr[indx]
-                    tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
-                    mltpl = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].mltpl
-                    ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
-                    area_ht = 2 * math.pi * ro * mltpl
-                    dtempdt2d[i][j] += 1e3*(tclad - self.temp[i][j]) * area_ht
-                rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
-                dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
+            if self.signaltemp[i] != '':
+                for j in range(self.pipennodes[i]):
+                    dtempdt.append(0)
+            else:
+                vol = self.areaz[i] * abs(self.elev[i])/self.pipennodes[i]
+                for j in range(self.pipennodes[i]):
+                    # check if there is a fuel rod cooled by the node
+                    if (self.pipeid[i],j) in self.map_th:
+                        indx = self.map_th.index((self.pipeid[i],j))
+                        tuple_fr = self.map_fr[indx]
+                        tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
+                        mltpl = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].mltpl
+                        ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
+                        area_ht = 2 * math.pi * ro * mltpl
+                        dtempdt2d[i][j] += 1e3*(tclad - self.temp[i][j]) * area_ht
+                    rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
+                    dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
 
         rhs = dmdotdt + dtempdt
         return rhs

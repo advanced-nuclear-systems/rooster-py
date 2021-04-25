@@ -150,10 +150,17 @@ class Reactor:
 
             self.control.evaluate(self, t)
 
+            # signal-dependent junction
             for j in range(self.fluid.njun):
                 if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
                     # impose flowrate from the look-up table
                     self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
+
+            # signal-dependent pipe
+            for i in range(self.fluid.npipe):
+                if self.fluid.pipetype[i] == 'normal' and self.fluid.signaltemp[i] != '':
+                    # impose temperature from the look-up table
+                    self.fluid.temp[i] = [self.control.signal[self.fluid.signaltemp[i]]] * self.fluid.pipennodes[i]
 
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)

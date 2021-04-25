@@ -185,11 +185,15 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe without free level
         elif key == 'pipe' :
-             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6])} )
+             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6]), 'signaltemp':''} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe with free level
         elif key == 'pipe-f' :
-             inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':1} )
+             inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':1, 'signaltemp':''} )
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic pipe without free level with temperature defined by signal
+        elif key == 'pipe-t' :
+             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6]), 'signaltemp':word[7]} )
         #--------------------------------------------------------------------------------------
         elif key == 'solve':
             inp['solve'].append(word[1])

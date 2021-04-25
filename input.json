@@ -152,7 +152,7 @@
     ],
     "flowrate": [
       "",
-      "FLOW_VS_TIME",
+      "MDOT_VS_T",
       "",
       "",
       ""
@@ -190,9 +190,21 @@
         10.0
       ],
       "f(x)": [
-        "FLOW_VS_TIME",
+        "MDOT_VS_T",
         0.0,
         10.0
+      ]
+    },
+    {
+      "x": [
+        "TIME",
+        0.0,
+        10.0
+      ],
+      "f(x)": [
+        "TEMP_VS_T",
+        700.0,
+        700.0
       ]
     }
   ],
@@ -233,7 +245,8 @@
       "dhyd": 0.1,
       "elev": 1.0,
       "areaz": 0.22,
-      "nnodes": 1
+      "nnodes": 1,
+      "signaltemp": ""
     },
     {
       "id": "DOWN",
@@ -242,7 +255,8 @@
       "dhyd": 0.01,
       "elev": -1.0,
       "areaz": 1.1,
-      "nnodes": 10
+      "nnodes": 10,
+      "signaltemp": "TEMP_VS_T"
     },
     {
       "id": "UP1",
@@ -251,7 +265,8 @@
       "dhyd": 0.01,
       "elev": 1.0,
       "areaz": 1.1,
-      "nnodes": 10
+      "nnodes": 10,
+      "signaltemp": ""
     },
     {
       "id": "UP2",
@@ -260,7 +275,8 @@
       "dhyd": 0.01,
       "elev": 1.0,
       "areaz": 1.1,
-      "nnodes": 10
+      "nnodes": 10,
+      "signaltemp": ""
     }
   ],
   "signal": [
