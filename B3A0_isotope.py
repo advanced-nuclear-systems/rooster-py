@@ -9,9 +9,20 @@ class Isotope:
     def __init__(self, indx, indxmix, reactor):
         # nuclear data directory
         nddir = reactor.control.input['nddir']
+        # isotope name
         self.isoname = reactor.control.input['mix'][indxmix]['isoid'][indx]
+        # open, read, split by eol and close the isotope data file
         f = open(nddir + os.sep + self.isoname, 'r')
-        s = f.readline()
+        s = f.read().replace('\r\n', '\n').split('\n')
         f.close()
-        print(nddir + os.sep + self.isoname)
+        # base temperatures
+        self.temp = [float(s[i]) for i in range(1,int(s[0])+1)]
+        del s[0:int(s[0])+1]
+        # base sigma-zeros
+        self.sig0 = [float(s[i]) for i in range(1,int(s[0])+1)]
+        del s[0:int(s[0])+1]
+
+        #print(nddir + os.sep + self.isoname)
+        #print(self.temp)
+        #print(self.sig0)
 
