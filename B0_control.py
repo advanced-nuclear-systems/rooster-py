@@ -149,14 +149,6 @@ def construct_input():
              inp['junction']['pumphead'].append('')
              inp['junction']['flowrate'].append('')
         #--------------------------------------------------------------------------------------
-        # thermal-hydraulic junction (independent + signal for pump head)
-        elif key == 'jun-i-p' :
-             inp['junction']['from'].append(word[1])
-             inp['junction']['to'].append(word[2])
-             inp['junction']['type'].append('independent')
-             inp['junction']['pumphead'].append(word[3])
-             inp['junction']['flowrate'].append('')
-        #--------------------------------------------------------------------------------------
         # thermal-hydraulic junction (independent + signal for flowrate)
         elif key == 'jun-i-f' :
              inp['junction']['from'].append(word[1])
@@ -164,6 +156,14 @@ def construct_input():
              inp['junction']['type'].append('independent')
              inp['junction']['pumphead'].append('')
              inp['junction']['flowrate'].append(word[3])
+        #--------------------------------------------------------------------------------------
+        # thermal-hydraulic junction (independent + signal for pump head)
+        elif key == 'jun-i-p' :
+             inp['junction']['from'].append(word[1])
+             inp['junction']['to'].append(word[2])
+             inp['junction']['type'].append('independent')
+             inp['junction']['pumphead'].append(word[3])
+             inp['junction']['flowrate'].append('')
         #--------------------------------------------------------------------------------------
         # lookup table
         elif key == 'lookup' :
@@ -185,15 +185,15 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe without free level
         elif key == 'pipe' :
-             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6]), 'signaltemp':''} )
+             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':''} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe with free level
         elif key == 'pipe-f' :
-             inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':1, 'signaltemp':''} )
+             inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':1, 'signaltemp':''} )
         #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe without free level with temperature defined by signal
         elif key == 'pipe-t' :
-             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'elev':word[4], 'areaz':word[5], 'nnodes':int(word[6]), 'signaltemp':word[7]} )
+             inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
         #--------------------------------------------------------------------------------------
         elif key == 'solve':
             inp['solve'].append(word[1])
@@ -212,8 +212,8 @@ def construct_input():
         # signal variable
         elif key == 'signal' :
              signal = {}
-             signal['type'] = word[1]
-             signal['id'] = word[2]
+             signal['id'] = word[1]
+             signal['type'] = word[2]
              signal['sign'] = word[3:]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------

@@ -23,8 +23,10 @@ class Fluid:
         self.npipef = self.pipetype.count('freelevel')
         # list of pipe hydraulic diameters
         self.dhyd = [x['dhyd'] for x in reactor.control.input['pipe']]
-        # list of pipe elevations
-        self.elev = [x['elev'] for x in reactor.control.input['pipe']]
+        # list of pipe length
+        self.len = [x['len'] for x in reactor.control.input['pipe']]
+        # list of pipe direction
+        self.dir = [x['dir'] for x in reactor.control.input['pipe']]
         # list of pipe flow area
         self.areaz = [x['areaz'] for x in reactor.control.input['pipe']]
         # list of numbers of pipe nodes
@@ -204,9 +206,9 @@ class Fluid:
             rho_f = self.prop[self.f[j][0]]['rhol'][self.f[j][1]]
             rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
             # gravitational head
-            rhogh_f = 9.81*rho_f*self.elev[self.f[j][0]]/self.pipennodes[self.f[j][0]]
+            rhogh_f = 9.81*rho_f*self.len[self.f[j][0]]*self.dir[self.f[j][0]]/self.pipennodes[self.f[j][0]]
             if self.pipetype[self.f[j][0]] != 'freelevel': rhogh_f = - abs(rhogh_f)
-            rhogh_t = 9.81*rho_t*self.elev[self.t[j][0]]/self.pipennodes[self.t[j][0]]
+            rhogh_t = 9.81*rho_t*self.len[self.t[j][0]]*self.dir[self.t[j][0]]/self.pipennodes[self.t[j][0]]
             if self.pipetype[self.t[j][0]] != 'freelevel': rhogh_t = abs(rhogh_t)
             b[j] = -0.5*(rhogh_f + rhogh_t) - self.mdot[j]*100
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
@@ -246,7 +248,7 @@ class Fluid:
                 for j in range(self.pipennodes[i]):
                     dtempdt.append(0)
             else:
-                vol = self.areaz[i] * abs(self.elev[i])/self.pipennodes[i]
+                vol = self.areaz[i] * abs(self.len[i])/self.pipennodes[i]
                 for j in range(self.pipennodes[i]):
                     # check if there is a fuel rod cooled by the node
                     if (self.pipeid[i],j) in self.map_th:
