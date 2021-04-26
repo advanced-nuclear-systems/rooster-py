@@ -41,6 +41,7 @@ def construct_input():
     inp['junction'] = {'from':[], 'to':[], 'type':[], 'pumphead':[], 'flowrate':[]}
     inp['lookup'] = []
     inp['mat'] = []
+    inp['mix'] = []
     inp['p2d'] = []
     inp['pipe'] = []
     inp['signal'] = []
@@ -49,7 +50,7 @@ def construct_input():
     inp['t_dt'] = []
 
     #read input file as a whole
-    f = open('input', mode = 'r')
+    f = open('input', 'r')
     s0 = f.read()
     f.close()
 
@@ -183,6 +184,21 @@ def construct_input():
              elif word[2] == 'ss316':
                  inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
         #--------------------------------------------------------------------------------------
+        # mixture of isotopes
+        elif key == 'mix' :
+            mixid = word[1]
+            if any([mixid in x['mixid'] for x in inp['mix']]):
+                for x in inp['mix']:
+                    if x['mixid'] == mixid:
+                        x['isoid'].append(word[2])
+                        x['numdens'].append(float(word[3]))
+            else:
+                inp['mix'].append({'mixid':mixid, 'isoid':[word[2]], 'numdens':[float(word[3])]})
+        #--------------------------------------------------------------------------------------
+        # nuclear data directory
+        elif key == 'nddir' :
+             inp['nddir'] = word[1]
+        #--------------------------------------------------------------------------------------
         # thermal-hydraulic pipe without free level
         elif key == 'pipe' :
              inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':''} )
@@ -198,7 +214,7 @@ def construct_input():
         elif key == 'solve':
             inp['solve'].append(word[1])
             # verify that solve card has correct value
-            correct_values = {'fluid','fuelgrain','fuelrod','pointkinetics'}
+            correct_values = {'fluid','fuelgrain','fuelrod','pointkinetics','spatialkinetics'}
             value = set([word[1]])
             diff = value.difference(correct_values)
             if diff != set():

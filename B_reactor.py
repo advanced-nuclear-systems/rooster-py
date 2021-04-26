@@ -10,14 +10,12 @@
 #                InnerGas
 #                Clad
 #         Fluid
-#         Neutron
-#             PointKinetics
-#             SpatialKinetics
+#         Core
 #--------------------------------------------------------------------------------------------------
 from B0_control import Control
 from B1_solid import Solid
 from B2_fluid import Fluid
-from B3_neutron import Neutron
+from B3_core import Core
 
 # SciPy requires installation : python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.integrate import ode
@@ -41,7 +39,7 @@ class Reactor:
         # create other objects
         self.solid = Solid(self)
         self.fluid = Fluid(self)
-        self.neutron = Neutron(self)
+        self.core = Core(self)
 
         # write list of unknowns to y0
         y0 = []
@@ -84,9 +82,9 @@ class Reactor:
                     # temperature in pipe nodes
                     y0.append(self.fluid.temp[i][j])
         if 'pointkinetics' in self.solve:
-            y0.append(self.neutron.pointkinetics.power)
-            for i in range(self.neutron.pointkinetics.ndnp):
-                y0.append(self.neutron.pointkinetics.cdnp[i])
+            y0.append(self.core.power)
+            for i in range(self.core.ndnp):
+                y0.append(self.core.cdnp[i])
 
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
@@ -142,30 +140,32 @@ class Reactor:
                         self.fluid.temp[i][j] = y[indx]
                         indx += 1
             if 'pointkinetics' in self.solve:
-                self.neutron.pointkinetics.power = y[indx]
+                self.core.power = y[indx]
                 indx += 1
-                for i in range(self.neutron.pointkinetics.ndnp):
-                    self.neutron.pointkinetics.cdnp[i] = y[indx]
+                for i in range(self.core.ndnp):
+                    self.core.cdnp[i] = y[indx]
                     indx += 1
 
             self.control.evaluate(self, t)
 
             # signal-dependent junction
-            for j in range(self.fluid.njun):
-                if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
-                    # impose flowrate from the look-up table
-                    self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
+            if 'fluid' in self.solve:
+                for j in range(self.fluid.njun):
+                    if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
+                        # impose flowrate from the look-up table
+                        self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
 
             # signal-dependent pipe
-            for i in range(self.fluid.npipe):
-                if self.fluid.pipetype[i] == 'normal' and self.fluid.signaltemp[i] != '':
-                    # impose temperature from the look-up table
-                    self.fluid.temp[i] = [self.control.signal[self.fluid.signaltemp[i]]] * self.fluid.pipennodes[i]
+            if 'fluid' in self.solve:
+                for i in range(self.fluid.npipe):
+                    if self.fluid.pipetype[i] == 'normal' and self.fluid.signaltemp[i] != '':
+                        # impose temperature from the look-up table
+                        self.fluid.temp[i] = [self.control.signal[self.fluid.signaltemp[i]]] * self.fluid.pipennodes[i]
 
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)
-            rhs += self.neutron.calculate_rhs(self, t)
+            rhs += self.core.calculate_rhs(self, t)
             return rhs
 
         # prepare an output folder
@@ -228,7 +228,7 @@ class Reactor:
             fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
             fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
-            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.core.ndnp)]) + '\n')
 
         # main integration loop
         for t_dt in self.control.input['t_dt'] :
@@ -283,10 +283,10 @@ class Reactor:
                         indx += 1
                 if 'pointkinetics' in self.solve:
                     # point kinetics power
-                    fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(self.neutron.pointkinetics.power) + '\n')
+                    fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(self.core.power) + '\n')
                     indx += 1
                     # point kinetics cdnp
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.neutron.pointkinetics.cdnp[i]) for i in range(self.neutron.pointkinetics.ndnp)]) + '\n')
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.core.cdnp[i]) for i in range(self.core.ndnp)]) + '\n')
                     indx += 1
 
         # close all output files
