@@ -4,16 +4,16 @@ import os
 class Isotope:
 
     #----------------------------------------------------------------------------------------------
-    # constructor: self is an 'isotope' object created in B3A
-    # indx is the index of the isotope in the mix with index indxmix
-    def __init__(self, indx, indxmix, reactor):
+    # constructor: self is an 'isotope' object created in B3
+    # isoname is the name of the isotope
+    def __init__(self, isoname, reactor):
         # to be fixed
         ng = 25
 
         # nuclear data directory
         nddir = reactor.control.input['nddir']
         # isotope name
-        self.isoname = reactor.control.input['mix'][indxmix]['isoid'][indx]
+        self.isoname = isoname
 
         # open, read, split by eol and close the isotope data file
         f = open(nddir + os.sep + self.isoname, 'r')
@@ -21,6 +21,7 @@ class Isotope:
         # remove leading whitespaces
         s = [str.lstrip() for str in s]
         f.close()
+
         ntemp = int(s[0])
         # base temperatures
         self.temp = [float(s[i]) for i in range(1,ntemp+1)]

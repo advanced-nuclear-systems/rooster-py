@@ -1,4 +1,5 @@
-from B3A_mix import Mix
+from B3A_isotope import Isotope
+from B3B_mix import Mix
 
 import os
 
@@ -21,6 +22,14 @@ class Core:
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
 
         if 'spatialkinetics' in reactor.solve:
+            # create a list of cll isotopes
+            self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
+            #remove duplicates
+            self.isoname = list(dict.fromkeys(self.isoname))
+            # create an object for every isotope
+            self.iso = []
+            for i in range(len(self.isoname)):
+                self.iso.append(Isotope(self.isoname[i], reactor))
             # create an object for every mix
             self.mix = []
             for i in range(len(reactor.control.input['mix'])):

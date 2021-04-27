@@ -1,5 +1,3 @@
-from B3A0_isotope import Isotope
-
 #--------------------------------------------------------------------------------------------------
 class Mix:
 
@@ -11,6 +9,7 @@ class Mix:
         # number of isotopes specified in input for mix indx
         self.niso = len(reactor.control.input['mix'][indx]['isoid'])
         # create an object for every isotope of the mix
-        self.iso = []
-        for i in range(self.niso):
-            self.iso.append(Isotope(i, indx, reactor))
+        #self.iso = []
+        #for i in range(self.niso):
+        #    self.iso.append(Isotope(i, indx, reactor))
+        #    print(self.iso[i].isoname)
