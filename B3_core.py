@@ -33,7 +33,7 @@ class Core:
             # create an object for every mix
             self.mix = []
             for i in range(len(reactor.control.input['mix'])):
-                self.mix.append(Mix(i, reactor))
+                self.mix.append(Mix(i, self, reactor))
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B

@@ -5,18 +5,18 @@ class Isotope:
 
     #----------------------------------------------------------------------------------------------
     # constructor: self is an 'isotope' object created in B3
-    # isoname is the name of the isotope
-    def __init__(self, isoname, reactor):
+    # isoid is the id of the isotope
+    def __init__(self, isoid, reactor):
         # to be fixed
         ng = 25
 
         # nuclear data directory
         nddir = reactor.control.input['nddir']
-        # isotope name
-        self.isoname = isoname
+        # isotope is
+        self.isoid = isoid
 
         # open, read, split by eol and close the isotope data file
-        f = open(nddir + os.sep + self.isoname, 'r')
+        f = open(nddir + os.sep + self.isoid, 'r')
         s = f.read().replace('\r\n', '\n').split('\n')
         # remove leading whitespaces
         s = [str.lstrip() for str in s]
@@ -96,4 +96,4 @@ class Isotope:
                 elif keyword == 'the':
                     pass
             
-        #if self.isoname == 'U238b6' : print(self.xs['n2n'])
+        #if self.isoid == 'U238b6' : print(self.xs['n2n'])

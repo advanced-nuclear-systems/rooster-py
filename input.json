@@ -250,6 +250,12 @@
         1.97311e-08,
         7.94201e-08,
         2.7547e-05
+      ],
+      "signaltemp": [
+        "TEMP",
+        "TEMP",
+        "TEMP",
+        "TEMP"
       ]
     },
     {
@@ -267,6 +273,13 @@
         7.94201e-08,
         2.7547e-05,
         0.00523707
+      ],
+      "signaltemp": [
+        "TEMP",
+        "TEMP",
+        "TEMP",
+        "TEMP",
+        "TEMP"
       ]
     }
   ],
@@ -320,9 +333,25 @@
   "signal": [
     {
       "id": "TIME",
-      "type": "time",
-      "sign": []
+      "value": "time"
+    },
+    {
+      "id": "PI",
+      "value": 3.14159
+    },
+    {
+      "id": "TEMP",
+      "value": 300.0
     }
+  ],
+  "signalid": [
+    "TIME",
+    "PI",
+    "TEMP",
+    "RHO_INS",
+    "PMPHEAD_VS_T",
+    "MDOT_VS_T",
+    "TEMP_VS_T"
   ],
   "solve": [
     "pointkinetics",
@@ -335,7 +364,6 @@
       1.0
     ]
   ],
-  "PI": 3.14159,
   "tlife": 0.0005,
   "dnplmb": [
     0.0127,

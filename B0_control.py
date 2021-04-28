@@ -5,17 +5,19 @@ import sys
 
 #--------------------------------------------------------------------------------------------------
 class Control:
-    
-    signal = {}
 
     # constructor: self is a 'control' object created in B
     def __init__(self, reactor):
         self.input = construct_input()
+        self.signal = {}
+        self.evaluate(reactor, self.input['t0'])
 
     def evaluate(self, reactor, t):
         # evaluate signals
         for s in self.input['signal'] :
-            if s['type'] == 'time' :
+            if type(s['value']) == int or type(s['value']) == float:
+                self.signal[s['id']] = s['value']
+            if s['value'] == 'time' :
                 self.signal[s['id']] = t
 
         #evaluate output signals of lookup tables
@@ -29,6 +31,7 @@ class Control:
             xnew = max(min(self.signal[insignal_name],x[-1]),x[0])
             ynew = f(xnew)
             self.signal[outsignal_name] = ynew
+
 
 #--------------------------------------------------------------------------------------------------
 def construct_input():
@@ -45,6 +48,7 @@ def construct_input():
     inp['p2d'] = []
     inp['pipe'] = []
     inp['signal'] = []
+    inp['signalid'] = []
     inp['solve'] = []
     inp['t0'] = 0
     inp['t_dt'] = []
@@ -186,14 +190,19 @@ def construct_input():
         #--------------------------------------------------------------------------------------
         # mixture of isotopes
         elif key == 'mix' :
+            if len(word)-1 < 4:
+                print('****ERROR: mix card should have four values after the keyword: mix id, isotopeid, number density and signal id for temperature.')
+                sys.exit()
+            
             mixid = word[1]
             if any([mixid in x['mixid'] for x in inp['mix']]):
                 for x in inp['mix']:
                     if x['mixid'] == mixid:
                         x['isoid'].append(word[2])
                         x['numdens'].append(float(word[3]))
+                        x['signaltemp'].append(word[4])
             else:
-                inp['mix'].append({'mixid':mixid, 'isoid':[word[2]], 'numdens':[float(word[3])]})
+                inp['mix'].append({'mixid':mixid, 'isoid':[word[2]], 'numdens':[float(word[3])], 'signaltemp':[word[4]]})
         #--------------------------------------------------------------------------------------
         # nuclear data directory
         elif key == 'nddir' :
@@ -229,8 +238,7 @@ def construct_input():
         elif key == 'signal' :
              signal = {}
              signal['id'] = word[1]
-             signal['type'] = word[2]
-             signal['sign'] = word[3:]
+             signal['value'] = word[2]
              inp['signal'].append(signal)
         #--------------------------------------------------------------------------------------
         # integration starting time
@@ -256,17 +264,25 @@ def construct_input():
     if 'fuelgrain' in inp['solve'] and 'fuelrod' not in inp['solve']:
         print('****ERROR: \'solve fuelgrain\' card requires \'solve fuelrod\' card.')
         sys.exit()
-    
+
+    # make a list of all signals
+    inp['signalid'] = [x['id'] for x in inp['signal']]
     # verify that lookup tables use existing signals
-    signal_userid = []
-    for s in inp['signal'] :
-        signal_userid.append(s['id'])
     for table in inp['lookup'] :
         insignal = table['x'][0]
         outsignal = table['f(x)'][0]
-        if insignal not in signal_userid :
+        if insignal not in inp['signalid'] :
             print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
             sys.exit()
+    # append output signals of lookup tables
+    inp['signalid'] += [y['f(x)'][0] for y in inp['lookup']]
+
+    # verify that mix card uses existing signals
+    for s in [x['signaltemp'][j] for x in inp['mix'] for j in range(len(x['signaltemp']))]:
+        if s not in inp['signalid']:
+            print('****ERROR: signal for temperature ' + s + ' in mix card is not defined.')
+            sys.exit()
+
     fid = open('input.json', 'w')
     fid.write(json.dumps(inp, indent=2))
     fid.close()
