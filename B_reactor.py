@@ -11,6 +11,8 @@
 #                Clad
 #         Fluid
 #         Core
+#             Mix
+#             Isotope
 #--------------------------------------------------------------------------------------------------
 from B0_control import Control
 from B1_solid import Solid
@@ -177,7 +179,6 @@ class Reactor:
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 
-        #------------------------------------------------------------------------------------------
         # main integration loop
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
@@ -188,55 +189,8 @@ class Reactor:
 
                 #print('time: {0:12.5e}'.format(time))
 
-                #----------------------------------------------------------------------------------
-                # print output files
-                indx = 0
-                if 'fuelrod' in self.solve:
-                    for i in range(self.solid.nfuelrods):
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].innergas.hgap[j]) for j in range(self.solid.fuelrod[i].nz)]) + '\n')
-                        indx += 1
-                        # fuel and clad temperatures
-                        for j in range(self.solid.fuelrod[i].nz):
-                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].temp[k]) for k in range(self.solid.fuelrod[i].fuel[j].nr)]) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].clad[j].temp[k]) for k in range(self.solid.fuelrod[i].clad[j].nr)]) + '\n')
-                            indx += 1
-                            for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                                if 'fuelgrain' in self.solve and i + j + k == 0: 
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
-                                    indx += 1
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ri[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-                                    indx += 1
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-                                    indx += 1
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-                                    indx += 1
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-                                    indx += 1
-                                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l]) for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-                                    indx += 1
-                if 'fluid' in self.solve:
-                    # flowrate in dependent and independent junctions (no internal junctions)
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.mdot[i]) for i in range(self.fluid.njuni + self.fluid.njund)]) + '\n')
-                    indx += 1
-                    for i in range(self.fluid.npipe):
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.p[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.temp[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.vel[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.re[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.pr[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                        fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.fluid.pe[i][j]) for j in range(self.fluid.pipennodes[i])]) + '\n')
-                        indx += 1
-                if 'pointkinetics' in self.solve:
-                    # point kinetics power
-                    fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(self.core.power) + '\n')
-                    indx += 1
-                    # point kinetics cdnp
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(self.core.cdnp[i]) for i in range(self.core.ndnp)]) + '\n')
-                    indx += 1
+                # print to output files
+                self.control.print_output_files(self, fid, time)
 
         # close all output files
         for f in fid:

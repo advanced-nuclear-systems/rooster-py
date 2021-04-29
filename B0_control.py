@@ -315,7 +315,6 @@ class Control:
         if os.path.isfile(path4results): os.remove(path4results)
         if not os.path.isdir(path4results): os.mkdir(path4results)
 
-        #------------------------------------------------------------------------------------------
         # copy input and open output files to output folder
         shutil.copyfile('input', path4results + os.sep + 'input')
         shutil.copyfile('input.json', path4results + os.sep + 'input.json')
@@ -363,4 +362,58 @@ class Control:
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
             fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(reactor.core.ndnp)]) + '\n')
+
         return fid
+
+    #----------------------------------------------------------------------------------------------
+    def print_output_files(self, reactor, fid, time):
+
+        # print output files
+        indx = 0
+        if 'fuelrod' in reactor.solve:
+            for i in range(reactor.solid.nfuelrods):
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].innergas.hgap[j]) for j in range(reactor.solid.fuelrod[i].nz)]) + '\n')
+                indx += 1
+                # fuel and clad temperatures
+                for j in range(reactor.solid.fuelrod[i].nz):
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].temp[k]) for k in range(reactor.solid.fuelrod[i].fuel[j].nr)]) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].clad[j].temp[k]) for k in range(reactor.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                    indx += 1
+                    for k in range(reactor.solid.fuelrod[i].fuel[j].nr):
+                        if 'fuelgrain' in reactor.solve and i + j + k == 0: 
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
+                            indx += 1
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].ri[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            indx += 1
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            indx += 1
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            indx += 1
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            indx += 1
+                            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            indx += 1
+        if 'fluid' in reactor.solve:
+            # flowrate in dependent and independent junctions (no internal junctions)
+            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.mdot[i]) for i in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
+            indx += 1
+            for i in range(reactor.fluid.npipe):
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.p[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.temp[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.vel[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.re[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pr[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pe[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+        if 'pointkinetics' in reactor.solve:
+            # point kinetics power
+            fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(reactor.core.power) + '\n')
+            indx += 1
+            # point kinetics cdnp
+            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.cdnp[i]) for i in range(reactor.core.ndnp)]) + '\n')
+            indx += 1
+
