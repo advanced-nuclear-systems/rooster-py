@@ -1,6 +1,9 @@
 from scipy.interpolate import interp1d
 
+import datetime
 import json
+import os
+import shutil
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -300,3 +303,64 @@ class Control:
         fid.write(json.dumps(inp, indent=2))
         fid.close()
         return inp
+
+    #----------------------------------------------------------------------------------------------
+    def open_output_files(self, reactor):
+
+        # prepare an output folder
+        path4results = 'output'
+        if os.path.isfile(path4results): os.remove(path4results)
+        if not os.path.isdir(path4results): os.mkdir(path4results)
+        path4results += os.sep + str(datetime.datetime.now())[0:21].replace(' ','-').replace(':','-').replace('.','-')
+        if os.path.isfile(path4results): os.remove(path4results)
+        if not os.path.isdir(path4results): os.mkdir(path4results)
+
+        #------------------------------------------------------------------------------------------
+        # copy input and open output files to output folder
+        shutil.copyfile('input', path4results + os.sep + 'input')
+        shutil.copyfile('input.json', path4results + os.sep + 'input.json')
+        # open files for output
+        fid = []
+        if 'fuelrod' in reactor.solve:
+            for i in range(reactor.solid.nfuelrods):
+                fid.append(open(path4results + os.sep + 'fuelrod-hgap-' + [x['id'] for x in self.input['fuelrod']][i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('hgap-' + str(j).zfill(3)).ljust(13) for j in range(reactor.solid.fuelrod[i].nz)]) + '\n')
+                for j in range(reactor.solid.fuelrod[i].nz):
+                    fid.append(open(path4results + os.sep + 'fuelrod-temp-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '.dat', 'w'))
+                    fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('tempf-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(reactor.solid.fuelrod[i].fuel[j].nr)]) + ''.join([('tempc-' + str(k).zfill(3) + '(K)').ljust(13) for k in range(reactor.solid.fuelrod[i].clad[j].nr)]) + '\n')
+                    for k in range(reactor.solid.fuelrod[i].fuel[j].nr):
+                        if 'fuelgrain' in reactor.solve and i + j + k == 0: 
+                            fid.append(open(path4results + os.sep + 'fuelrod-c1-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('c1-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].nr)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-ri-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('ri-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-cv_irr-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_irr-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-ci_irr-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('ci_irr-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-cv_p-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_p-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+                            fid.append(open(path4results + os.sep + 'fuelrod-bi-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
+                            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('bi-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+        if 'fluid' in reactor.solve:
+            fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.input['junction']['from'][j] +'-' + self.input['junction']['to'][j]).ljust(13) for j in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
+            for i in range(reactor.fluid.npipe):
+                fid.append(open(path4results + os.sep + 'fluid-p-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-temp-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-vel-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-re-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pr-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pe-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+        if 'pointkinetics' in reactor.solve:
+            fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
+            fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(reactor.core.ndnp)]) + '\n')
+        return fid
