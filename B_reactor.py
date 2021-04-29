@@ -168,6 +168,7 @@ class Reactor:
             rhs += self.core.calculate_rhs(self, t)
             return rhs
 
+        #------------------------------------------------------------------------------------------
         # prepare an output folder
         path4results = 'output'
         if os.path.isfile(path4results): os.remove(path4results)
@@ -182,6 +183,7 @@ class Reactor:
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 
+        #------------------------------------------------------------------------------------------
         # copy input and open output files to output folder
         shutil.copyfile('input', path4results + os.sep + 'input')
         shutil.copyfile('input.json', path4results + os.sep + 'input.json')
@@ -230,6 +232,7 @@ class Reactor:
             fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(self.core.ndnp)]) + '\n')
 
+        #------------------------------------------------------------------------------------------
         # main integration loop
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
@@ -240,6 +243,7 @@ class Reactor:
 
                 #print('time: {0:12.5e}'.format(time))
 
+                #----------------------------------------------------------------------------------
                 # print output
                 indx = 0
                 if 'fuelrod' in self.solve:
