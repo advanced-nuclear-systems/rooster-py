@@ -233,6 +233,18 @@ def construct_input():
                 for v in sorted:
                     print('solve', v)
                 sys.exit()
+            if word[1] == 'spatialkinetics':
+                # check that there is a second value
+                if len(word)-1 == 1:
+                    print('****ERROR: solve spatialkinetics card should have a second value after the keyword: number of energy groups (integer), e.g.:\nsolve spatialkinetics 25')
+                    sys.exit()
+                # check that there the second value is integer
+                try:
+                    # number of energy groups
+                    inp['ng'] = int(word[2])
+                except:
+                    print('****ERROR: the second value after the keyword of solve spatialkinetics card should be integer (number of energy groups), e.g.:\nsolve spatialkinetics 25')
+                    sys.exit()
         #--------------------------------------------------------------------------------------
         # signal variable
         elif key == 'signal' :
@@ -256,6 +268,7 @@ def construct_input():
     # verify that t_dt present
     if inp['t_dt'] == [] :
         sys.exit('****ERROR: obligatory card t_dt specifying time_end and dtime_out is absent.')
+        sys.exit()
 
     # verify that there is at least one solve card
     if len(inp['solve']) == 0:

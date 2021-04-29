@@ -7,8 +7,8 @@ class Isotope:
     # constructor: self is an 'isotope' object created in B3
     # isoid is the id of the isotope
     def __init__(self, isoid, reactor):
-        # to be fixed
-        ng = 25
+        # number of energy groups
+        ng = reactor.control.input['ng']
 
         # nuclear data directory
         nddir = reactor.control.input['nddir']

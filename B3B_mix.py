@@ -14,13 +14,13 @@ class Mix:
         self.numdens = reactor.control.input['mix'][indx]['numdens']
         # number of isotopes specified in input for mix indx
         self.niso = len(self.isoid)
-        # signals for temperatures of isotopes
+        # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
 
         sigma0(self, indx, core, reactor)
 
 #----------------------------------------------------------------------------------------------
-# sigma-zero iterations
+# returns a list of sigma-zeros for each isotope of mix indx
 def sigma0(self, indx, core, reactor):
 
     for i in range(self.niso):
