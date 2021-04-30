@@ -34,135 +34,44 @@ class Reactor:
         # create control object
         self.control = Control(self)
 
+        # evaluate signals
+        self.control.evaluate(self, self.control.input['t0'])
+
         # list of objects to be solved
         self.solve = self.control.input['solve']
-        
+
         # create other objects
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.core = Core(self)
 
         # write list of unknowns to y0
-        y0 = []
-        if 'fuelrod' in self.solve:
-            for i in range(self.solid.nfuelrods):
-                for j in range(self.solid.fuelrod[i].nz):
-                    for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                        if 'fuelgrain' in self.solve and i + j + k == 0: #i+j+k==0 is a temporal condition to solve fuel grain only for one node
-                            # fuel grain monoatoms
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l])
-                            # fuel grain bubble radii
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ri[l])
-                            # fuel grain fractional concentration of irradiation-induced uranium vacancies
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l])
-                            # fuel grain fractional concentration of irradiation-induced uranium interstitials
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l])
-                            # fuel grain fractional concentration of uranium vacancies ejected from intragranular as-fabricated pores
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l])
-                            # fuel grain intragranular bubble concentation
-                            for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                y0.append(self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l])
-                    for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                        # fuel temperature
-                        y0.append(self.solid.fuelrod[i].fuel[j].temp[k])
-                    for k in range(self.solid.fuelrod[i].clad[j].nr):
-                        # clad temperature
-                        y0.append(self.solid.fuelrod[i].clad[j].temp[k])
-        if 'fluid' in self.solve:
-            for j in range(self.fluid.njun):
-                if self.fluid.juntype[j] == 'independent':
-                    # flowrate in independent junctions
-                    y0.append(self.fluid.mdoti[j])
-            for i in range(self.fluid.npipe):
-                for j in range(self.fluid.pipennodes[i]):
-                    # temperature in pipe nodes
-                    y0.append(self.fluid.temp[i][j])
-        if 'pointkinetics' in self.solve:
-            y0.append(self.core.power)
-            for i in range(self.core.ndnp):
-                y0.append(self.core.cdnp[i])
+        y0 = self.control.write_to_y(self)
 
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
         def construct_rhs(t, y):
-            # read list of unknowns from y
-            indx = 0
-            if 'fuelrod' in self.solve:
-                for i in range(self.solid.nfuelrods):
-                    for j in range(self.solid.fuelrod[i].nz):
-                        for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                            if 'fuelgrain' in self.solve and i + j + k == 0:
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].nr):
-                                    # fuel grain monoatoms
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].c1[l] = y[indx]
-                                    indx += 1
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                    # fuel grain bubble radii
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].rb[l] = y[indx]
-                                    indx += 1
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                    # fuel grain fractional concentration of irradiation-induced uranium vacancies
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_irr[l] = y[indx]
-                                    indx += 1
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                    # fuel grain fractional concentration of irradiation-induced uranium interstitials
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].ci_irr[l] = y[indx]
-                                    indx += 1
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                    # fuel grain fractional concentration of uranium vacancies ejected from intragranular as-fabricated pores
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].cv_p[l] = y[indx]
-                                    indx += 1
-                                for l in range(self.solid.fuelrod[i].fuel[j].fuelgrain[k].NB):
-                                    # fuel grain intragranular bubble concentrations
-                                    self.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l] = y[indx]
-                                    indx += 1
-                        for k in range(self.solid.fuelrod[i].fuel[j].nr):
-                            # fuel temperature
-                            self.solid.fuelrod[i].fuel[j].temp[k] = y[indx]
-                            indx += 1
-                        for k in range(self.solid.fuelrod[i].clad[j].nr):
-                            # clad temperature
-                            self.solid.fuelrod[i].clad[j].temp[k] = y[indx]
-                            indx += 1
-            if 'fluid' in self.solve:
-                for j in range(self.fluid.njun):
-                    if self.fluid.juntype[j] == 'independent':
-                        # flowrate in independent junctions
-                        self.fluid.mdoti[j] = y[indx]
-                        indx += 1
-                for i in range(self.fluid.npipe):
-                    for j in range(self.fluid.pipennodes[i]):
-                        # temperature in pipe nodes
-                        self.fluid.temp[i][j] = y[indx]
-                        indx += 1
-            if 'pointkinetics' in self.solve:
-                self.core.power = y[indx]
-                indx += 1
-                for i in range(self.core.ndnp):
-                    self.core.cdnp[i] = y[indx]
-                    indx += 1
 
+            # read list of unknowns from y
+            self.control.read_from_y(self, y)
+
+            # evaluate signals            
             self.control.evaluate(self, t)
 
-            # signal-dependent junction
+            # signal-dependent junction: impose flowrate
             if 'fluid' in self.solve:
                 for j in range(self.fluid.njun):
                     if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
                         # impose flowrate from the look-up table
                         self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
-
-            # signal-dependent pipe
+            
+            # signal-dependent pipe: impose temperature
             if 'fluid' in self.solve:
                 for i in range(self.fluid.npipe):
                     if self.fluid.pipetype[i] == 'normal' and self.fluid.signaltemp[i] != '':
                         # impose temperature from the look-up table
                         self.fluid.temp[i] = [self.control.signal[self.fluid.signaltemp[i]]] * self.fluid.pipennodes[i]
-
+   
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)
@@ -173,7 +82,7 @@ class Reactor:
         # prepare an output folder, copy input and open output files
         fid = self.control.open_output_files(self)
 
-        # solve the whole system of ODEs
+        # create ODE solver, initialize and set integrator
         solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
         t0 = self.control.input['t0']
         solver.set_initial_value(y0, t0)
@@ -183,6 +92,7 @@ class Reactor:
         for t_dt in self.control.input['t_dt'] :
             tend = t_dt[0]
             dtout = t_dt[1]
+            # solve the whole system of ODEs
             while solver.successful() and solver.t < tend:
                 time = solver.t + dtout
                 y = solver.integrate(time)

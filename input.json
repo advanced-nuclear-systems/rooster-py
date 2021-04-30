@@ -354,6 +354,7 @@
     "TEMP_VS_T"
   ],
   "solve": [
+    "fluid",
     "pointkinetics",
     "spatialkinetics"
   ],

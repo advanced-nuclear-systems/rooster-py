@@ -251,7 +251,7 @@ class Fluid:
                 vol = self.areaz[i] * abs(self.len[i])/self.pipennodes[i]
                 for j in range(self.pipennodes[i]):
                     # check if there is a fuel rod cooled by the node
-                    if (self.pipeid[i],j) in self.map_th:
+                    if ('fuelrod' in reactor.solve and self.pipeid[i],j) in self.map_th:
                         indx = self.map_th.index((self.pipeid[i],j))
                         tuple_fr = self.map_fr[indx]
                         tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
