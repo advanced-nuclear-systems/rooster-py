@@ -42,18 +42,9 @@ class Mix:
                 # iteration loop
                 iter = 0
                 while err > 1e-4:
-                    sig_tmp2 = [0]*self.niso
-                    for i in range(self.niso):
-                        # index of the isotope i in the global list of isotopes core.iso
-                        isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
-                        # grid sigma0s for this isotope
-                        grid_sig0 = core.iso[isoindx].sig0
-                        nsig0 = len(grid_sig0)
-                        # interpolate total cross section for sig0
-                        x = [math.log10(s) for s in grid_sig0]
-                        y = [sig_tmp1[i][ig][isig0] for isig0 in range(nsig0)]
-                        f = interp1d(x, y) #scipy function
-                        sig_tmp2[i] = f(math.log10(self.sig0[ig][i]))
+                    # given microscopic XSs without temperature dimension perform sig0 interpolation for energy group ig 
+                    # for all isotopes of mix indx and return matrix of microscopic XSs without sig0 dimension
+                    sig_tmp2 = self.sig0_inter(ig, indx, core, reactor, sig_tmp1)
                     err = 0
                     for i in range(self.niso):
                         # find new sig0
@@ -71,9 +62,10 @@ class Mix:
                     if iter > 100:
                         print('****ERROR: too many sig0 iterations for mix ' + self.mixid + ' and energy group ' + ig + '.')
                         sys.exit()
-
+        #print(self.sig0)
     #----------------------------------------------------------------------------------------------
-    # perform temperature interpolation for all isotopes of mix indx and return matrix of microscopic XSs without temperature dimension
+    # perform temperature interpolation for all isotopes of mix indx and 
+    # return matrix of microscopic XSs without temperature dimension
     def temp_inter(self, indx, core, reactor):
 
         # temporal list for sigt after temperature interpolation
@@ -103,3 +95,21 @@ class Mix:
                     f = interp1d(x, y) #scipy function
                     sig_tmp1[i][ig][isig0] = f(temp)
         return sig_tmp1
+
+    #----------------------------------------------------------------------------------------------
+    # given microscopic XSs without temperature dimension perform sig0 interpolation for energy group ig 
+    # for all isotopes of mix indx and return matrix of microscopic XSs without sig0 dimension
+    def sig0_inter(self, ig, indx, core, reactor, sig_tmp1):
+        sig_tmp2 = [0]*self.niso
+        for i in range(self.niso):
+            # index of the isotope i in the global list of isotopes core.iso
+            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+            # grid sigma0s for this isotope
+            grid_sig0 = core.iso[isoindx].sig0
+            nsig0 = len(grid_sig0)
+            # interpolate total cross section for sig0
+            x = [math.log10(s) for s in grid_sig0]
+            y = [sig_tmp1[i][ig][isig0] for isig0 in range(nsig0)]
+            f = interp1d(x, y) #scipy function
+            sig_tmp2[i] = f(math.log10(self.sig0[ig][i]))
+        return sig_tmp2
