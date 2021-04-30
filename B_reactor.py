@@ -45,19 +45,20 @@ class Reactor:
         # evaluate signals
         self.control.evaluate(self, self.control.input['t0'])
 
-        # write list of unknowns to y0
+        # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
 
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
         def construct_rhs(t, y):
 
-            # read list of unknowns from y
+            # read list of unknowns from y to self
             self.control.read_from_y(self, y)
 
             # evaluate signals            
             self.control.evaluate(self, t)
 
+            # create right-hand side vector
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)

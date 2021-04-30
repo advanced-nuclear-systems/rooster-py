@@ -56,7 +56,6 @@ class Core:
         if 'spatialkinetics' in reactor.solve:
             for i in range(self.nmix):
                 if self.mix[i].update_xs:
-                    #print(i, self.mix[i].update_xs)
                     self.mix[i].sigma0(i, self, reactor)
                     self.mix[i].update_xs = False
 
