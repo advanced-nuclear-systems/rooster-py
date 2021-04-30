@@ -27,12 +27,14 @@ class Core:
             #remove duplicates
             self.isoname = list(dict.fromkeys(self.isoname))
             # create an object for every isotope
+            self.niso = len(self.isoname)
             self.iso = []
-            for i in range(len(self.isoname)):
+            for i in range(self.niso):
                 self.iso.append(Isotope(self.isoname[i], reactor))
             # create an object for every mix
+            self.nmix = len(reactor.control.input['mix'])
             self.mix = []
-            for i in range(len(reactor.control.input['mix'])):
+            for i in range(self.nmix):
                 self.mix.append(Mix(i, self, reactor))
 
     #----------------------------------------------------------------------------------------------
@@ -52,6 +54,12 @@ class Core:
             rhs = [dpowerdt] + dcdnpdt
 
         if 'spatialkinetics' in reactor.solve:
+            for i in range(self.nmix):
+                if self.mix[i].update_xs:
+                    #print(i, self.mix[i].update_xs)
+                    self.mix[i].sigma0(i, self, reactor)
+                    self.mix[i].update_xs = False
+
             rhs += []
 
         return rhs
