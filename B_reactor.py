@@ -34,9 +34,6 @@ class Reactor:
         # create control object
         self.control = Control(self)
 
-        # evaluate signals
-        self.control.evaluate(self, self.control.input['t0'])
-
         # list of objects to be solved
         self.solve = self.control.input['solve']
 
@@ -44,6 +41,9 @@ class Reactor:
         self.solid = Solid(self)
         self.fluid = Fluid(self)
         self.core = Core(self)
+
+        # evaluate signals
+        self.control.evaluate(self, self.control.input['t0'])
 
         # write list of unknowns to y0
         y0 = self.control.write_to_y(self)
@@ -58,20 +58,6 @@ class Reactor:
             # evaluate signals            
             self.control.evaluate(self, t)
 
-            # signal-dependent junction: impose flowrate
-            if 'fluid' in self.solve:
-                for j in range(self.fluid.njun):
-                    if self.fluid.juntype[j] == 'independent' and self.fluid.junflowrate[j] != '':
-                        # impose flowrate from the look-up table
-                        self.fluid.mdoti[j] = self.control.signal[self.fluid.junflowrate[j]]
-            
-            # signal-dependent pipe: impose temperature
-            if 'fluid' in self.solve:
-                for i in range(self.fluid.npipe):
-                    if self.fluid.pipetype[i] == 'normal' and self.fluid.signaltemp[i] != '':
-                        # impose temperature from the look-up table
-                        self.fluid.temp[i] = [self.control.signal[self.fluid.signaltemp[i]]] * self.fluid.pipennodes[i]
-   
             rhs = []
             rhs += self.solid.calculate_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)

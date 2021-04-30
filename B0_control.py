@@ -37,19 +37,19 @@ class Control:
             ynew = f(xnew)
             self.signal[outsignal_name] = ynew
 
-        ## signal-dependent junction: impose flowrate
-        #if 'fluid' in reactor.solve:
-        #    for j in range(reactor.fluid.njun):
-        #        if reactor.fluid.juntype[j] == 'independent' and reactor.fluid.junflowrate[j] != '':
-        #            # impose flowrate from the look-up table
-        #            reactor.fluid.mdoti[j] = self.signal[reactor.fluid.junflowrate[j]]
-        #
-        ## signal-dependent pipe: impose temperature
-        #if 'fluid' in reactor.solve:
-        #    for i in range(reactor.fluid.npipe):
-        #        if reactor.fluid.pipetype[i] == 'normal' and reactor.fluid.signaltemp[i] != '':
-        #            # impose temperature from the look-up table
-        #            reactor.fluid.temp[i] = [self.signal[reactor.fluid.signaltemp[i]]] * reactor.fluid.pipennodes[i]
+        # signal-dependent junction: impose flowrate
+        if 'fluid' in reactor.solve:
+            for j in range(reactor.fluid.njun):
+                if reactor.fluid.juntype[j] == 'independent' and reactor.fluid.junflowrate[j] != '':
+                    # impose flowrate from the look-up table
+                    reactor.fluid.mdoti[j] = self.signal[reactor.fluid.junflowrate[j]]
+        
+        # signal-dependent pipe: impose temperature
+        if 'fluid' in reactor.solve:
+            for i in range(reactor.fluid.npipe):
+                if reactor.fluid.pipetype[i] == 'normal' and reactor.fluid.signaltemp[i] != '':
+                    # impose temperature from the look-up table
+                    reactor.fluid.temp[i] = [self.signal[reactor.fluid.signaltemp[i]]] * reactor.fluid.pipennodes[i]
 
 
     #----------------------------------------------------------------------------------------------
