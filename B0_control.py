@@ -374,10 +374,14 @@ class Control:
                 fid.append(open(path4results + os.sep + 'fluid-pe-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
         if 'pointkinetics' in reactor.solve:
-            fid.append(open(path4results + os.sep + 'pointkinetics-power.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'core-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
-            fid.append(open(path4results + os.sep + 'pointkinetics-cdnp.dat', 'w'))
+            fid.append(open(path4results + os.sep + 'core-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(reactor.core.ndnp)]) + '\n')
+        if 'spatialkinetics' in reactor.solve:
+            for i in range(reactor.core.nmix):
+                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sig0.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(12) + 'isoname'.ljust(13) + ''.join([(str(j)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
 
         return fid
 
@@ -432,6 +436,12 @@ class Control:
             # point kinetics cdnp
             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.cdnp[i]) for i in range(reactor.core.ndnp)]) + '\n')
             indx += 1
+        if 'spatialkinetics' in reactor.solve:
+            for i in range(reactor.core.nmix):
+                for j in range(reactor.core.mix[i].niso):
+                    # sigma-zeros
+                    fid[indx].write('{0:12.5e} '.format(time) + str(reactor.core.mix[i].isoid[j]).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                indx += 1
 
     #----------------------------------------------------------------------------------------------
     def write_to_y(self, reactor):

@@ -17,10 +17,10 @@ class Mix:
         self.mixid = reactor.control.input['mix'][indx]['mixid']
         # id of isotopes specified in input for mix indx
         self.isoid = reactor.control.input['mix'][indx]['isoid']
-        # number densities of isotopes specified in input for mix indx
-        self.numdens = reactor.control.input['mix'][indx]['numdens']
         # number of isotopes specified in input for mix indx
         self.niso = len(self.isoid)
+        # number densities of isotopes specified in input for mix indx
+        self.numdens = reactor.control.input['mix'][indx]['numdens']
         # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
         # flag to calculate xs for mix
