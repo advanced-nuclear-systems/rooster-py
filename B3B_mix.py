@@ -23,7 +23,9 @@ class Mix:
         self.numdens = reactor.control.input['mix'][indx]['numdens']
         # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
-        # macroscopic absorption cross sections
+        # total macroscopic cross sections
+        self.sigt = [0]*self.ng
+        # absorption macroscopic cross sections
         self.siga = [0]*self.ng
         # flag to calculate xs for mix
         self.update_xs = True
@@ -117,7 +119,7 @@ class Mix:
         return sig2
 
     #----------------------------------------------------------------------------------------------
-    # calculates macroscopic absorption cross sections for the mix
+    # calculates absorption macroscopic cross sections for the mix
     def calculate_siga(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'abs')
@@ -126,3 +128,14 @@ class Mix:
             self.siga[i] = 0
             for j in range(self.niso):
                 self.siga[i] += self.numdens[j]*sig_tmp2[i][j]
+
+    #----------------------------------------------------------------------------------------------
+    # calculates total macroscopic absorption cross sections for the mix
+    def calculate_sigt(self, core, reactor):
+        # perform temperature and sig0 interpolations for all isotopes and all groups
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        for i in range(self.ng):
+            self.sigt[i] = 0
+            for j in range(self.niso):
+                self.sigt[i] += self.numdens[j]*sig_tmp2[i][j]

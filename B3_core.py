@@ -57,6 +57,7 @@ class Core:
             for i in range(self.nmix):
                 if self.mix[i].update_xs:
                     self.mix[i].calculate_sig0(self, reactor)
+                    self.mix[i].calculate_sigt(self, reactor)
                     self.mix[i].calculate_siga(self, reactor)
                     self.mix[i].update_xs = False
 
