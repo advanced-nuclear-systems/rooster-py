@@ -56,7 +56,8 @@ class Core:
         if 'spatialkinetics' in reactor.solve:
             for i in range(self.nmix):
                 if self.mix[i].update_xs:
-                    self.mix[i].calculate_sig0(i, self, reactor)
+                    self.mix[i].calculate_sig0(self, reactor)
+                    self.mix[i].calculate_siga(self, reactor)
                     self.mix[i].update_xs = False
 
             rhs += []

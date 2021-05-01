@@ -23,15 +23,18 @@ class Mix:
         self.numdens = reactor.control.input['mix'][indx]['numdens']
         # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
+        # macroscopic absorption cross sections
+        self.siga = [0]*self.ng
         # flag to calculate xs for mix
         self.update_xs = True
 
     #----------------------------------------------------------------------------------------------
-    # calculates a list of sigma-zeros for each isotope of mix indx
-    def calculate_sig0(self, indx, core, reactor):
+    # calculates a list of sigma-zeros for each isotope of the mix
+    def calculate_sig0(self, core, reactor):
 
-        # perform temperature interpolation for all isotopes and return matrix of microscopic XSs without temperature dimension
-        sig_tmp1 = self.interpolate_temp(core, reactor)
+        # perform temperature interpolation for all isotopes and all groups
+        # return matrix of microscopic XSs without temperature dimension
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
 
         self.sig0 = [[1e10]*self.niso for j in range(self.ng)]
         # if mix consists of only one isotope then keep sig0 = 1e10
@@ -43,7 +46,7 @@ class Mix:
                 iter = 0
                 while err > 1e-4:
                     # given microscopic XSs without temperature dimension perform sig0 interpolation for energy group ig 
-                    # for all isotopes of mix indx and return matrix of microscopic XSs without sig0 dimension
+                    # for all isotopes of the mix and return matrix of microscopic XSs without sig0 dimension
                     sig_tmp2 = self.interpolate_sig0(ig, core, sig_tmp1)
                     err = 0
                     for i in range(self.niso):
@@ -66,10 +69,9 @@ class Mix:
     #----------------------------------------------------------------------------------------------
     # perform temperature interpolation for all isotopes of the mix and 
     # return matrix of microscopic XSs without temperature dimension
-    def interpolate_temp(self, core, reactor):
+    def interpolate_temp(self, core, reactor, reaction_type):
 
-        # temporal list for sigt after temperature interpolation
-        sig1 = []
+        sig = []
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
             isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
@@ -85,16 +87,16 @@ class Mix:
             if temp < grid_temp[0] or temp > grid_temp[-1]:
                 print('****ERROR: temperature ' + str(temp) + ' K specified in input for isotope ' + self.isoid[i] + ' is out of range of the grid temperatures available in nuclear data library: ' + ''.join([str(int(s)) + ', ' for s in grid_temp])[:-2] + '.')
                 sys.exit()
-            sig1.append([[0]*nsig0 for j in range(self.ng)])
+            sig.append([[0]*nsig0 for j in range(self.ng)])
     
             for ig in range(self.ng):
                 for isig0 in range(nsig0):
                     # interpolate total xs for isotope temperature temp
                     x = grid_temp
-                    y = [core.iso[isoindx].xs['tot'][ig][itemp][isig0] for itemp in range(ntemp)]
+                    y = [core.iso[isoindx].xs[reaction_type][ig][itemp][isig0] for itemp in range(ntemp)]
                     f = interp1d(x, y) #scipy function
-                    sig1[i][ig][isig0] = f(temp)
-        return sig1
+                    sig[i][ig][isig0] = f(temp)
+        return sig
 
     #----------------------------------------------------------------------------------------------
     # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group ig 
@@ -113,3 +115,14 @@ class Mix:
             f = interp1d(x, y) #scipy function
             sig2[i] = f(self.sig0[ig][i])
         return sig2
+
+    #----------------------------------------------------------------------------------------------
+    # calculates macroscopic absorption cross sections for the mix
+    def calculate_siga(self, core, reactor):
+        # perform temperature and sig0 interpolations for all isotopes and all groups
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'abs')
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        for i in range(self.ng):
+            self.siga[i] = 0
+            for j in range(self.niso):
+                self.siga[i] += self.numdens[j]*sig_tmp2[i][j]
