@@ -15,11 +15,11 @@ class Mix:
         self.ng = reactor.control.input['ng']
         # mix id
         self.mixid = reactor.control.input['mix'][indx]['mixid']
-        # id of isotopes specified in input for mix indx
+        # id of isotopes specified in input for mix indx (list)
         self.isoid = reactor.control.input['mix'][indx]['isoid']
         # number of isotopes specified in input for mix indx
         self.niso = len(self.isoid)
-        # number densities of isotopes specified in input for mix indx
+        # number densities of isotopes specified in input for mix indx (list)
         self.numdens = reactor.control.input['mix'][indx]['numdens']
         # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
@@ -28,10 +28,10 @@ class Mix:
 
     #----------------------------------------------------------------------------------------------
     # calculates a list of sigma-zeros for each isotope of mix indx
-    def sigma0(self, indx, core, reactor):
+    def calculate_sig0(self, indx, core, reactor):
 
         # perform temperature interpolation for all isotopes and return matrix of microscopic XSs without temperature dimension
-        sig_tmp1 = self.temp_inter(indx, core, reactor)
+        sig_tmp1 = self.interpolate_temp(indx, core, reactor)
 
         self.sig0 = [[1e10]*self.niso for j in range(self.ng)]
         # if mix consists of only one isotope then keep sig0 = 1e10
@@ -44,7 +44,7 @@ class Mix:
                 while err > 1e-4:
                     # given microscopic XSs without temperature dimension perform sig0 interpolation for energy group ig 
                     # for all isotopes of mix indx and return matrix of microscopic XSs without sig0 dimension
-                    sig_tmp2 = self.sig0_inter(ig, indx, core, reactor, sig_tmp1)
+                    sig_tmp2 = self.interpolate_sig0(ig, indx, core, reactor, sig_tmp1)
                     err = 0
                     for i in range(self.niso):
                         # find new sig0
@@ -66,7 +66,7 @@ class Mix:
     #----------------------------------------------------------------------------------------------
     # perform temperature interpolation for all isotopes of mix indx and 
     # return matrix of microscopic XSs without temperature dimension
-    def temp_inter(self, indx, core, reactor):
+    def interpolate_temp(self, indx, core, reactor):
 
         # temporal list for sigt after temperature interpolation
         sig_tmp1 = []
@@ -78,7 +78,7 @@ class Mix:
             # grid temperatures for this isotope
             grid_temp = core.iso[isoindx].temp
             ntemp = len(grid_temp)
-            # grid sigma0s for this isotope
+            # grid sig0s for this isotope
             grid_sig0 = core.iso[isoindx].sig0
             nsig0 = len(grid_sig0)
             # check if temperature withing the range of grid temperatures for this isotope
@@ -99,12 +99,12 @@ class Mix:
     #----------------------------------------------------------------------------------------------
     # given microscopic XSs without temperature dimension perform sig0 interpolation for energy group ig 
     # for all isotopes of mix indx and return matrix of microscopic XSs without sig0 dimension
-    def sig0_inter(self, ig, indx, core, reactor, sig_tmp1):
+    def interpolate_sig0(self, ig, indx, core, reactor, sig_tmp1):
         sig_tmp2 = [0]*self.niso
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
             isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
-            # grid sigma0s for this isotope
+            # grid sig0s for this isotope
             grid_sig0 = core.iso[isoindx].sig0
             nsig0 = len(grid_sig0)
             # interpolate total cross section for sig0

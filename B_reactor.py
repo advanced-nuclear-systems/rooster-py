@@ -43,7 +43,7 @@ class Reactor:
         self.core = Core(self)
 
         # evaluate signals
-        self.control.evaluate(self, self.control.input['t0'])
+        self.control.evaluate_signals(self, self.control.input['t0'])
 
         # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
@@ -56,7 +56,7 @@ class Reactor:
             self.control.read_from_y(self, y)
 
             # evaluate signals            
-            self.control.evaluate(self, t)
+            self.control.evaluate_signals(self, t)
 
             # create right-hand side vector
             rhs = []

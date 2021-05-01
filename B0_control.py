@@ -12,10 +12,9 @@ class Control:
     # constructor: self is a 'control' object created in B
     def __init__(self, reactor):
         self.input = self.construct_input()
-        #self.evaluate(reactor, self.input['t0'])
 
     #------------------------------------------------------------------------------------------
-    def evaluate(self, reactor, t):
+    def evaluate_signals(self, reactor, t):
 
         # evaluate signals
         self.signal = {}
