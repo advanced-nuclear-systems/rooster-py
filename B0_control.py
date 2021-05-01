@@ -380,11 +380,11 @@ class Control:
         if 'spatialkinetics' in reactor.solve:
             for i in range(reactor.core.nmix):
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sig0.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(12) + 'isoname'.ljust(13) + ''.join([(str(j)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-siga.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
+                fid[-1].write(' ' + 'time(s)'.ljust(12) + 'isoname'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigt.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
+                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-siga.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
 
         return fid
 

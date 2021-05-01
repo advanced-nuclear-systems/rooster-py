@@ -38,8 +38,8 @@ class Mix:
         # return matrix of microscopic XSs without temperature dimension
         sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
 
-        self.sig0 = [[1e10]*self.niso for j in range(self.ng)]
-        # if mix consists of only one isotope then keep sig0 = 1e10
+        self.sig0 = [[1]*self.niso for j in range(self.ng)]
+        # if mix consists of only one isotope then keep sig0 = 1
         if self.niso > 1:
             for ig in range(self.ng):
                 # error of sig0 calculation

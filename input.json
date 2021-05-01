@@ -238,47 +238,14 @@
   ],
   "mix": [
     {
-      "mixid": "MOX01",
-      "isoid": [
-        "H1b6",
-        "B10b6",
-        "B11b6",
-        "C0b6"
-      ],
-      "numdens": [
-        1.24405e-06,
-        1.97311e-08,
-        7.94201e-08,
-        2.7547e-05
-      ],
-      "signaltemp": [
-        "TEMP",
-        "TEMP",
-        "TEMP",
-        "TEMP"
-      ]
-    },
-    {
       "mixid": "MOX02",
       "isoid": [
-        "H1b6",
-        "B10b6",
-        "B11b6",
-        "C0b6",
         "U238b6"
       ],
       "numdens": [
-        1.24405e-06,
-        1.97311e-08,
-        7.94201e-08,
-        2.7547e-05,
-        0.00523707
+        1.0
       ],
       "signaltemp": [
-        "TEMP",
-        "TEMP",
-        "TEMP",
-        "TEMP",
         "TEMP"
       ]
     }
@@ -341,7 +308,7 @@
     },
     {
       "id": "TEMP",
-      "value": 300.0
+      "value": 450.0
     }
   ],
   "signalid": [

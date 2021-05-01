@@ -36,33 +36,43 @@ class Isotope:
         list = []
         skip = False
         self.xs = {'inv':[0]*ng, 'chi':[0]*ng, 'nubar':[[0]*ntemp for i in range(ng)], 'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'n2n':[], 'sca':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
+        # cycle over lines of s
         for i in range(len(s)):
-            # read string beginning
+            # read 3 symbols at the line beginning
             s_beg = s[i][0:3].replace('.','').rstrip()
-            # check if the string begins with a text
+            # check if the line begins with a text
             if s_beg != '' and not s_beg.isnumeric():
                 # keyword
                 keyword = s_beg
                 temp = float(s[i+1].replace('k',''))
                 itemp = self.temp.index(temp)
             try:
+                # list of values in the line 
                 list = [float(e) for e in s[i].split()]
+                # if successful set skip to True unless this is the last line
                 skip = (list == [])
             except:
+                # the line contains non-numerical value: this is temperature line with "k"
                 skip = True
             if not skip:
                 if keyword == 'tot':
+                    ig = int(list[0])-1
                     if int(list[1]) == 0:
-                        self.xs['tot'][int(list[0])-1][itemp] = list[2:]
+                        self.xs['tot'][ig][itemp] = list[2:]
                     elif int(list[1]) == 1:
-                        self.xs['tot1'][int(list[0])-1][itemp] = list[2:]
+                        self.xs['tot1'][ig][itemp] = list[2:]
                 elif keyword == 'nga':
-                    self.xs['abs'][int(list[0])-1][itemp] += list[2:]
+                    ig = int(list[0])-1
+                    for j in range(nsig0):
+                        self.xs['abs'][ig][itemp][j] += list[j+1]
                 elif keyword == 'fis':
-                    self.xs['abs'][int(list[0])-1][itemp] += list[2:]
-                    self.xs['fis'][int(list[0])-1][itemp] = list[2:]
+                    ig = int(list[0])-1
+                    self.xs['fis'][ig][itemp] = list[1:]
+                    for j in range(nsig0):
+                        self.xs['abs'][ig][itemp][j] += list[j+1]
                 elif keyword == 'nub':
-                    self.xs['nubar'][int(list[0])-1][itemp] = list[1]
+                    ig = int(list[0])-1
+                    self.xs['nubar'][ig][itemp] = list[1]
                 elif keyword == 'dnu':
                     pass
                 elif keyword == 'ela':
@@ -78,17 +88,19 @@ class Isotope:
                     f = int(list[0])-1
                     t = int(list[1])-1
                     self.xs['n2n'].append([(f,t), list[2]])
-                    pass
                 elif keyword == 'chi':
-                    self.xs['chi'][int(list[0])-1] = list[1]
+                    ig = int(list[0])-1
+                    self.xs['chi'][ig] = list[1]
                 elif keyword == 'chd':
                     pass
                 elif keyword == 'inv':
-                    self.xs['inv'][int(list[0])-1] = list[1]
+                    ig = int(list[0])-1
+                    self.xs['inv'][ig] = list[1]
                 elif keyword == 'nab':
                     for k in range(ntemp):
+                        ig = int(list[0])-1
                         for l in range(nsig0):
-                            self.xs['abs'][int(list[0])-1][k][l] += list[1]
+                            self.xs['abs'][ig][k][l] += list[1]
                 elif keyword == 'xi':
                     pass
                 elif keyword == 'hea':
