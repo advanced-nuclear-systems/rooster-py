@@ -35,7 +35,7 @@ class Isotope:
         keyword = ''
         list = []
         skip = False
-        self.xs = {'inv':[0]*ng, 'chi':[0]*ng, 'nubar':[[0]*ntemp for i in range(ng)], 'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'n2n':[], 'sca':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
+        self.xs = {'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'ine':[], 'inv':[0]*ng, 'n2n':[], 'nubar':[[0]*ntemp for i in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
         # cycle over lines of s
         for i in range(len(s)):
             # read 3 symbols at the line beginning
@@ -79,11 +79,11 @@ class Isotope:
                     if int(list[2]) == 0:
                         f = int(list[0])-1
                         t = int(list[1])-1
-                        self.xs['sca'].append([itemp, (f,t)] + list[3:])
+                        self.xs['ela'].append([itemp, (f,t)] + list[3:])
                 elif keyword == 'ine':
                     f = int(list[0])-1
                     t = int(list[1])-1
-                    self.xs['sca'].append([itemp, (f,t)] + [list[2]]*nsig0)
+                    self.xs['ine'].append([(f,t), list[2]])
                 elif keyword == 'n2n':
                     f = int(list[0])-1
                     t = int(list[1])-1

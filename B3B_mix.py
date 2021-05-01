@@ -67,7 +67,6 @@ class Mix:
                     if iter > 100:
                         print('****ERROR: too many sig0 iterations for mix ' + self.mixid + ' and energy group ' + ig + '.')
                         sys.exit()
-        #print(self.sig0)
     #----------------------------------------------------------------------------------------------
     # perform temperature interpolation for all isotopes of the mix and 
     # return matrix of microscopic XSs without temperature dimension
@@ -89,15 +88,39 @@ class Mix:
             if temp < grid_temp[0] or temp > grid_temp[-1]:
                 print('****ERROR: temperature ' + str(temp) + ' K specified in input for isotope ' + self.isoid[i] + ' is out of range of the grid temperatures available in nuclear data library: ' + ''.join([str(int(s)) + ', ' for s in grid_temp])[:-2] + '.')
                 sys.exit()
-            sig.append([[0]*nsig0 for j in range(self.ng)])
-    
-            for ig in range(self.ng):
-                for isig0 in range(nsig0):
-                    # interpolate total xs for isotope temperature temp
-                    x = grid_temp
-                    y = [core.iso[isoindx].xs[reaction_type][ig][itemp][isig0] for itemp in range(ntemp)]
-                    f = interp1d(x, y) #scipy function
-                    sig[i][ig][isig0] = f(temp)
+
+            if reaction_type == 'sca':
+                # number of entries in scaterring matrix
+                n = len(core.iso[isoindx].xs['ela'])
+                # number of entries in scattering matrix for one temperature
+                n1 = int(n/ntemp)
+                s = []
+                for j in range(n1):
+                    f_t = core.iso[isoindx].xs['ela'][j][1]
+                    s.append([f_t])
+                    for k in range(n):
+                        if core.iso[isoindx].xs['ela'][k][1] == f_t:
+                            pass
+                            s[j] += [core.iso[isoindx].xs['ela'][k][2:]]
+                print(len(s))
+                sig = [[0]*(nsig0+1) for j in range(n1)]
+                for j in range(n1):
+                    sig[j][0] = (f_t)
+                    for isig0 in range(nsig0):
+                        # interpolate total xs for isotope temperature temp
+                        x = grid_temp
+                        y = [s[j][1+itemp][isig0] for itemp in range(ntemp)]
+                        f = interp1d(x, y) #scipy function
+                        sig[j][isig0+1] = f(temp)
+            else:
+                sig.append([[0]*nsig0 for j in range(self.ng)])
+                for ig in range(self.ng):
+                    for isig0 in range(nsig0):
+                        # interpolate total xs for isotope temperature temp
+                        x = grid_temp
+                        y = [core.iso[isoindx].xs[reaction_type][ig][itemp][isig0] for itemp in range(ntemp)]
+                        f = interp1d(x, y) #scipy function
+                        sig[i][ig][isig0] = f(temp)
         return sig
 
     #----------------------------------------------------------------------------------------------
@@ -139,3 +162,14 @@ class Mix:
             self.sigt[i] = 0
             for j in range(self.niso):
                 self.sigt[i] += self.numdens[j]*sig_tmp2[i][j]
+
+    #----------------------------------------------------------------------------------------------
+    # calculates macroscopic scattering cross sections for the mix
+    def calculate_sigs(self, core, reactor):
+        # perform temperature and sig0 interpolations for all isotopes and all groups
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'sca')
+        #sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        #for i in range(self.ng):
+        #    self.sigt[i] = 0
+        #    for j in range(self.niso):
+        #        self.sigt[i] += self.numdens[j]*sig_tmp2[i][j]
