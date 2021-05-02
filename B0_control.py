@@ -385,6 +385,8 @@ class Control:
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-siga.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
+                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigp.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigs.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sign2n.dat', 'w'))
@@ -454,6 +456,9 @@ class Control:
                 indx += 1
                 # macroscopic sigma-absorption
                 fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].siga[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                indx += 1
+                # macroscopic sigma-production
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigp[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
                 indx += 1
                 # macroscopic sigma-scattering
                 for j in range(len(reactor.core.mix[i].sigs)):

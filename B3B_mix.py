@@ -98,6 +98,15 @@ class Mix:
                         y = [core.iso[isoindx].xs[reaction_type][j][1+itemp][isig0] for itemp in range(ntemp)]
                         f = interp1d(x, y) #scipy function
                         sig[i][j][isig0+1] = f(temp)
+            elif reaction_type == 'nub':
+                sig.append([0]*self.ng)
+                for ig in range(self.ng):
+                    # interpolate total xs for isotope temperature temp
+                    x = grid_temp
+                    y = [core.iso[isoindx].xs[reaction_type][ig][itemp] for itemp in range(ntemp)]
+                    # scipy function
+                    f = interp1d(x, y)
+                    sig[i][ig] = f(temp)
             else:
                 sig.append([[0]*nsig0 for j in range(self.ng)])
                 for ig in range(self.ng):
@@ -141,7 +150,7 @@ class Mix:
                 self.siga[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
-    # calculates total macroscopic absorption cross sections for the mix
+    # calculates total macroscopic cross sections for the mix
     def calculate_sigt(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
@@ -150,6 +159,19 @@ class Mix:
         for ig in range(self.ng):
             for i in range(self.niso):
                 self.sigt[ig] += self.numdens[i]*sig_tmp2[ig][i]
+
+    #----------------------------------------------------------------------------------------------
+    # calculates production macroscopic cross sections for the mix
+    def calculate_sigp(self, core, reactor):
+        # perform temperature and sig0 interpolations for fission xs for all isotopes and all groups
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'fis')
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        # perform temperature interpolations for nubar for all isotopes and all groups
+        nubar = self.interpolate_temp(core, reactor, 'nub')
+        self.sigp = [0]*self.ng
+        for ig in range(self.ng):
+            for i in range(self.niso):
+                self.sigp[ig] += self.numdens[i]*nubar[i][ig]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic scattering cross sections for the mix
