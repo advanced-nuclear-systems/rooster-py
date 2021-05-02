@@ -23,14 +23,6 @@ class Mix:
         self.numdens = reactor.control.input['mix'][indx]['numdens']
         # list of signals for temperatures of isotopes of mix indx
         self.signal_isotemp = reactor.control.input['mix'][indx]['signaltemp']
-        # total macroscopic cross sections
-        self.sigt = [0]*self.ng
-        # absorption macroscopic cross sections
-        self.siga = [0]*self.ng
-        # scattering macroscopic cross sections
-        self.sigs = []
-        # n2n macroscopic cross sections
-        self.sign2n = []
         # flag to calculate xs for mix
         self.update_xs = True
 
@@ -210,7 +202,7 @@ class Mix:
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic n2n cross sections for the mix
     def calculate_sign2n(self, core, reactor):
-        self.sigs = []
+        self.sign2n = []
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
             isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
@@ -221,7 +213,7 @@ class Mix:
                 f_t = core.iso[isoindx].xs['n2n'][j][0]
                 # n2n scattering xs
                 value = core.iso[isoindx].xs['n2n'][j][1]
-                f_t_list = [s[0] for s in self.sigs]
+                f_t_list = [s[0] for s in self.sign2n]
                 if f_t in f_t_list:
                     # if the (from, to) tuple is already in the self.sign2n list
                     indx = f_t_list.index(f_t)
