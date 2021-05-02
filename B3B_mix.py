@@ -29,6 +29,8 @@ class Mix:
         self.siga = [0]*self.ng
         # scattering macroscopic cross sections
         self.sigs = []
+        # n2n macroscopic cross sections
+        self.sign2n = []
         # flag to calculate xs for mix
         self.update_xs = True
 
@@ -91,17 +93,17 @@ class Mix:
                 print('****ERROR: temperature ' + str(temp) + ' K specified in input for isotope ' + self.isoid[i] + ' is out of range of the grid temperatures available in nuclear data library: ' + ''.join([str(int(s)) + ', ' for s in grid_temp])[:-2] + '.')
                 sys.exit()
 
-            if reaction_type == 'sca':
+            if reaction_type == 'ela':
                 # number of entries in elastic scaterring matrix
-                n = len(core.iso[isoindx].xs['ela'])
+                n = len(core.iso[isoindx].xs[reaction_type])
                 sig.append([[0]*(nsig0+1) for j in range(n)])
                 for j in range(n):
                     # from-to tuple
-                    sig[i][j][0] = core.iso[isoindx].xs['ela'][j][0]
+                    sig[i][j][0] = core.iso[isoindx].xs[reaction_type][j][0]
                     for isig0 in range(nsig0):
                         # interpolate elastic scattering xs for isotope temperature temp
                         x = grid_temp
-                        y = [core.iso[isoindx].xs['ela'][j][1+itemp][isig0] for itemp in range(ntemp)]
+                        y = [core.iso[isoindx].xs[reaction_type][j][1+itemp][isig0] for itemp in range(ntemp)]
                         f = interp1d(x, y) #scipy function
                         sig[i][j][isig0+1] = f(temp)
             else:
@@ -117,7 +119,7 @@ class Mix:
         return sig
 
     #----------------------------------------------------------------------------------------------
-    # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group ig
+    # given microscopic XSs without temperature dimension sig1 (absorption or total) perform sig0 interpolation for energy group ig
     # for all isotopes of the mix and return sig2: microscopic XSs without sig0 dimension
     def interpolate_sig0(self, ig, core, sig1):
         sig2 = [0]*self.niso
@@ -161,7 +163,7 @@ class Mix:
     # calculates macroscopic scattering cross sections for the mix
     def calculate_sigs(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
-        sig_tmp1 = self.interpolate_temp(core, reactor, 'sca')
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'ela')
         self.sigs = []
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
@@ -204,3 +206,25 @@ class Mix:
                     self.sigs[indx][1] += self.numdens[i]*value
                 else:
                     self.sigs.append([f_t, self.numdens[i]*value])
+
+    #----------------------------------------------------------------------------------------------
+    # calculates macroscopic n2n cross sections for the mix
+    def calculate_sign2n(self, core, reactor):
+        self.sigs = []
+        for i in range(self.niso):
+            # index of the isotope i in the global list of isotopes core.iso
+            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+            # number of entries in n2n matrix for isotope i
+            nn2n = len(core.iso[isoindx].xs['n2n'])
+            for j in range(nn2n):
+                # (from, to) tuple
+                f_t = core.iso[isoindx].xs['n2n'][j][0]
+                # n2n scattering xs
+                value = core.iso[isoindx].xs['n2n'][j][1]
+                f_t_list = [s[0] for s in self.sigs]
+                if f_t in f_t_list:
+                    # if the (from, to) tuple is already in the self.sign2n list
+                    indx = f_t_list.index(f_t)
+                    self.sign2n[indx][1] += self.numdens[i]*value
+                else:
+                    self.sign2n.append([f_t, self.numdens[i]*value])

@@ -387,6 +387,8 @@ class Control:
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigs.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
+                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sign2n.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(13) + '\n')
 
         return fid
 
@@ -459,6 +461,13 @@ class Control:
                     t = reactor.core.mix[i].sigs[j][0][1] + 1
                     sigs = reactor.core.mix[i].sigs[j][1]
                     fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
+                indx += 1
+                # macroscopic sigma-n2n
+                for j in range(len(reactor.core.mix[i].sign2n)):
+                    f = reactor.core.mix[i].sign2n[j][0][0] + 1
+                    t = reactor.core.mix[i].sign2n[j][0][1] + 1
+                    sign2n = reactor.core.mix[i].sign2n[j][1]
+                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sign2n) + '\n')
                 indx += 1
 
     #----------------------------------------------------------------------------------------------

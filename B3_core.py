@@ -60,6 +60,7 @@ class Core:
                     self.mix[i].calculate_sigt(self, reactor)
                     self.mix[i].calculate_siga(self, reactor)
                     self.mix[i].calculate_sigs(self, reactor)
+                    self.mix[i].calculate_sign2n(self, reactor)
                     self.mix[i].update_xs = False
 
             rhs += []
