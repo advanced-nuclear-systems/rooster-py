@@ -27,6 +27,8 @@ class Mix:
         self.sigt = [0]*self.ng
         # absorption macroscopic cross sections
         self.siga = [0]*self.ng
+        # scattering macroscopic cross sections
+        self.sigs = []
         # flag to calculate xs for mix
         self.update_xs = True
 
@@ -109,14 +111,15 @@ class Mix:
                         # interpolate total xs for isotope temperature temp
                         x = grid_temp
                         y = [core.iso[isoindx].xs[reaction_type][ig][itemp][isig0] for itemp in range(ntemp)]
-                        f = interp1d(x, y) #scipy function
+                        # scipy function
+                        f = interp1d(x, y)
                         sig[i][ig][isig0] = f(temp)
         return sig
 
     #----------------------------------------------------------------------------------------------
-    # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group j or(f_t) tuple j
+    # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group ig
     # for all isotopes of the mix and return sig2: microscopic XSs without sig0 dimension
-    def interpolate_sig0(self, j, core, sig1, reaction_type):
+    def interpolate_sig0(self, ig, core, sig1):
         sig2 = [0]*self.niso
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
@@ -125,20 +128,11 @@ class Mix:
             grid_sig0 = core.iso[isoindx].sig0
             nsig0 = len(grid_sig0)
 
-            if reaction_type == 'sca':
-                # interpolate sig1 cross section for sig0
-                x = grid_sig0
-                y = [sig1[i][j][isig0+1] for isig0 in range(nsig0)]
-                f = interp1d(x, y) #scipy function
-                ig = sig1[i][j][0][0]
-                sig2[i] = f(self.sig0[ig][i])
-            else:
-                ig = j
-                # interpolate sig1 cross section for sig0
-                x = grid_sig0
-                y = [sig1[i][ig][isig0] for isig0 in range(nsig0)]
-                f = interp1d(x, y) #scipy function
-                sig2[i] = f(self.sig0[ig][i])
+            # interpolate sig1 cross section for sig0
+            x = grid_sig0
+            y = [sig1[i][ig][isig0] for isig0 in range(nsig0)]
+            f = interp1d(x, y) #scipy function
+            sig2[i] = f(self.sig0[ig][i])
         return sig2
 
     #----------------------------------------------------------------------------------------------
@@ -146,30 +140,67 @@ class Mix:
     def calculate_siga(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'abs')
-        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1, 'abs') for ig in range(self.ng)]
-        for i in range(self.ng):
-            self.siga[i] = 0
-            for j in range(self.niso):
-                self.siga[i] += self.numdens[j]*sig_tmp2[i][j]
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        self.siga = [0]*self.ng
+        for ig in range(self.ng):
+            for i in range(self.niso):
+                self.siga[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
     # calculates total macroscopic absorption cross sections for the mix
     def calculate_sigt(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
-        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1, 'tot') for ig in range(self.ng)]
-        for i in range(self.ng):
-            self.sigt[i] = 0
-            for j in range(self.niso):
-                self.sigt[i] += self.numdens[j]*sig_tmp2[i][j]
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        self.sigt = [0]*self.ng
+        for ig in range(self.ng):
+            for i in range(self.niso):
+                self.sigt[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic scattering cross sections for the mix
     def calculate_sigs(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'sca')
-        sig_tmp2 = [self.interpolate_sig0(j, core, sig_tmp1, 'sca') for j in range(len(sig_tmp1[0]))]
-        #for i in range(self.ng):
-        #    self.sigt[i] = 0
-        #    for j in range(self.niso):
-        #        self.sigt[i] += self.numdens[j]*sig_tmp2[i][j]
+        self.sigs = []
+        for i in range(self.niso):
+            # index of the isotope i in the global list of isotopes core.iso
+            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+            # grid sig0s for this isotope
+            x = core.iso[isoindx].sig0
+            nsig0 = len(x)
+            # number of entries in elastic scattering matrix for isotope i
+            nesca = len(sig_tmp1[i])
+            for j in range(nesca):
+                # (from, to) tuple
+                f_t = sig_tmp1[i][j][0]
+                # scattering xs corresponding to x
+                y = [sig_tmp1[i][j][isig0+1] for isig0 in range(nsig0)]
+                # scipy function
+                f = interp1d(x, y)
+                # index of 'from' group
+                ig = f_t[0]
+                # interpolate scattering cross section for sig0 of group ig for isotope i
+                value = f(self.sig0[ig][i])
+                f_t_list = [s[0] for s in self.sigs]
+                if f_t in f_t_list:
+                    # if the (from, to) tuple is already in the self.sigs list
+                    indx = f_t_list.index(f_t)
+                    self.sigs[indx][1] += self.numdens[i]*value
+                else:
+                    self.sigs.append([f_t, self.numdens[i]*value])
+
+            # number of entries in inelastic scattering matrix for isotope i
+            nisca = len(core.iso[isoindx].xs['ine'])
+            for j in range(nisca):
+                # (from, to) tuple
+                f_t = core.iso[isoindx].xs['ine'][j][0]
+                # inelastic scattering xs
+                value = core.iso[isoindx].xs['ine'][j][1]
+                f_t_list = [s[0] for s in self.sigs]
+                if f_t in f_t_list:
+                    # if the (from, to) tuple is already in the self.sigs list
+                    indx = f_t_list.index(f_t)
+                    self.sigs[indx][1] += self.numdens[i]*value
+                else:
+                    self.sigs.append([f_t, self.numdens[i]*value])

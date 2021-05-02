@@ -240,12 +240,15 @@
     {
       "mixid": "MOX02",
       "isoid": [
-        "H1b6"
+        "H1b6",
+        "U238b6"
       ],
       "numdens": [
+        1.0,
         1.0
       ],
       "signaltemp": [
+        "TEMP",
         "TEMP"
       ]
     }
@@ -308,7 +311,7 @@
     },
     {
       "id": "TEMP",
-      "value": 450.0
+      "value": 300.0
     }
   ],
   "signalid": [
