@@ -145,7 +145,7 @@ nddir     DATA25
 * MIXTURES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     mixid     isoid     numdens             signal
-mix       MOX02     U238b6    1                   TEMP
+mix       MOX02     H1b6      1                   TEMP
 *mix       MOX01     H1b6      1.24405E-06         TEMP
 *mix       MOX01     B10b6     1.97311E-08         TEMP
 *mix       MOX01     B11b6     7.94201E-08         TEMP

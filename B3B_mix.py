@@ -92,16 +92,16 @@ class Mix:
             if reaction_type == 'sca':
                 # number of entries in elastic scaterring matrix
                 n = len(core.iso[isoindx].xs['ela'])
-                sig = [[0]*(nsig0+1) for j in range(n)]
+                sig.append([[0]*(nsig0+1) for j in range(n)])
                 for j in range(n):
                     # from-to tuple
-                    sig[j][0] = core.iso[isoindx].xs['ela'][j][0]
+                    sig[i][j][0] = core.iso[isoindx].xs['ela'][j][0]
                     for isig0 in range(nsig0):
                         # interpolate elastic scattering xs for isotope temperature temp
                         x = grid_temp
                         y = [core.iso[isoindx].xs['ela'][j][1+itemp][isig0] for itemp in range(ntemp)]
                         f = interp1d(x, y) #scipy function
-                        sig[j][isig0+1] = f(temp)
+                        sig[i][j][isig0+1] = f(temp)
             else:
                 sig.append([[0]*nsig0 for j in range(self.ng)])
                 for ig in range(self.ng):
@@ -114,9 +114,9 @@ class Mix:
         return sig
 
     #----------------------------------------------------------------------------------------------
-    # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group ig 
-    # for all isotopes of the mix and return matrix of microscopic XSs without sig0 dimension
-    def interpolate_sig0(self, ig, core, sig1):
+    # given microscopic XSs without temperature dimension sig1 perform sig0 interpolation for energy group j or(f_t) tuple j
+    # for all isotopes of the mix and return sig2: microscopic XSs without sig0 dimension
+    def interpolate_sig0(self, j, core, sig1, reaction_type):
         sig2 = [0]*self.niso
         for i in range(self.niso):
             # index of the isotope i in the global list of isotopes core.iso
@@ -124,11 +124,21 @@ class Mix:
             # grid sig0s for this isotope
             grid_sig0 = core.iso[isoindx].sig0
             nsig0 = len(grid_sig0)
-            # interpolate sig1 cross section for sig0
-            x = grid_sig0
-            y = [sig1[i][ig][isig0] for isig0 in range(nsig0)]
-            f = interp1d(x, y) #scipy function
-            sig2[i] = f(self.sig0[ig][i])
+
+            if reaction_type == 'sca':
+                # interpolate sig1 cross section for sig0
+                x = grid_sig0
+                y = [sig1[i][j][isig0+1] for isig0 in range(nsig0)]
+                f = interp1d(x, y) #scipy function
+                ig = sig1[i][j][0][0]
+                sig2[i] = f(self.sig0[ig][i])
+            else:
+                ig = j
+                # interpolate sig1 cross section for sig0
+                x = grid_sig0
+                y = [sig1[i][ig][isig0] for isig0 in range(nsig0)]
+                f = interp1d(x, y) #scipy function
+                sig2[i] = f(self.sig0[ig][i])
         return sig2
 
     #----------------------------------------------------------------------------------------------
@@ -136,7 +146,7 @@ class Mix:
     def calculate_siga(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'abs')
-        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1, 'abs') for ig in range(self.ng)]
         for i in range(self.ng):
             self.siga[i] = 0
             for j in range(self.niso):
@@ -147,7 +157,7 @@ class Mix:
     def calculate_sigt(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'tot')
-        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1, 'tot') for ig in range(self.ng)]
         for i in range(self.ng):
             self.sigt[i] = 0
             for j in range(self.niso):
@@ -158,7 +168,7 @@ class Mix:
     def calculate_sigs(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'sca')
-        #sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        sig_tmp2 = [self.interpolate_sig0(j, core, sig_tmp1, 'sca') for j in range(len(sig_tmp1[0]))]
         #for i in range(self.ng):
         #    self.sigt[i] = 0
         #    for j in range(self.niso):
