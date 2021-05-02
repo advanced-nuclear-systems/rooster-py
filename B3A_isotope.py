@@ -107,5 +107,20 @@ class Isotope:
                     pass
                 elif keyword == 'the':
                     pass
-            
+   
+        # number of entries in elastic scaterring matrix
+        n = len(self.xs['ela'])
+        # number of entries in elastic scattering matrix for one temperature
+        n1 = int(n/ntemp)
+        # re-arrange s to facilitate temperature interpolation [(f,t) [sig[0], sig[1], ..., sig[nsig0-1]]*ntemp]
+        s = []
+        for j in range(n1):
+            # find and group all entries with (f,t) tuple
+            f_t = self.xs['ela'][j][1]
+            s.append([f_t])
+            for k in range(n):
+                if self.xs['ela'][k][1] == f_t:
+                    s[j] += [self.xs['ela'][k][2:]]
+        self.xs['ela'] = s
+
         #if self.isoid == 'U238b6' : print(self.xs['n2n'])

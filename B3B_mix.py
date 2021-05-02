@@ -90,26 +90,16 @@ class Mix:
                 sys.exit()
 
             if reaction_type == 'sca':
-                # number of entries in scaterring matrix
+                # number of entries in elastic scaterring matrix
                 n = len(core.iso[isoindx].xs['ela'])
-                # number of entries in scattering matrix for one temperature
-                n1 = int(n/ntemp)
-                s = []
-                for j in range(n1):
-                    f_t = core.iso[isoindx].xs['ela'][j][1]
-                    s.append([f_t])
-                    for k in range(n):
-                        if core.iso[isoindx].xs['ela'][k][1] == f_t:
-                            pass
-                            s[j] += [core.iso[isoindx].xs['ela'][k][2:]]
-                print(len(s))
-                sig = [[0]*(nsig0+1) for j in range(n1)]
-                for j in range(n1):
-                    sig[j][0] = (f_t)
+                sig = [[0]*(nsig0+1) for j in range(n)]
+                for j in range(n):
+                    # from-to tuple
+                    sig[j][0] = core.iso[isoindx].xs['ela'][j][0]
                     for isig0 in range(nsig0):
-                        # interpolate total xs for isotope temperature temp
+                        # interpolate elastic scattering xs for isotope temperature temp
                         x = grid_temp
-                        y = [s[j][1+itemp][isig0] for itemp in range(ntemp)]
+                        y = [core.iso[isoindx].xs['ela'][j][1+itemp][isig0] for itemp in range(ntemp)]
                         f = interp1d(x, y) #scipy function
                         sig[j][isig0+1] = f(temp)
             else:
