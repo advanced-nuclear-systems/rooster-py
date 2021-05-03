@@ -31,7 +31,8 @@ class Control:
             outsignal_name = table['f(x)'][0]
             x = table['x'][1:]
             y = table['f(x)'][1:]
-            f = interp1d(x, y) #scipy function
+            # scipy function
+            f = interp1d(x, y)
             xnew = max(min(self.signal[insignal_name],x[-1]),x[0])
             ynew = f(xnew)
             self.signal[outsignal_name] = ynew

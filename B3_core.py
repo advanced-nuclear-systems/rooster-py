@@ -22,7 +22,7 @@ class Core:
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
 
         if 'spatialkinetics' in reactor.solve:
-            # create a list of cll isotopes
+            # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
             #remove duplicates
             self.isoname = list(dict.fromkeys(self.isoname))
@@ -31,11 +31,23 @@ class Core:
             self.iso = []
             for i in range(self.niso):
                 self.iso.append(Isotope(self.isoname[i], reactor))
+
             # create an object for every mix
             self.nmix = len(reactor.control.input['mix'])
             self.mix = []
             for i in range(self.nmix):
                 self.mix.append(Mix(i, self, reactor))
+            # calculate sig0 and macroscopic cross sections
+            for i in range(self.nmix):
+                self.mix[i].calculate_sig0(self, reactor)
+                self.mix[i].calculate_sigt(self, reactor)
+                self.mix[i].calculate_siga(self, reactor)
+                self.mix[i].calculate_sigp(self, reactor)
+                self.mix[i].calculate_chi(self)
+                self.mix[i].calculate_sigs(self, reactor)
+                self.mix[i].calculate_sign2n(self, reactor)
+                self.mix[i].update_xs = False
+                self.mix[i].print_xs = True
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B

@@ -37,13 +37,16 @@ class Reactor:
         # list of objects to be solved
         self.solve = self.control.input['solve']
 
-        # create other objects
-        self.solid = Solid(self)
+        # create object fluid
         self.fluid = Fluid(self)
-        self.core = Core(self)
 
         # evaluate signals
         self.control.evaluate_signals(self, self.control.input['t0'])
+
+        # create object solid
+        self.solid = Solid(self)
+        # create object core
+        self.core = Core(self)
 
         # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
