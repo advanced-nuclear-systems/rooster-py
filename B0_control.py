@@ -69,6 +69,7 @@ class Control:
         inp['signal'] = []
         inp['signalid'] = []
         inp['solve'] = []
+        inp['stack'] = []
         inp['t0'] = 0
         inp['t_dt'] = []
     
@@ -149,9 +150,9 @@ class Control:
                             x['p2d'].append(word[5])
                             x['mltpl'].append(word[6])
                             x['pipeid'].append(word[7])
-                            x['pipenodeid'].append(int(word[8]))
+                            x['pipenode'].append(int(word[8]))
                 else:
-                    inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenodeid':[int(word[8])]})
+                    inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenode':[int(word[8])]})
             #--------------------------------------------------------------------------------------
             # inner gas
             elif key == 'innergas' :
@@ -239,6 +240,14 @@ class Control:
             elif key == 'pipe-t' :
                  inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
             #--------------------------------------------------------------------------------------
+            # signal variable
+            elif key == 'signal' :
+                 signal = {}
+                 signal['id'] = word[1]
+                 signal['value'] = word[2]
+                 inp['signal'].append(signal)
+            #--------------------------------------------------------------------------------------
+            # models to be solved
             elif key == 'solve':
                 inp['solve'].append(word[1])
                 # verify that solve card has correct value
@@ -265,12 +274,21 @@ class Control:
                         print('****ERROR: the second value after the keyword of solve spatialkinetics card should be integer (number of energy groups), e.g.:\nsolve spatialkinetics 25')
                         sys.exit()
             #--------------------------------------------------------------------------------------
-            # signal variable
-            elif key == 'signal' :
-                 signal = {}
-                 signal['id'] = word[1]
-                 signal['value'] = word[2]
-                 inp['signal'].append(signal)
+            # stack of mixes of isotopes
+            elif key == 'stack' :
+                if len(word)-1 < 4:
+                    print('****ERROR: stack card should have five values after the keyword: stack id, mix id, pipe id, pipe node.')
+                    sys.exit()
+                
+                stackid = word[1]
+                if any([stackid in x['stackid'] for x in inp['stack']]):
+                    for x in inp['stack']:
+                        if x['stackid'] == stackid:
+                            x['mixid'].append(word[2])
+                            x['pipeid'].append(word[3])
+                            x['pipenode'].append(int(word[4]))
+                else:
+                    inp['stack'].append({'stackid':stackid, 'mixid':[word[2]], 'pipeid':[word[3]], 'pipenode':[int(word[4])]})
             #--------------------------------------------------------------------------------------
             # integration starting time
             elif key == 't0' :

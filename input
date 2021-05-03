@@ -119,7 +119,7 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * FUEL ROD AXIAL LEVELS
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodid
+*****     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodeid
 fuelrod   FR01      F01       0         C01       1.1       10        UP1       2
 fuelrod   FR01      F01       0         C01       1.1       10        UP1       3
 fuelrod   FR01      F01       0         C01       1.1       10        UP1       4
@@ -141,10 +141,11 @@ innergas  FR02      HE1       53e-6
 * NUCLEAR DATA DIRECTORY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 nddir     DATA25
+*
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-* MIXTURES
+* MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     mixid     isoid     numdens             signal
+*****     id        isoid     numdens             signal
 mix       MOX02     H1b6      1                   TEMP
 mix       MOX02     U238b6    1                   TEMP
 mix       MOX02     Pu239b6   1                   TEMP
@@ -159,3 +160,17 @@ mix       MOX02     Pu239b6   1                   TEMP
 *mix       MOX02     C0b6      2.75470E-05         TEMP
 *mix       MOX02     U238b6    5.23707E-03         TEMP
 *
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+* STACK OF MIXES
+*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+*****     id        mixid     pipeid    pipenodeid
+stack     S01       MOX02     UP1       1
+stack     S01       MOX02     UP1       2
+stack     S01       MOX02     UP1       3
+stack     S01       MOX02     UP1       4
+stack     S01       MOX02     UP1       5
+stack     S01       MOX02     UP1       6
+stack     S01       MOX02     UP1       7
+stack     S01       MOX02     UP1       8
+stack     S01       MOX02     UP1       9
+stack     S01       MOX02     UP1       10

@@ -136,7 +136,7 @@ class Fluid:
 
         # prepare lists to map thermal-hydraulic and fuel rods nodes
         indx_i = [x['pipeid'] for x in reactor.control.input['fuelrod']]
-        indx_j = [x['pipenodeid'] for x in reactor.control.input['fuelrod']]
+        indx_j = [x['pipenode'] for x in reactor.control.input['fuelrod']]
         nfuelrods = len(indx_i)
         self.map_th = []
         self.map_fr = []

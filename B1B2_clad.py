@@ -92,7 +92,7 @@ class Clad:
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # pipe node indexes
         ipipe = reactor.fluid.pipeid.index(dictfuelrod['pipeid'][indx])
-        jpipe = dictfuelrod['pipenodeid'][indx]
+        jpipe = dictfuelrod['pipenode'][indx]
         dTdt[self.nr-1] -= 1e3*(self.temp[self.nr-1] - reactor.fluid.temp[ipipe][jpipe])
         rhs = dTdt
 
