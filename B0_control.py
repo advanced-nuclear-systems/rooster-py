@@ -18,15 +18,15 @@ class Control:
 
         # evaluate signals
         self.signal = {}
-        for s in self.input['signal'] :
+        for s in self.input['signal']:
             if type(s['value']) == int or type(s['value']) == float:
                 self.signal[s['id']] = s['value']
-            if s['value'] == 'time' :
+            if s['value'] == 'time':
                 self.signal[s['id']] = t
 
         #evaluate output signals of lookup tables
         lookup_table = self.input['lookup']
-        for table in lookup_table :
+        for table in lookup_table:
             insignal_name = table['x'][0]
             outsignal_name = table['f(x)'][0]
             x = table['x'][1:]
@@ -57,6 +57,7 @@ class Control:
         #create dictionary inp where all input data will be stored
         inp = {}
         inp['clad'] = []
+        inp['coregeom'] = {'geometry':'', 'pitch':0, 'botBC':'', 'topBC':''}
         inp['fuel'] = []
         inp['fuelrod'] = []
         inp['innergas'] = []
@@ -81,7 +82,7 @@ class Control:
         #merge &-ending "line" with the next one
         s = ''
         take = True
-        for c in s0 :
+        for c in s0:
             if c == '&' : take = False
             if take : s += c
             if c == '\n' : take = True
@@ -92,10 +93,10 @@ class Control:
         #remove comment-lines (*)
         lines = [x for x in lines if not x.startswith('*')]
     
-        def convert_to_float(w) : 
+        def convert_to_float(w): 
             try:
                 w = float(w)
-            except :
+            except:
                 pass
             return w
     
@@ -106,27 +107,49 @@ class Control:
             key = word[0].lower()
             #--------------------------------------------------------------------------------------
             # just placeholder
-            if key == '' :
+            if key == '':
                 pass
             #--------------------------------------------------------------------------------------
             # effective delayed neutron fractions
-            elif key == 'betaeff' :
+            elif key == 'betaeff':
                 inp['betaeff'] = word[1:]
             #--------------------------------------------------------------------------------------
             # cladding
-            elif key == 'clad' :
+            elif key == 'clad':
                  inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
             #--------------------------------------------------------------------------------------
             # constant
-            elif key == 'constant' :
+            elif key == 'constant':
                  inp[word[1]] = float(word[2])
             #--------------------------------------------------------------------------------------
+            # core geometry
+            elif key == 'coregeom':
+                if len(word)-1 < 4:
+                    print('****ERROR: coregeom card should have four values after the keyword: geometry flag (hex or square), pitch (distance between node centres), bottom boundary conditions (0: vacuum, -1: reflective), top boundary conditions (0: vacuum, -1: reflective).')
+                    sys.exit()
+                list_of_geometries = ['square','hex']
+                if not word[1] in list_of_geometries:
+                    print('****ERROR: geometry flag of coregeom card (word 2) is wrong: ', word[1], '\nCorrect values are: ')
+                    for v in list_of_geometries:
+                        print(v)
+                    sys.exit()
+                if not isinstance(word[2],int) and not isinstance(word[2],float):
+                    print('****ERROR: node pitch (m) of coregeom card (word 3) is not numeric: ', word[2])
+                    sys.exit()
+                if word[3] != 0 and word[3] != -1:
+                    print('****ERROR: bottom boundary condition flag of coregeom card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
+                    sys.exit()
+                if word[4] != 0 and word[4] != -1:
+                    print('****ERROR: top boundary condition flag of coregeom card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
+                    sys.exit()
+                inp['coregeom'] = {'geom':word[1], 'pitch':word[2], 'botBC':int(word[3]), 'topBC':int(word[4])}
+            #--------------------------------------------------------------------------------------
             # delayed neutron precursor decay time constants
-            elif key == 'dnplmb' :
+            elif key == 'dnplmb':
                 inp['dnplmb'] = word[1:]
             #--------------------------------------------------------------------------------------
             # fuel grain parameters
-            elif key == 'fgrain' :
+            elif key == 'fgrain':
                 # grain diameter
                 inp['dgrain'] = word[1]
                 # number of nodes in the grain
@@ -135,11 +158,11 @@ class Control:
                 inp['frate'] = int(word[3])
             #--------------------------------------------------------------------------------------
             # fuel
-            elif key == 'fuel' :
+            elif key == 'fuel':
                  inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
             #--------------------------------------------------------------------------------------
             # fuel rod card
-            elif key == 'fuelrod' :
+            elif key == 'fuelrod':
                 id = word[1]
                 if any([id in x['id'] for x in inp['fuelrod']]):
                     for x in inp['fuelrod']:
@@ -155,11 +178,11 @@ class Control:
                     inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenode':[int(word[8])]})
             #--------------------------------------------------------------------------------------
             # inner gas
-            elif key == 'innergas' :
+            elif key == 'innergas':
                  inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic junction (dependent)
-            elif key == 'jun' :
+            elif key == 'jun':
                  inp['junction']['from'].append(word[1])
                  inp['junction']['to'].append(word[2])
                  inp['junction']['type'].append('dependent')
@@ -167,7 +190,7 @@ class Control:
                  inp['junction']['flowrate'].append('')
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic junction (independent)
-            elif key == 'jun-i' :
+            elif key == 'jun-i':
                  inp['junction']['from'].append(word[1])
                  inp['junction']['to'].append(word[2])
                  inp['junction']['type'].append('independent')
@@ -175,7 +198,7 @@ class Control:
                  inp['junction']['flowrate'].append('')
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic junction (independent + signal for flowrate)
-            elif key == 'jun-i-f' :
+            elif key == 'jun-i-f':
                  inp['junction']['from'].append(word[1])
                  inp['junction']['to'].append(word[2])
                  inp['junction']['type'].append('independent')
@@ -183,7 +206,7 @@ class Control:
                  inp['junction']['flowrate'].append(word[3])
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic junction (independent + signal for pump head)
-            elif key == 'jun-i-p' :
+            elif key == 'jun-i-p':
                  inp['junction']['from'].append(word[1])
                  inp['junction']['to'].append(word[2])
                  inp['junction']['type'].append('independent')
@@ -191,14 +214,14 @@ class Control:
                  inp['junction']['flowrate'].append('')
             #--------------------------------------------------------------------------------------
             # lookup table
-            elif key == 'lookup' :
+            elif key == 'lookup':
                  lookup = {}
                  lookup['x'] = word[1::2]
                  lookup['f(x)'] = word[2::2]
                  inp['lookup'].append(lookup)
             #--------------------------------------------------------------------------------------
             # material
-            elif key == 'mat' :
+            elif key == 'mat':
                  if word[2] == 'he':
                      inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
                  elif word[2] == 'mox':
@@ -209,7 +232,7 @@ class Control:
                      inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
             #--------------------------------------------------------------------------------------
             # mixture of isotopes
-            elif key == 'mix' :
+            elif key == 'mix':
                 if len(word)-1 < 4:
                     print('****ERROR: mix card should have four values after the keyword: mix id, isotopeid, number density and signal id for temperature.')
                     sys.exit()
@@ -225,23 +248,23 @@ class Control:
                     inp['mix'].append({'mixid':mixid, 'isoid':[word[2]], 'numdens':[float(word[3])], 'signaltemp':[word[4]]})
             #--------------------------------------------------------------------------------------
             # nuclear data directory
-            elif key == 'nddir' :
+            elif key == 'nddir':
                  inp['nddir'] = word[1]
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic pipe without free level
-            elif key == 'pipe' :
+            elif key == 'pipe':
                  inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':''} )
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic pipe with free level
-            elif key == 'pipe-f' :
+            elif key == 'pipe-f':
                  inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':1, 'signaltemp':''} )
             #--------------------------------------------------------------------------------------
             # thermal-hydraulic pipe without free level with temperature defined by signal
-            elif key == 'pipe-t' :
+            elif key == 'pipe-t':
                  inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
             #--------------------------------------------------------------------------------------
             # signal variable
-            elif key == 'signal' :
+            elif key == 'signal':
                  signal = {}
                  signal['id'] = word[1]
                  signal['value'] = word[2]
@@ -275,9 +298,9 @@ class Control:
                         sys.exit()
             #--------------------------------------------------------------------------------------
             # stack of mixes of isotopes
-            elif key == 'stack' :
+            elif key == 'stack':
                 if len(word)-1 < 4:
-                    print('****ERROR: stack card should have five values after the keyword: stack id, mix id, pipe id, pipe node.')
+                    print('****ERROR: stack card should have four values after the keyword: stack id, mix id, pipe id, pipe node.')
                     sys.exit()
                 
                 stackid = word[1]
@@ -291,19 +314,19 @@ class Control:
                     inp['stack'].append({'stackid':stackid, 'mixid':[word[2]], 'pipeid':[word[3]], 'pipenode':[int(word[4])]})
             #--------------------------------------------------------------------------------------
             # integration starting time
-            elif key == 't0' :
+            elif key == 't0':
                 inp['t0'] = word[1]
             #--------------------------------------------------------------------------------------
             # end of time interval and output time step for this interval
-            elif key == 't_dt' :
+            elif key == 't_dt':
                 inp['t_dt'].append([word[1], word[2]])
             #--------------------------------------------------------------------------------------
             # prompt neutron lifetime
-            elif key == 'tlife' :
+            elif key == 'tlife':
                 inp['tlife'] = word[1]
     
         # verify that t_dt present
-        if inp['t_dt'] == [] :
+        if inp['t_dt'] == []:
             sys.exit('****ERROR: obligatory card t_dt specifying time_end and dtime_out is absent.')
             sys.exit()
     
@@ -318,10 +341,10 @@ class Control:
         # make a list of all signals
         inp['signalid'] = [x['id'] for x in inp['signal']]
         # verify that lookup tables use existing signals
-        for table in inp['lookup'] :
+        for table in inp['lookup']:
             insignal = table['x'][0]
             outsignal = table['f(x)'][0]
-            if insignal not in inp['signalid'] :
+            if insignal not in inp['signalid']:
                 print('****ERROR: input signal ' + insignal + ' in lookup table ' + outsignal + ' is not defined.')
                 sys.exit()
         # append output signals of lookup tables

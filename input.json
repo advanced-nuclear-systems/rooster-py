@@ -8,6 +8,12 @@
       "nr": 3
     }
   ],
+  "coregeom": {
+    "geom": "square",
+    "pitch": 0.106,
+    "botBC": 0,
+    "topBC": -1
+  },
   "fuel": [
     {
       "id": "F01",
