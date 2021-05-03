@@ -58,6 +58,7 @@ class Control:
         inp = {}
         inp['clad'] = []
         inp['coregeom'] = {'geometry':'', 'pitch':0, 'botBC':'', 'topBC':''}
+        inp['coremap'] = []
         inp['fuel'] = []
         inp['fuelrod'] = []
         inp['innergas'] = []
@@ -92,6 +93,10 @@ class Control:
     
         #remove comment-lines (*)
         lines = [x for x in lines if not x.startswith('*')]
+        #remove comments inside lines (*)
+        for i in range(len(lines)):
+            if '*' in lines[i]:
+                lines[i] = lines[i].split('*')[0]
     
         def convert_to_float(w): 
             try:
@@ -136,13 +141,18 @@ class Control:
                 if not isinstance(word[2],int) and not isinstance(word[2],float):
                     print('****ERROR: node pitch (m) of coregeom card (word 3) is not numeric: ', word[2])
                     sys.exit()
-                if word[3] != 0 and word[3] != -1:
-                    print('****ERROR: bottom boundary condition flag of coregeom card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
+                if word[3] != 0 and word[3] != 1:
+                    print('****ERROR: bottom boundary condition flag of coregeom card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
                     sys.exit()
-                if word[4] != 0 and word[4] != -1:
-                    print('****ERROR: top boundary condition flag of coregeom card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
+                if word[4] != 0 and word[4] != 1:
+                    print('****ERROR: top boundary condition flag of coregeom card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
                     sys.exit()
                 inp['coregeom'] = {'geom':word[1], 'pitch':word[2], 'botBC':int(word[3]), 'topBC':int(word[4])}
+            #--------------------------------------------------------------------------------------
+            # core map
+            elif key == 'coremap':
+                #for i in range()
+                inp['coremap'].append(word[1:])
             #--------------------------------------------------------------------------------------
             # delayed neutron precursor decay time constants
             elif key == 'dnplmb':
