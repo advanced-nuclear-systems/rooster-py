@@ -64,6 +64,7 @@ class Core:
                     self.mix[i].calculate_sigs(self, reactor)
                     self.mix[i].calculate_sign2n(self, reactor)
                     self.mix[i].update_xs = False
+                    self.mix[i].print_xs = True
 
             rhs += []
 

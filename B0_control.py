@@ -449,36 +449,42 @@ class Control:
             indx += 1
         if 'spatialkinetics' in reactor.solve:
             for i in range(reactor.core.nmix):
-                for j in range(reactor.core.mix[i].niso):
-                    # sigma-zeros
-                    fid[indx].write('{0:12.5e} '.format(time) + str(reactor.core.mix[i].isoid[j]).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                indx += 1
-                # macroscopic sigma-total
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigt[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                indx += 1
-                # macroscopic sigma-absorption
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].siga[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                indx += 1
-                # macroscopic sigma-production
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigp[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                indx += 1
-                # fission spectrum
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].chi[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                indx += 1
-                # macroscopic sigma-scattering
-                for j in range(len(reactor.core.mix[i].sigs)):
-                    f = reactor.core.mix[i].sigs[j][0][0] + 1
-                    t = reactor.core.mix[i].sigs[j][0][1] + 1
-                    sigs = reactor.core.mix[i].sigs[j][1]
-                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
-                indx += 1
-                # macroscopic sigma-n2n
-                for j in range(len(reactor.core.mix[i].sign2n)):
-                    f = reactor.core.mix[i].sign2n[j][0][0] + 1
-                    t = reactor.core.mix[i].sign2n[j][0][1] + 1
-                    sign2n = reactor.core.mix[i].sign2n[j][1]
-                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sign2n) + '\n')
-                indx += 1
+                if reactor.core.mix[i].print_xs:
+                    for j in range(reactor.core.mix[i].niso):
+                        # sigma-zeros
+                        fid[indx].write('{0:12.5e} '.format(time) + str(reactor.core.mix[i].isoid[j]).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                    indx += 1
+                    # macroscopic sigma-total
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigt[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                    indx += 1
+                    # macroscopic sigma-absorption
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].siga[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                    indx += 1
+                    # macroscopic sigma-production
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigp[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                    indx += 1
+                    # fission spectrum
+                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].chi[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
+                    indx += 1
+                    # macroscopic sigma-scattering
+                    for j in range(len(reactor.core.mix[i].sigs)):
+                        f = reactor.core.mix[i].sigs[j][0][0] + 1
+                        t = reactor.core.mix[i].sigs[j][0][1] + 1
+                        sigs = reactor.core.mix[i].sigs[j][1]
+                        fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
+                    indx += 1
+                    # macroscopic sigma-n2n
+                    for j in range(len(reactor.core.mix[i].sign2n)):
+                        f = reactor.core.mix[i].sign2n[j][0][0] + 1
+                        t = reactor.core.mix[i].sign2n[j][0][1] + 1
+                        sign2n = reactor.core.mix[i].sign2n[j][1]
+                        fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sign2n) + '\n')
+                    indx += 1
+
+                    reactor.core.mix[i].print_xs = False
+
+                else:
+                    indx += 7
 
     #----------------------------------------------------------------------------------------------
     def write_to_y(self, reactor):
