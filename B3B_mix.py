@@ -174,6 +174,18 @@ class Mix:
                 self.sigp[ig] += self.numdens[i]*nubar[i][ig]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
+    # calculates fission spectrum for the mix
+    def calculate_chi(self, core):
+        self.chi = [0]*self.ng
+        for ig in range(self.ng):
+            for i in range(self.niso):
+                # index of the isotope i in the global list of isotopes core.iso
+                isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+                self.chi[ig] += self.numdens[i]*core.iso[isoindx].xs['chi'][ig]
+        # normalize fission spectrum
+        s = sum(self.chi)
+        self.chi = [self.chi[ig]/s for ig in range(self.ng)]
+    #----------------------------------------------------------------------------------------------
     # calculates macroscopic scattering cross sections for the mix
     def calculate_sigs(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups

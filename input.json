@@ -241,13 +241,16 @@
       "mixid": "MOX02",
       "isoid": [
         "H1b6",
-        "U238b6"
+        "U238b6",
+        "Pu239b6"
       ],
       "numdens": [
+        1.0,
         1.0,
         1.0
       ],
       "signaltemp": [
+        "TEMP",
         "TEMP",
         "TEMP"
       ]
