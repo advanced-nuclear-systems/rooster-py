@@ -24,6 +24,7 @@ class Core:
         if 'spatialkinetics' in reactor.solve:
             # number of energy groups
             self.ng = reactor.control.input['ng']
+
             # core mesh
             self.nz = len(reactor.control.input['stack'][0]['mixid'])
             for i in range(len(reactor.control.input['stack'])):
@@ -34,6 +35,7 @@ class Core:
             self.nz += 2
             self.ny = len(reactor.control.input['coremap'])
             self.nx = [len(reactor.control.input['coremap'][i]) for i in range(self.ny)]
+
             # initialize flux
             self.flux = []
             for iz in range(self.nz):
@@ -42,6 +44,19 @@ class Core:
                     self.flux[iz].append([])
                     for ix in range(self.nx[iy]):
                         self.flux[iz][iy].append([1]*self.ng)
+
+            # initialize map
+            self.map = {'mix':[]}
+            for iz in range(self.nz):
+                self.map['mix'].append([])
+                for iy in range(self.ny):
+                    self.map['mix'][iz].append([])
+                    if iz == 0:
+                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['botBC'] for ix in range(self.nx[iy])])
+                    elif iz == self.nz:
+                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['topBC'] for ix in range(self.nx[iy])])
+                    else:
+                        self.map['mix'][iz][iy].append([reactor.control.input['coremap'][iy][ix] for ix in range(self.nx[iy])])
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -58,6 +73,7 @@ class Core:
             self.mix = []
             for i in range(self.nmix):
                 self.mix.append(Mix(i, self, reactor))
+
             # calculate sig0 and macroscopic cross sections
             for i in range(self.nmix):
                 self.mix[i].calculate_sig0(self, reactor)
