@@ -34,7 +34,11 @@ class Core:
             # add bottom and top layers for boundary conditions
             self.nz += 2
             self.ny = len(reactor.control.input['coremap'])
-            self.nx = [len(reactor.control.input['coremap'][i]) for i in range(self.ny)]
+            self.nx = len(reactor.control.input['coremap'][0])
+            for i in range(self.nx):
+                if len(reactor.control.input['coremap'][i]) != self.nx:
+                    print('****ERROR: all coremap cards should have the same number of nodes.')
+                    sys.exit()
 
             # initialize flux
             self.flux = []
@@ -42,7 +46,7 @@ class Core:
                 self.flux.append([])
                 for iy in range(self.ny):
                     self.flux[iz].append([])
-                    for ix in range(self.nx[iy]):
+                    for ix in range(self.nx):
                         self.flux[iz][iy].append([1]*self.ng)
 
             # initialize map
@@ -52,11 +56,11 @@ class Core:
                 for iy in range(self.ny):
                     self.map['mix'][iz].append([])
                     if iz == 0:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['botBC'] for ix in range(self.nx[iy])])
+                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['botBC'] for ix in range(self.nx)])
                     elif iz == self.nz:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['topBC'] for ix in range(self.nx[iy])])
+                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['topBC'] for ix in range(self.nx)])
                     else:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coremap'][iy][ix] for ix in range(self.nx[iy])])
+                        self.map['mix'][iz][iy].append([reactor.control.input['coremap'][iy][ix] for ix in range(self.nx)])
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
