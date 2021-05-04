@@ -254,3 +254,4 @@ class Mix:
                     self.sign2n[indx][1] += self.numdens[i]*value
                 else:
                     self.sign2n.append([f_t, self.numdens[i]*value])
+

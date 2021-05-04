@@ -151,7 +151,6 @@ class Control:
             #--------------------------------------------------------------------------------------
             # core map
             elif key == 'coremap':
-                #for i in range()
                 inp['coremap'].append(word[1:])
             #--------------------------------------------------------------------------------------
             # delayed neutron precursor decay time constants

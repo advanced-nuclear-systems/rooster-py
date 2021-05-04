@@ -22,6 +22,27 @@ class Core:
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
 
         if 'spatialkinetics' in reactor.solve:
+            # number of energy groups
+            self.ng = reactor.control.input['ng']
+            # core mesh
+            self.nz = len(reactor.control.input['stack'][0]['mixid'])
+            for i in range(len(reactor.control.input['stack'])):
+                if len(reactor.control.input['stack'][i]['mixid']) != self.nz:
+                    print('****ERROR: all stacks should have the same number of axial nodes.')
+                    sys.exit()
+            # add bottom and top layers for boundary conditions
+            self.nz += 2
+            self.ny = len(reactor.control.input['coremap'])
+            self.nx = [len(reactor.control.input['coremap'][i]) for i in range(self.ny)]
+            # initialize flux
+            self.flux = []
+            for iz in range(self.nz):
+                self.flux.append([])
+                for iy in range(self.ny):
+                    self.flux[iz].append([])
+                    for ix in range(self.nx[iy]):
+                        self.flux[iz][iy].append([1]*self.ng)
+
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
             #remove duplicates
