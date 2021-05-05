@@ -79,15 +79,19 @@ class Core:
                         self.flux[iz][iy].append([1]*self.ng)
 
             # initialize map
-            self.map = {'imix':[]}
+            self.map = {'imix':[], 'ipipe':[]}
             mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
             self.nstack = len(reactor.control.input['stack'])
             stackid_list = [reactor.control.input['stack'][i]['stackid'] for i in range(self.nstack)]
+            self.npipe = len(reactor.control.input['pipe'])
+            pipeid_list = [reactor.control.input['pipe'][i]['id'] for i in range(self.npipe)]
             bc = ['vac','ref']
             for iz in range(self.nz):
                 self.map['imix'].append([])
+                self.map['ipipe'].append([])
                 for iy in range(self.ny):
                     self.map['imix'][iz].append([])
+                    self.map['ipipe'][iz].append([])
                     if iz == 0:
                         # bottom boundary conditions
                         botBC = int(reactor.control.input['coregeom']['botBC'])
@@ -105,11 +109,12 @@ class Core:
                                 self.map['imix'][iz][iy].append(bc[int(id)])
                             else:
                                 if id not in stackid_list:
-                                    print('****ERROR: stack id in coremap card (' + id + ') not specified in stack card.')
+                                    print('****ERROR: stack id (' + id + ') in coremap card not specified in stack card.')
                                     sys.exit()
                                 else:
                                     # index of stack
                                     istack = stackid_list.index(id)
+                                    # id of mix at (ix, iy, iz)
                                     mixid = reactor.control.input['stack'][istack]['mixid'][iz-1]
                                     if mixid not in mixid_list:
                                         print('****ERROR: mix id in stack card (' + mixid + ') not specified in mix card.')
@@ -118,7 +123,22 @@ class Core:
                                         # index of stack
                                         imix = mixid_list.index(mixid)
                                         self.map['imix'][iz][iy].append(imix)
-                    #print(iz, self.map['imix'][iz][iy])
+                                    # id of pipe at (ix, iy, iz)
+                                    pipeid = reactor.control.input['stack'][istack]['pipeid'][iz-1]
+                                    if pipeid not in pipeid_list:
+                                        print('****ERROR: pipe id (' + pipeid + ') in stack card not specified in pipe card.')
+                                        sys.exit()
+                                    else:
+                                        # index of pipe
+                                        ipipe = pipeid_list.index(pipeid)
+                                        # id of pipenode at (ix, iy, iz)
+                                        pipenode = reactor.control.input['stack'][istack]['pipenode'][iz-1]
+                                        if pipenode > reactor.control.input['pipe'][ipipe]['nnodes']:
+                                            print('****ERROR: pipenode index (' + pipenode + ') in stack card is bigger than number of nodes in pipe ' + pipeid + '.')
+                                            sys.exit()
+                                        else:
+                                            self.map['ipipe'][iz][iy].append((ipipe,pipenode))
+                    #print(iz, self.map['ipipe'][iz][iy])
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
