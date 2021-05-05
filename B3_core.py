@@ -2,6 +2,7 @@ from B3A_isotope import Isotope
 from B3B_mix import Mix
 
 import os
+import sys
 
 #--------------------------------------------------------------------------------------------------
 class Core:
@@ -40,28 +41,6 @@ class Core:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
                     sys.exit()
 
-            # initialize flux
-            self.flux = []
-            for iz in range(self.nz):
-                self.flux.append([])
-                for iy in range(self.ny):
-                    self.flux[iz].append([])
-                    for ix in range(self.nx):
-                        self.flux[iz][iy].append([1]*self.ng)
-
-            # initialize map
-            self.map = {'mix':[]}
-            for iz in range(self.nz):
-                self.map['mix'].append([])
-                for iy in range(self.ny):
-                    self.map['mix'][iz].append([])
-                    if iz == 0:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['botBC'] for ix in range(self.nx)])
-                    elif iz == self.nz:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coregeom']['topBC'] for ix in range(self.nx)])
-                    else:
-                        self.map['mix'][iz][iy].append([reactor.control.input['coremap'][iy][ix] for ix in range(self.nx)])
-
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
             #remove duplicates
@@ -89,6 +68,57 @@ class Core:
                 self.mix[i].calculate_sign2n(self, reactor)
                 self.mix[i].update_xs = False
                 self.mix[i].print_xs = True
+
+            # initialize flux
+            self.flux = []
+            for iz in range(self.nz):
+                self.flux.append([])
+                for iy in range(self.ny):
+                    self.flux[iz].append([])
+                    for ix in range(self.nx):
+                        self.flux[iz][iy].append([1]*self.ng)
+
+            # initialize map
+            self.map = {'imix':[]}
+            mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
+            self.nstack = len(reactor.control.input['stack'])
+            stackid_list = [reactor.control.input['stack'][i]['stackid'] for i in range(self.nstack)]
+            bc = ['vac','ref']
+            for iz in range(self.nz):
+                self.map['imix'].append([])
+                for iy in range(self.ny):
+                    self.map['imix'][iz].append([])
+                    if iz == 0:
+                        # bottom boundary conditions
+                        botBC = int(reactor.control.input['coregeom']['botBC'])
+                        for ix in range(self.nx):
+                            self.map['imix'][iz][iy].append(bc[botBC])
+                    elif iz == self.nz-1:
+                        # top boundary conditions
+                        topBC = int(reactor.control.input['coregeom']['topBC'])
+                        for ix in range(self.nx):
+                            self.map['imix'][iz][iy].append(bc[topBC])
+                    else:
+                        for ix in range(self.nx):
+                            id = reactor.control.input['coremap'][iy][ix]
+                            if isinstance(id, float):
+                                self.map['imix'][iz][iy].append(bc[int(id)])
+                            else:
+                                if id not in stackid_list:
+                                    print('****ERROR: stack id in coremap card (' + id + ') not specified in stack card.')
+                                    sys.exit()
+                                else:
+                                    # index of stack
+                                    istack = stackid_list.index(id)
+                                    mixid = reactor.control.input['stack'][istack]['mixid'][iz-1]
+                                    if mixid not in mixid_list:
+                                        print('****ERROR: mix id in stack card (' + mixid + ') not specified in mix card.')
+                                        sys.exit()
+                                    else:
+                                        # index of stack
+                                        imix = mixid_list.index(mixid)
+                                        self.map['imix'][iz][iy].append(imix)
+                    #print(iz, self.map['imix'][iz][iy])
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
@@ -122,3 +152,20 @@ class Core:
             rhs += []
 
         return rhs
+
+    #----------------------------------------------------------------------------------------------
+    # solve steady-state eigenvalue problem
+    def solve_eigenvalue_problem(self, reactor):
+
+        # accuracy of the solution
+        eps = 1
+        while eps > 1e-6:
+            for iz in range(self.nz):
+                for iy in range(self.ny):
+                    for ix in range(self.nx):
+                        mix = self.map['mix'][iz][iy][ix]
+                        mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
+                        if mix in mixid_list:
+                            imix = mixid_list(mix)
+                        # absorption rate
+                        #self.flux[iz][iy][ix][ig]*
