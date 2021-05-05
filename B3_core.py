@@ -79,7 +79,7 @@ class Core:
                         self.flux[iz][iy].append([1]*self.ng)
 
             # initialize map
-            self.map = {'imix':[], 'ipipe':[]}
+            self.map = {'dz':[], 'imix':[], 'ipipe':[]}
             mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
             self.nstack = len(reactor.control.input['stack'])
             stackid_list = [reactor.control.input['stack'][i]['stackid'] for i in range(self.nstack)]
@@ -138,7 +138,10 @@ class Core:
                                             sys.exit()
                                         else:
                                             self.map['ipipe'][iz][iy].append((ipipe,pipenode))
-                    #print(iz, self.map['ipipe'][iz][iy])
+                                # node height
+                                if len(self.map['dz']) < iz:
+                                    self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
+        #print(self.map['dz'])
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
