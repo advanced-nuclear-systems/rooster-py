@@ -1,6 +1,7 @@
 from B3A_isotope import Isotope
 from B3B_mix import Mix
 
+import math
 import os
 import sys
 
@@ -142,6 +143,7 @@ class Core:
                                 if len(self.map['dz']) < iz:
                                     self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
         #print(self.map['dz'])
+        self.solve_eigenvalue_problem()
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
@@ -177,18 +179,95 @@ class Core:
         return rhs
 
     #----------------------------------------------------------------------------------------------
-    # solve steady-state eigenvalue problem
-    def solve_eigenvalue_problem(self, reactor):
+    # calculate fission source
+    def calculate_fission_source(self):
+        # fission source
+        self.qf = [[[[0]*self.ng for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
+        # eigenvalue self.k equal to ratio of total fission source at two iterations. 
+        # flux is normalise to total fission cource = 1 at previous iteration 
+        self.k = 0
+        for iz in range(self.nz):
+            for iy in range(self.ny):
+                for ix in range(self.nx):
+                    # mix index
+                    imix = self.map['imix'][iz][iy][ix]
+                    # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                    if isinstance(imix, int):
+                        xs = self.mix[imix]
+                        for ig in range(self.ng):
+                            fi = self.flux[iz][iy][ix][ig]
+                            self.qf[iz][iy][ix][ig] += xs.sigp[ig]*fi
+                            self.k += self.qf[iz][iy][ix][ig]
+                        for ig in range(self.ng):
+                            self.qf[iz][iy][ix][ig] *= xs.chi[ig]
 
-        # accuracy of the solution
-        eps = 1
-        while eps > 1e-6:
+    #----------------------------------------------------------------------------------------------
+    # solve steady-state eigenvalue problem
+    def solve_eigenvalue_problem(self):
+
+        # initialize fission source
+        self.qf = [[[0 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
+        # eigenvalue self.k equal to ratio of total fission source at two iterations. 
+        # flux is normalise to total fission cource = 1 at previous iteration 
+        self.k = 1
+
+        # correct!
+        rtol = 1e-10
+        atol = 1e-6
+
+        converge_qf = False
+        converge_k = False
+        while not converge_qf and not converge_k:
+            converge_flux = False
+            iter = 0
+            while not converge_flux:
+                converge_flux = True
+                iter += 1
+                for iz in range(self.nz):
+                    for iy in range(self.ny):
+                        for ix in range(self.nx):
+                            imix = self.map['imix'][iz][iy][ix]
+                            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                            if isinstance(imix, int):
+                                xs = self.mix[imix]
+                                for ig in range(self.ng):
+                                    # fission source
+                                    qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k
+                                    # scattering source
+                                    qs = 0
+                                    for indx in range(len(xs.sigs)):
+                                        f = xs.sigs[indx][0][0]
+                                        t = xs.sigs[indx][0][1]
+                                        if f != ig and t == ig:
+                                            qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
+                                    flux = (qs + qf)/xs.sigt[ig]
+                                    if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol or iter >= 10
+                                    self.flux[iz][iy][ix][ig] = flux
+
+            converge_qf = True
             for iz in range(self.nz):
                 for iy in range(self.ny):
                     for ix in range(self.nx):
-                        mix = self.map['mix'][iz][iy][ix]
-                        mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
-                        if mix in mixid_list:
-                            imix = mixid_list(mix)
-                        # absorption rate
-                        #self.flux[iz][iy][ix][ig]*
+                        imix = self.map['imix'][iz][iy][ix]
+                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                        if isinstance(imix, int):
+                            xs = self.mix[imix]
+                            qf = 0
+                            for ig in range(self.ng):
+                                qf += xs.sigp[ig]*self.flux[iz][iy][ix][ig]
+                            if converge_qf : converge_qf = abs(qf - self.qf[iz][iy][ix]) < rtol*abs(qf) + atol
+                            self.qf[iz][iy][ix] = qf
+
+            converge_k = True
+            k = 0
+            for iz in range(self.nz):
+                for iy in range(self.ny):
+                    for ix in range(self.nx):
+                        imix = self.map['imix'][iz][iy][ix]
+                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                        if isinstance(imix, int):
+                            for ig in range(self.ng):
+                                k += self.qf[iz][iy][ix]
+            converge_k = abs(k - self.k) < rtol*abs(k) + atol
+            self.k = k
+            print('k-effective: ', '{0:12.5f} '.format(self.k), '; flux iterations: ', iter)
