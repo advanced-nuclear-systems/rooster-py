@@ -71,10 +71,11 @@ class Reactor:
         #------------------------------------------------------------------------------------------
         # prepare an output folder, copy input and open output files
         fid = self.control.open_output_files(self)
+        t0 = self.control.input['t0']
+        self.control.print_output_files(self, fid, t0, 0)
 
         # create ODE solver, initialize and set integrator
         solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
-        t0 = self.control.input['t0']
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 
@@ -90,7 +91,7 @@ class Reactor:
                 #print('time: {0:12.5e}'.format(time))
 
                 # print to output files
-                self.control.print_output_files(self, fid, time)
+                self.control.print_output_files(self, fid, time, 1)
 
         # close all output files
         for f in fid:

@@ -34,10 +34,14 @@ class Fluid:
         # list of user-specified pipe temperature signal
         self.signaltemp = [x['signaltemp'] for x in reactor.control.input['pipe']]
 
-        # lists for pressure, temperature, pipeid and type
+        # lists for pressure, temperature, type, velocity, reynolds, prandtl and peclet
         self.p = []
         self.temp = []
         self.type = []
+        self.vel = []
+        self.re = []
+        self.pr = []
+        self.pe = []
         # process coolant names
         for i in range(self.npipe):
             cool = reactor.control.input['pipe'][i]['matid']
@@ -56,6 +60,14 @@ class Fluid:
             self.p.append([p0]*self.pipennodes[i])
             # list of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
+            # list of initial velocities in pipe nodes
+            self.vel.append([0]*self.pipennodes[i])
+            # list of initial reynolds in pipe nodes
+            self.re.append([0]*self.pipennodes[i])
+            # list of initial prandtl in pipe nodes
+            self.pr.append([0]*self.pipennodes[i])
+            # list of initial peclet in pipe nodes
+            self.pe.append([0]*self.pipennodes[i])
         # assign index to every pipe node
         self.indx = []
         for i in range(self.npipe):
@@ -130,9 +142,12 @@ class Fluid:
             if self.pipetype[self.indx[i][0]] == 'freelevel':
                 B[self.njun + i][self.njun + i] = 1 # P = +_freelevel
         self.invB = linalg.inv(B)
-        
+
         # initialize list of flowrate in independent junctions
         self.mdoti = [0]*self.njuni
+
+        # initialize list of flowrate in all junctions
+        self.mdot = [0]*self.njun
 
         # prepare lists to map thermal-hydraulic and fuel rods nodes
         indx_i = [x['pipeid'] for x in reactor.control.input['fuelrod']]

@@ -209,7 +209,7 @@ class Core:
         self.qf = [[[0 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
         # eigenvalue self.k equal to ratio of total fission source at two iterations. 
         # flux is normalise to total fission cource = 1 at previous iteration 
-        self.k = 1
+        self.k = [1]
 
         # correct!
         rtol = 1e-10
@@ -232,7 +232,7 @@ class Core:
                                 xs = self.mix[imix]
                                 for ig in range(self.ng):
                                     # fission source
-                                    qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k
+                                    qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
                                     # scattering source
                                     qs = 0
                                     for indx in range(len(xs.sigs)):
@@ -268,6 +268,6 @@ class Core:
                         if isinstance(imix, int):
                             for ig in range(self.ng):
                                 k += self.qf[iz][iy][ix]
-            converge_k = abs(k - self.k) < rtol*abs(k) + atol
-            self.k = k
-            print('k-effective: ', '{0:12.5f} '.format(self.k), '; flux iterations: ', iter)
+            converge_k = abs(k - self.k[-1]) < rtol*abs(k) + atol
+            self.k.append(k)
+            print('k-effective: ', '{0:12.5f} '.format(self.k[-1]), '| flux iterations: ', iter)

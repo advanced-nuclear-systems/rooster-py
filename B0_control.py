@@ -444,11 +444,14 @@ class Control:
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
                 fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sign2n.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(13) + '\n')
-
+                fid.append(open(path4results + os.sep + 'core-k.dat', 'w'))
+                fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
+                fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'flux'.ljust(13) + '\n')
         return fid
 
     #----------------------------------------------------------------------------------------------
-    def print_output_files(self, reactor, fid, time):
+    def print_output_files(self, reactor, fid, time, flag):
 
         # print output files
         indx = 0
@@ -536,6 +539,20 @@ class Control:
 
                 else:
                     indx += 7
+            # multiplication factor
+            if flag == 0 : fid[indx].write(''.join([(' '+str(niter)).ljust(13) + '{0:12.5e} '.format(reactor.core.k[niter]) + '\n' for niter in range(len(reactor.core.k))]))
+            indx += 1
+            # neutron flux
+            if flag == 0 : 
+                for iz in range(reactor.core.nz):
+                    for iy in range(reactor.core.ny):
+                        for ix in range(reactor.core.nx):
+                            imix = reactor.core.map['imix'][iz][iy][ix]
+                            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                            if isinstance(imix, int):
+                                for ig in range(reactor.core.ng):
+                                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig).ljust(13) + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.flux[iz][iy][ix][ig]) + '\n')
+            indx += 1
 
     #----------------------------------------------------------------------------------------------
     def write_to_y(self, reactor):
