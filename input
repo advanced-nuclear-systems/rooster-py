@@ -146,43 +146,77 @@ nddir     DATA25
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        isoid     numdens             sigtemp   sigdens
-mix       MOX02     U235jef   1.01274E-04         TEMP
-mix       MOX02     U238jef   1.98991E-02         TEMP
-mix       MOX02     Pu238jef  1.78335E-05         TEMP
-mix       MOX02     Pu239jef  2.45976E-03         TEMP
-mix       MOX02     Pu240jef  7.33391E-04         TEMP
-mix       MOX02     Pu241jef  1.97174E-04         TEMP
-mix       MOX02     Pu242jef  6.84331E-05         TEMP
-mix       MOX02     Am241jef  4.82584E-05         TEMP
-mix       MOX02     O16jef    4.65798E-02         TEMP
+
+
+
+
+
+
+
+
+
+
+mix       INNER     U235jef   3.64947E-05         TEMP
+mix       INNER     U238jef   7.17076E-03         TEMP
+mix       INNER     Pu238jef  6.42641E-06         TEMP
+mix       INNER     Pu239jef  8.86389E-04         TEMP
+mix       INNER     Pu240jef  2.64282E-04         TEMP
+mix       INNER     Pu241jef  7.10528E-05         TEMP
+mix       INNER     Pu242jef  2.46603E-05         TEMP
+mix       INNER     Am241jef  1.73902E-05         TEMP
+mix       INNER     O16jef    1.67853E-02         TEMP
+mix       INNER     C0jef     4.63230E-05         TEMP
+mix       INNER     Si0jef    2.37553E-04         TEMP
+mix       INNER     P31b6     1.07680E-05         TEMP
+mix       INNER     Ti0b6     9.29310E-05         TEMP
+mix       INNER     Cr50b6    1.54745E-04         TEMP
+mix       INNER     Cr52b6    2.86953E-03         TEMP
+mix       INNER     Cr53b6    3.19234E-04         TEMP
+mix       INNER     Cr54b6    7.79935E-05         TEMP
+mix       INNER     Mn55jef   3.44020E-04         TEMP
+mix       INNER     Fe54b6    7.79694E-04         TEMP
+mix       INNER     Fe56b6    1.18029E-02         TEMP
+mix       INNER     Fe57b6    2.67791E-04         TEMP
+mix       INNER     Fe58b6    3.50241E-05         TEMP
+mix       INNER     Ni58b6    1.82892E-03         TEMP
+mix       INNER     Ni60b6    6.81034E-04         TEMP
+mix       INNER     Ni61b6    2.91182E-05         TEMP
+mix       INNER     Ni62b6    9.13491E-05         TEMP
+mix       INNER     Ni64b6    2.25332E-05         TEMP
+mix       INNER     Mo0jef    2.89814E-04         TEMP
+mix       INNER     Na23b6    8.34742E-03         TEMP
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * STACK OF MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        mixid     pipeid    pipenodeid
-stack     S01       MOX02     UP1       1
-stack     S01       MOX02     UP1       2
-stack     S01       MOX02     UP1       3
-stack     S01       MOX02     UP1       4
-stack     S01       MOX02     UP1       5
-stack     S01       MOX02     UP1       6
-stack     S01       MOX02     UP1       7
-stack     S01       MOX02     UP1       8
-stack     S01       MOX02     UP1       9
-stack     S01       MOX02     UP1       10
+stack     S01       INNER     UP1       1
+*stack     S01       MOX02     UP1       2
+*stack     S01       MOX02     UP1       3
+*stack     S01       MOX02     UP1       4
+*stack     S01       MOX02     UP1       5
+*stack     S01       MOX02     UP1       6
+*stack     S01       MOX02     UP1       7
+*stack     S01       MOX02     UP1       8
+*stack     S01       MOX02     UP1       9
+*stack     S01       MOX02     UP1       10
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE GEOMETRY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     geometry  pitch(m)  botBC     topBC
-coregeom  square    0.179     0         0
+coregeom  square    0.179     1         1
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE MAP
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-coremap   1   1   1   1   1   1   1
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   S01 S01 S01 S01 S01 0
-coremap   1   0   0   0   0   0   0
+*coremap   1     1     1     1     1     1     1
+*coremap      1    S01   S01   S01   S01   S01   0
+*coremap   1    S01   S01   S01   S01   S01    0
+*coremap      1    S01   S01   S01   S01   S01   0
+*coremap   1    S01   S01   S01   S01   S01    0
+*coremap      1    S01   S01   S01   S01   S01   0
+*coremap   1    S01   S01   S01   S01   S01    0
+*coremap      1    S01   S01   S01   S01   S01   0
+*coremap   0     0     0     0     0     0     0
+coremap   1     1     1
+coremap   1    S01    1
+coremap   1     1     1

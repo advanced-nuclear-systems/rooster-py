@@ -222,7 +222,7 @@ class Core:
                                         dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
                                         D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
                                         mlt += D/dz * a_over_v
-                                        dif -= D*self.flux[iz-1][iy][ix][ig]/dz * a_over_v
+                                        dif += D*self.flux[iz-1][iy][ix][ig]/dz * a_over_v
                                     
                                     # diffusion term: to top
                                     imix_n =  self.map['imix'][iz+1][iy][ix]
@@ -237,7 +237,7 @@ class Core:
                                         dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
                                         D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
                                         mlt += D/dz * a_over_v
-                                        dif -= D*self.flux[iz+1][iy][ix][ig]/dz * a_over_v
+                                        dif += D*self.flux[iz+1][iy][ix][ig]/dz * a_over_v
                                     
                                     # diffusion term: from north
                                     imix_n =  self.map['imix'][iz][iy-1][ix]
@@ -252,7 +252,7 @@ class Core:
                                         dy = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/dy * a_over_v
-                                        dif -= D*self.flux[iz][iy-1][ix][ig]/dy * a_over_v
+                                        dif += D*self.flux[iz][iy-1][ix][ig]/dy * a_over_v
                                     
                                     # diffusion term: from south
                                     imix_n =  self.map['imix'][iz][iy+1][ix]
@@ -267,7 +267,7 @@ class Core:
                                         dy = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/dy * a_over_v
-                                        dif -= D*self.flux[iz][iy+1][ix][ig]/dy * a_over_v
+                                        dif += D*self.flux[iz][iy+1][ix][ig]/dy * a_over_v
                                     
                                     # diffusion term: from west
                                     imix_n =  self.map['imix'][iz][iy][ix-1]
@@ -282,7 +282,7 @@ class Core:
                                         dx = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/dx * a_over_v
-                                        dif -= D*self.flux[iz][iy][ix-1][ig]/dx * a_over_v
+                                        dif += D*self.flux[iz][iy][ix-1][ig]/dx * a_over_v
                                     
                                     # diffusion term: to east
                                     imix_n =  self.map['imix'][iz][iy][ix+1]
@@ -297,7 +297,7 @@ class Core:
                                         dx = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/dx * a_over_v
-                                        dif -= D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
+                                        dif += D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
 
                                     # scattering source
                                     qs = 0
@@ -316,7 +316,7 @@ class Core:
                                     qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
 
                                     # neutron flux
-                                    flux = (-dif + qs + qf)/mlt
+                                    flux = (dif + qs + qf)/mlt
                                     if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol or iter >= 10
                                     self.flux[iz][iy][ix][ig] = flux
 
