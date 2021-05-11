@@ -146,19 +146,15 @@ nddir     DATA25
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        isoid     numdens             sigtemp   sigdens
-mix       MOX02     H1b6      1                   TEMP
-mix       MOX02     U238b6    1                   TEMP
-mix       MOX02     Pu239b6   1                   TEMP
-*mix       MOX01     H1b6      1.24405E-06         TEMP
-*mix       MOX01     B10b6     1.97311E-08         TEMP
-*mix       MOX01     B11b6     7.94201E-08         TEMP
-*mix       MOX01     C0b6      2.75470E-05         TEMP
-*****     mixid     fileid    numdens
-*mix       MOX02     H1b6      1.24405E-06         TEMP
-*mix       MOX02     B10b6     1.97311E-08         TEMP
-*mix       MOX02     B11b6     7.94201E-08         TEMP
-*mix       MOX02     C0b6      2.75470E-05         TEMP
-*mix       MOX02     U238b6    5.23707E-03         TEMP
+mix       MOX02     U235jef   1.01274E-04         TEMP
+mix       MOX02     U238jef   1.98991E-02         TEMP
+mix       MOX02     Pu238jef  1.78335E-05         TEMP
+mix       MOX02     Pu239jef  2.45976E-03         TEMP
+mix       MOX02     Pu240jef  7.33391E-04         TEMP
+mix       MOX02     Pu241jef  1.97174E-04         TEMP
+mix       MOX02     Pu242jef  6.84331E-05         TEMP
+mix       MOX02     Am241jef  4.82584E-05         TEMP
+mix       MOX02     O16jef    4.65798E-02         TEMP
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * STACK OF MIXES
@@ -178,15 +174,15 @@ stack     S01       MOX02     UP1       10
 * CORE GEOMETRY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     geometry  pitch(m)  botBC     topBC
-coregeom  square    0.106     1         1
+coregeom  square    0.179     0         0
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE MAP
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-coremap   0   0   0   0   0   0   0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   S01 S01 S01 S01 S01 0
-coremap   0   0   0   0   0   0   0
+coremap   1   1   1   1   1   1   1
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   S01 S01 S01 S01 S01 0
+coremap   1   0   0   0   0   0   0

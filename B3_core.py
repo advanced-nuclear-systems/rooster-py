@@ -182,14 +182,14 @@ class Core:
     def solve_eigenvalue_problem(self, reactor):
 
         # initialize fission source
-        self.qf = [[[0 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
+        self.qf = [[[1 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
         # eigenvalue self.k equal to ratio of total fission source at two iterations. 
         # flux is normalise to total fission cource = 1 at previous iteration 
         self.k = [1]
 
         # correct!
-        rtol = 1e-10
-        atol = 1e-6
+        rtol = 1e-5
+        atol = 1e-5
 
         converge_qf = False
         converge_k = False
@@ -213,115 +213,109 @@ class Core:
                                     imix_n =  self.map['imix'][iz-1][iy][ix]
                                     a_over_v = 0.01/self.map['dz'][iz-1]
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dz = 50*self.map['dz'][iz-1] + 0.71*xs.sigt[imix]
+                                        dz = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
                                         D = 1/(3*xs.sigt[imix])
-                                        #dif += D*(0 - self.flux[iz][iy][ix][ig])/dz * a_over_v
-                                        mlt += -D/dz * a_over_v
+                                        mlt += D/dz * a_over_v
                                     else:
                                         dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
                                         D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
-                                        #dif += D*(self.flux[iz-1][iy][ix][ig] - self.flux[iz][iy][ix][ig])/dz * a_over_v
-                                        mlt += -D/dz * a_over_v
-                                        dif += D*self.flux[iz-1][iy][ix][ig]/dz * a_over_v
-
-                                    # top
+                                        mlt += D/dz * a_over_v
+                                        dif -= D*self.flux[iz-1][iy][ix][ig]/dz * a_over_v
+                                    
+                                    # diffusion term: to top
                                     imix_n =  self.map['imix'][iz+1][iy][ix]
                                     a_over_v = 0.01/self.map['dz'][iz-1]
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dz = 50*self.map['dz'][iz-1] + 0.71*xs.sigt[imix]
+                                        dz = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
                                         D = 1/(3*xs.sigt[imix])
-                                        #dif += D*(self.flux[iz][iy][ix][ig] - 0)/dz * a_over_v
                                         mlt += D/dz * a_over_v
                                     else:
                                         dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
                                         D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
-                                        # dif += D*(self.flux[iz][iy][ix][ig] - self.flux[iz+1][iy][ix][ig])/dz * a_over_v
                                         mlt += D/dz * a_over_v
-                                        dif += -D*self.flux[iz+1][iy][ix][ig]/dz * a_over_v
-
-                                    # north
+                                        dif -= D*self.flux[iz+1][iy][ix][ig]/dz * a_over_v
+                                    
+                                    # diffusion term: from north
                                     imix_n =  self.map['imix'][iz][iy-1][ix]
                                     a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71*xs.sigt[imix]
+                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
                                         D = 1/(3*xs.sigt[imix])
-                                        # dif += D*(0 - self.flux[iz][iy][ix][ig])/dy * a_over_v
-                                        mlt += -D/dy * a_over_v
+                                        mlt += D/dy * a_over_v
                                     else:
                                         dy = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        # dif += D*(self.flux[iz][iy-1][ix][ig] - self.flux[iz][iy][ix][ig])/dy * a_over_v
-                                        mlt += -D/dy * a_over_v
-                                        dif += D*self.flux[iz][iy-1][ix][ig]/dy * a_over_v
-
-                                    # south
+                                        mlt += D/dy * a_over_v
+                                        dif -= D*self.flux[iz][iy-1][ix][ig]/dy * a_over_v
+                                    
+                                    # diffusion term: from south
                                     imix_n =  self.map['imix'][iz][iy+1][ix]
                                     a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71*xs.sigt[imix]                                        
+                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]                                        
                                         D = 1/(3*xs.sigt[imix])
-                                        # dif += D*(self.flux[iz][iy][ix][ig] - 0)/dy * a_over_v
                                         mlt += D/dy * a_over_v
                                     else:
                                         dy = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        # dif += D*(self.flux[iz][iy][ix][ig] - self.flux[iz][iy+1][ix][ig])/dy * a_over_v
                                         mlt += D/dy * a_over_v
-                                        dif += -D*self.flux[iz][iy+1][ix][ig]/dy * a_over_v
-
-                                    # west
+                                        dif -= D*self.flux[iz][iy+1][ix][ig]/dy * a_over_v
+                                    
+                                    # diffusion term: from west
                                     imix_n =  self.map['imix'][iz][iy][ix-1]
                                     a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71*xs.sigt[imix]
+                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
                                         D = 1/(3*xs.sigt[imix])
-                                        # dif += D*(0 - self.flux[iz][iy][ix][ig])/dx * a_over_v
-                                        mlt += -D/dx * a_over_v
+                                        mlt += D/dx * a_over_v
                                     else:
                                         dx = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        # dif += D*(self.flux[iz][iy][ix-1][ig] - self.flux[iz][iy][ix][ig])/dx * a_over_v
-                                        mlt += -D/dx * a_over_v
-                                        dif += D*self.flux[iz][iy][ix-1][ig]/dx * a_over_v
-
+                                        mlt += D/dx * a_over_v
+                                        dif -= D*self.flux[iz][iy][ix-1][ig]/dx * a_over_v
+                                    
                                     # diffusion term: to east
                                     imix_n =  self.map['imix'][iz][iy][ix+1]
                                     a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
                                     if imix_n == 'ref':
-                                        dif += 0
+                                        pass
                                     elif imix_n == 'vac':
-                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71*xs.sigt[imix]
+                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
                                         D = 1/(3*xs.sigt[imix])
-                                        # dif += D*(self.flux[iz][iy][ix][ig] - 0)/dx * a_over_v
                                         mlt += D/dx * a_over_v
                                     else:
                                         dx = 100*reactor.control.input['coregeom']['pitch']
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        # dif += D*(self.flux[iz][iy][ix][ig] - self.flux[iz][iy][ix+1][ig])/dx * a_over_v
                                         mlt += D/dx * a_over_v
-                                        dif += -D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
+                                        dif -= D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
 
-                                    # fission source
-                                    qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
                                     # scattering source
                                     qs = 0
+                                    # removal xs
+                                    sigr = xs.sigt[ig]
                                     for indx in range(len(xs.sigs)):
                                         f = xs.sigs[indx][0][0]
                                         t = xs.sigs[indx][0][1]
                                         if f != ig and t == ig:
                                             qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
+                                        if f == ig and t == ig:
+                                            sigr -= xs.sigs[indx][1]
+                                    mlt += sigr
 
-                                    mlt += xs.sigt[ig]
+                                    # fission source
+                                    qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
+
+                                    # neutron flux
                                     flux = (-dif + qs + qf)/mlt
                                     if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol or iter >= 10
                                     self.flux[iz][iy][ix][ig] = flux
