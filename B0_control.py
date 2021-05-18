@@ -531,6 +531,10 @@ class Control:
                         fid[indx].write(' ' + 'igroup'.ljust(12) + '\n')
                         for ig in range(reactor.core.ng):
                             fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['nub'][ig][itemp]) + '\n')
+                    fid[indx].write('fission spectrum\n')
+                    fid[indx].write(' ' + 'igroup'.ljust(12) + '\n')
+                    for ig in range(reactor.core.ng):
+                        fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['chi'][ig]) + '\n')
                     for itemp in range(ntemp):
                         fid[indx].write('elastic XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
                         fid[indx].write(' ' + 'from'.ljust(13) + 'to/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
