@@ -84,18 +84,20 @@ class Isotope:
             # capture xs (mf = 3, mt = 102)
             sigc = extract_mf_mt(3, 102, itemp, nlgndr, cards)
             for ig in range(ng):
-                self.xs['tot'][ig][itemp] = sigt[ig]
-                self.xs['cap'][ig][itemp] = sigc[ig]
-                self.xs['abs'][ig][itemp] = sigc[ig]
+                for i in range(nsig0):
+                    self.xs['tot'][ig][itemp][i] = sigt[ig][i]
+                    self.xs['cap'][ig][itemp][i] = sigc[ig][i]
+                    self.xs['abs'][ig][itemp][i] = sigc[ig][i]
                 if nubar != [] : 
                     self.xs['nub'][ig][itemp] = nubar[ig][0]
                     self.xs['fis'][ig][itemp] = sigf[ig]
                     for i in range(nsig0):
-                        self.xs['cap'][ig][itemp][i] += sigf[ig][i]
+                        self.xs['abs'][ig][itemp][i] += sigf[ig][i]
             # elastic scattering (mt = 2)
             sige = extract_mf6(2, itemp, nlgndr, cards)
             for s in sige:
                 self.xs['ela'].append(s)
+            #print(self.xs['cap'][0][0])
         # number of entries in elastic scattering matrix
         n = len(self.xs['ela'])
         # number of entries in elastic scattering matrix for one temperature
@@ -110,13 +112,13 @@ class Isotope:
                 if self.xs['ela'][k][0] == f_t:
                     s[j] += [self.xs['ela'][k][1:]]
         self.xs['ela'] = s
-        #for s in self.xs['ela']:
-        #    print(s)
 
         # inelastic scattering (mt = 51... 91)
-        for mt in range(51,91):
+        for mt in range(51,92):
             sigi = extract_mf6(mt, 0, 0, cards)
-            if sigi != [] : self.xs['ine'].append(sigi[0])
+            if sigi != []:
+                for i in range(len(sigi)):
+                    self.xs['ine'].append(sigi[i])
 
 #        # open, read, split by eol and close the isotope data file
 #        f = open(nddir + os.sep + self.isoid, 'r')

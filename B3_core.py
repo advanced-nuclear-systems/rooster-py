@@ -304,7 +304,6 @@ class Core:
                                     qs = 0
                                     # removal xs
                                     sigr = xs.sigt[ig]
-                                    sigr1 = xs.siga[ig]
                                     for indx in range(len(xs.sigs)):
                                         f = xs.sigs[indx][0][0]
                                         t = xs.sigs[indx][0][1]
@@ -312,8 +311,6 @@ class Core:
                                             qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
                                         if f == ig and t == ig:
                                             sigr -= xs.sigs[indx][1]
-                                        if f == ig and t != ig:
-                                            sigr1 += xs.sigs[indx][1]
                                     mlt += sigr
 
                                     # fission source
