@@ -517,6 +517,21 @@ class Control:
                         for ig in range(reactor.core.ng):
                             fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['tot'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
                     for itemp in range(ntemp):
+                        fid[indx].write('capture XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                        fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
+                        for ig in range(reactor.core.ng):
+                            fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['cap'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
+                    for itemp in range(ntemp):
+                        fid[indx].write('fission XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                        fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
+                        for ig in range(reactor.core.ng):
+                            fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['fis'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
+                    for itemp in range(ntemp):
+                        fid[indx].write('nubar @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                        fid[indx].write(' ' + 'igroup'.ljust(12) + '\n')
+                        for ig in range(reactor.core.ng):
+                            fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['nub'][ig][itemp]) + '\n')
+                    for itemp in range(ntemp):
                         fid[indx].write('elastic XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
                         fid[indx].write(' ' + 'from'.ljust(13) + 'to/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                         for s in reactor.core.iso[i].xs['ela']:

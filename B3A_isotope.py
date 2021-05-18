@@ -58,7 +58,7 @@ class Isotope:
         self.sig0 = a[1:]
 
         # dictionary of cross sections
-        self.xs = {'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'ine':[], 'inv':[0]*ng, 'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
+        self.xs = {'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)],  'cap':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'ine':[], 'inv':[0]*ng, 'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
 
         # fission spectrum (mf = 5, mt = 18)
         chi = extract_mf_mt(5, 18, 0, 0, cards)
@@ -85,12 +85,13 @@ class Isotope:
             sigc = extract_mf_mt(3, 102, itemp, nlgndr, cards)
             for ig in range(ng):
                 self.xs['tot'][ig][itemp] = sigt[ig]
+                self.xs['cap'][ig][itemp] = sigc[ig]
                 self.xs['abs'][ig][itemp] = sigc[ig]
                 if nubar != [] : 
                     self.xs['nub'][ig][itemp] = nubar[ig][0]
                     self.xs['fis'][ig][itemp] = sigf[ig]
                     for i in range(nsig0):
-                        self.xs['abs'][ig][itemp][i] += sigf[ig][i]
+                        self.xs['cap'][ig][itemp][i] += sigf[ig][i]
             # elastic scattering (mt = 2)
             sige = extract_mf6(2, itemp, nlgndr, cards)
             for s in sige:
