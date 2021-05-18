@@ -51,6 +51,7 @@ class Core:
             self.iso = []
             for i in range(self.niso):
                 self.iso.append(Isotope(self.isoname[i], reactor))
+                self.iso[i].print_xs = True
 
             # create an object for every mix
             self.nmix = len(reactor.control.input['mix'])
