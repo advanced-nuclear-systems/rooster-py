@@ -516,6 +516,11 @@ class Control:
                         fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                         for ig in range(reactor.core.ng):
                             fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['tot'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
+                    for itemp in range(ntemp):
+                        fid[indx].write('elastic XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                        fid[indx].write(' ' + 'from'.ljust(13) + 'to/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
+                        for s in reactor.core.iso[i].xs['ela']:
+                            fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + ''.join(['{0:12.5e} '.format(s[1][isig0]) for isig0 in range(nsig0)]) + '\n')
                     indx += 1
                     reactor.core.iso[i].print_xs = False
             for i in range(reactor.core.nmix):
