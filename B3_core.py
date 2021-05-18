@@ -182,14 +182,14 @@ class Core:
     def solve_eigenvalue_problem(self, reactor):
 
         # initialize fission source
-        self.qf = [[[1 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
+        self.qf = [[[1e-6 for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
         # eigenvalue self.k equal to ratio of total fission source at two iterations. 
         # flux is normalise to total fission cource = 1 at previous iteration 
         self.k = [1]
 
         # correct!
-        rtol = 1e-5
-        atol = 1e-5
+        rtol = 1e-14
+        atol = 1e-14
 
         converge_qf = False
         converge_k = False
@@ -303,6 +303,7 @@ class Core:
                                     qs = 0
                                     # removal xs
                                     sigr = xs.sigt[ig]
+                                    sigr1 = xs.siga[ig]
                                     for indx in range(len(xs.sigs)):
                                         f = xs.sigs[indx][0][0]
                                         t = xs.sigs[indx][0][1]
@@ -310,6 +311,8 @@ class Core:
                                             qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
                                         if f == ig and t == ig:
                                             sigr -= xs.sigs[indx][1]
+                                        if f == ig and t != ig:
+                                            sigr1 += xs.sigs[indx][1]
                                     mlt += sigr
 
                                     # fission source

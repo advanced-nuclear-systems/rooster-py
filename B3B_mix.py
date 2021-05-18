@@ -101,7 +101,7 @@ class Mix:
             elif reaction_type == 'nub':
                 sig.append([0]*self.ng)
                 for ig in range(self.ng):
-                    # interpolate total xs for isotope temperature temp
+                    # interpolate nubar for isotope temperature temp
                     x = grid_temp
                     y = [core.iso[isoindx].xs[reaction_type][ig][itemp] for itemp in range(ntemp)]
                     # scipy function

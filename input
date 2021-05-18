@@ -1,4 +1,4 @@
-*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+`*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * ROOSTER input: for code development
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     tstart(s)
@@ -146,45 +146,48 @@ nddir     DATA25
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        isoid     numdens             sigtemp   sigdens
-
-
-
-
-
-
-
-
-
-
-mix       INNER     U235jef   3.64947E-05         TEMP
-mix       INNER     U238jef   7.17076E-03         TEMP
-mix       INNER     Pu238jef  6.42641E-06         TEMP
-mix       INNER     Pu239jef  8.86389E-04         TEMP
-mix       INNER     Pu240jef  2.64282E-04         TEMP
-mix       INNER     Pu241jef  7.10528E-05         TEMP
-mix       INNER     Pu242jef  2.46603E-05         TEMP
-mix       INNER     Am241jef  1.73902E-05         TEMP
-mix       INNER     O16jef    1.67853E-02         TEMP
-mix       INNER     C0jef     4.63230E-05         TEMP
-mix       INNER     Si0jef    2.37553E-04         TEMP
-mix       INNER     P31b6     1.07680E-05         TEMP
-mix       INNER     Ti0b6     9.29310E-05         TEMP
-mix       INNER     Cr50b6    1.54745E-04         TEMP
-mix       INNER     Cr52b6    2.86953E-03         TEMP
-mix       INNER     Cr53b6    3.19234E-04         TEMP
-mix       INNER     Cr54b6    7.79935E-05         TEMP
-mix       INNER     Mn55jef   3.44020E-04         TEMP
-mix       INNER     Fe54b6    7.79694E-04         TEMP
-mix       INNER     Fe56b6    1.18029E-02         TEMP
-mix       INNER     Fe57b6    2.67791E-04         TEMP
-mix       INNER     Fe58b6    3.50241E-05         TEMP
-mix       INNER     Ni58b6    1.82892E-03         TEMP
-mix       INNER     Ni60b6    6.81034E-04         TEMP
-mix       INNER     Ni61b6    2.91182E-05         TEMP
-mix       INNER     Ni62b6    9.13491E-05         TEMP
-mix       INNER     Ni64b6    2.25332E-05         TEMP
-mix       INNER     Mo0jef    2.89814E-04         TEMP
-mix       INNER     Na23b6    8.34742E-03         TEMP
+mix       INNER     Pu239j311 1                    TEMP
+*mix       INNER     U235j311  3.64947E-05         TEMP
+*mix       INNER     U238j311  7.17076E-03         TEMP
+*mix       INNER     Pu238j311 6.42641E-06         TEMP
+*mix       INNER     Pu239j311 8.86389E-04         TEMP
+*mix       INNER     Pu240j311 2.64282E-04         TEMP
+*mix       INNER     Pu241j311 7.10528E-05         TEMP
+*mix       INNER     Pu242j311 2.46603E-05         TEMP
+*mix       INNER     Am241j311 1.73902E-05         TEMP
+*mix       INNER     O16j311   1.67853E-02         TEMP
+*mix       INNER     C0j311    4.63230E-05         TEMP
+*mix       INNER     Si28j311  2.19887E-04         TEMP
+*mix       INNER     Si29j311  1.07851E-05         TEMP
+*mix       INNER     Si30j311  6.88110E-06         TEMP
+*mix       INNER     P31j311   1.07680E-05         TEMP
+*mix       INNER     Ti46j311  7.98385E-06         TEMP
+*mix       INNER     Ti47j311  7.04676E-06         TEMP
+*mix       INNER     Ti48j311  6.83730E-05         TEMP
+*mix       INNER     Ti49j311  4.91510E-06         TEMP
+*mix       INNER     Ti50j311  4.61222E-06         TEMP
+*mix       INNER     Cr50j311  1.54745E-04         TEMP
+*mix       INNER     Cr52j311  2.86953E-03         TEMP
+*mix       INNER     Cr53j311  3.19234E-04         TEMP
+*mix       INNER     Cr54j311  7.79935E-05         TEMP
+*mix       INNER     Mn55j311  3.44020E-04         TEMP
+*mix       INNER     Fe54j311  7.79694E-04         TEMP
+*mix       INNER     Fe56j311  1.18029E-02         TEMP
+*mix       INNER     Fe57j311  2.67791E-04         TEMP
+*mix       INNER     Fe58j311  3.50241E-05         TEMP
+*mix       INNER     Ni58j311  1.82892E-03         TEMP
+*mix       INNER     Ni60j311  6.81034E-04         TEMP
+*mix       INNER     Ni61j311  2.91182E-05         TEMP
+*mix       INNER     Ni62j311  9.13491E-05         TEMP
+*mix       INNER     Ni64j311  2.25332E-05         TEMP
+*mix       INNER     Mo92j311  4.39407E-05         TEMP
+*mix       INNER     Mo94j311  2.70821E-05         TEMP
+*mix       INNER     Mo95j311  4.63885E-05         TEMP
+*mix       INNER     Mo96j311  4.83108E-05         TEMP
+*mix       INNER     Mo97j311  2.75340E-05         TEMP
+*mix       INNER     Mo98j311  6.92394E-05         TEMP
+*mix       INNER     Mo100j311 2.73188E-05         TEMP
+*mix       INNER     Na23j311  8.34742E-03         TEMP
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * STACK OF MIXES
