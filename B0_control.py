@@ -434,20 +434,7 @@ class Control:
             for i in range(reactor.core.niso):
                 fid.append(open(path4results + os.sep + 'core-iso-microxs-' + reactor.core.isoname[i] + '.dat', 'w'))
             for i in range(reactor.core.nmix):
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sig0.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(12) + 'isoname'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigt.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-siga.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigp.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-chi.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(str(j+1)).ljust(13) for j in range(reactor.core.mix[i].ng)]) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sigs.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
-                fid.append(open(path4results + os.sep + 'core-mix-' + str(i).zfill(4) + '-sign2n.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(13) + '\n')
+                fid.append(open(path4results + os.sep + 'core-mix-macroxs-' + reactor.core.mix[i].mixid + '.dat', 'w'))
                 fid.append(open(path4results + os.sep + 'core-k.dat', 'w'))
                 fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
                 fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
@@ -552,37 +539,42 @@ class Control:
                     reactor.core.iso[i].print_xs = False
             for i in range(reactor.core.nmix):
                 if reactor.core.mix[i].print_xs:
-                    for j in range(reactor.core.mix[i].niso):
-                        # sigma-zeros
-                        fid[indx].write('{0:12.5e} '.format(time) + str(reactor.core.mix[i].isoid[j]).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                    indx += 1
-                    # macroscopic sigma-total
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigt[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                    indx += 1
-                    # macroscopic sigma-absorption
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].siga[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                    indx += 1
-                    # macroscopic sigma-production
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sigp[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                    indx += 1
-                    # fission spectrum
-                    fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].chi[ig]) for ig in range(reactor.core.mix[i].ng)]) + '\n')
-                    indx += 1
-                    # macroscopic sigma-scattering
+                    fid[indx].write('time: ' + '{0:12.5e} '.format(time) + ' s\n')
+                    fid[indx].write('background XS\n')
+                    fid[indx].write(' ' + 'igroup'.ljust(13) + ''.join([str(reactor.core.mix[i].isoid[j]).ljust(13) for j in range(reactor.core.mix[i].niso)]) + '\n')
+                    for ig in range(reactor.core.ng):
+                        fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for j in range(reactor.core.mix[i].niso)]) + '\n')
+                    fid[indx].write('total XS, production XS and fission spectrum\n')
+                    fid[indx].write(' ' + 'igroup'.ljust(13) + 'sigt'.ljust(13) + 'nu*sigf'.ljust(13) + 'chi'.ljust(13) + 'sigsi'.ljust(13) + 'sigso'.ljust(13) + 'sign2n'.ljust(13) + '\n')
+                    for ig in range(reactor.core.ng):
+                        sigso = 0
+                        sigsi = 0
+                        for j in range(len(reactor.core.mix[i].sigs)):
+                            f = reactor.core.mix[i].sigs[j][0][0]
+                            t = reactor.core.mix[i].sigs[j][0][1]
+                            if f == ig and t != ig : sigso = sigso + reactor.core.mix[i].sigs[j][1]
+                            if f == ig and t == ig : sigsi = sigsi + reactor.core.mix[i].sigs[j][1]
+                        sign2n = 0
+                        for j in range(len(reactor.core.mix[i].sign2n)):
+                            f = reactor.core.mix[i].sign2n[j][0][0]
+                            t = reactor.core.mix[i].sign2n[j][0][1]
+                            if f == ig and t != ig : sign2n = sign2n + reactor.core.mix[i].sign2n[j][1]
+                        fid[indx].write(' ' + str(ig+1).ljust(12) + str('{0:12.5e} '.format(reactor.core.mix[i].sigt[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].sigp[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].chi[ig])) + str('{0:12.5e} '.format(sigsi)) + str('{0:12.5e} '.format(sigso)) + str('{0:12.5e} '.format(sign2n)) + '\n')
+                    fid[indx].write('scattering XS\n')
+                    fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
                     for j in range(len(reactor.core.mix[i].sigs)):
                         f = reactor.core.mix[i].sigs[j][0][0] + 1
                         t = reactor.core.mix[i].sigs[j][0][1] + 1
                         sigs = reactor.core.mix[i].sigs[j][1]
-                        fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
-                    indx += 1
-                    # macroscopic sigma-n2n
+                        fid[indx].write(' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
+                    fid[indx].write('n2n XS\n')
+                    fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(13) + '\n')
                     for j in range(len(reactor.core.mix[i].sign2n)):
                         f = reactor.core.mix[i].sign2n[j][0][0] + 1
                         t = reactor.core.mix[i].sign2n[j][0][1] + 1
                         sign2n = reactor.core.mix[i].sign2n[j][1]
-                        fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sign2n) + '\n')
+                        fid[indx].write(' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sign2n) + '\n')
                     indx += 1
-
                     reactor.core.mix[i].print_xs = False
 
                 else:
