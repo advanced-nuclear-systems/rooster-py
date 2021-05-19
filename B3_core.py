@@ -300,10 +300,10 @@ class Core:
                                         mlt += D/dx * a_over_v
                                         dif += D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
 
-                                    # scattering source
-                                    qs = 0
                                     # removal xs
                                     sigr = xs.sigt[ig]
+                                    # scattering source
+                                    qs = 0
                                     for indx in range(len(xs.sigs)):
                                         f = xs.sigs[indx][0][0]
                                         t = xs.sigs[indx][0][1]
@@ -311,13 +311,23 @@ class Core:
                                             qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
                                         if f == ig and t == ig:
                                             sigr -= xs.sigs[indx][1]
+                                    # n2n source
+                                    qn2n = 0
+                                    for indx in range(len(xs.sign2n)):
+                                        f = xs.sign2n[indx][0][0]
+                                        t = xs.sign2n[indx][0][1]
+                                        if f != ig and t == ig:
+                                            qn2n += 2*xs.sign2n[indx][1] * self.flux[iz][iy][ix][f]
+                                        if f == ig and t == ig:
+                                            sigr -= xs.sign2n[indx][1]
+
                                     mlt += sigr
 
                                     # fission source
                                     qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
 
                                     # neutron flux
-                                    flux = (dif + qs + qf)/mlt
+                                    flux = (dif + qs + qn2n + qf)/mlt
                                     if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol or iter >= 10
                                     self.flux[iz][iy][ix][ig] = flux
 

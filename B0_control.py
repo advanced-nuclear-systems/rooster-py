@@ -541,8 +541,12 @@ class Control:
                         for s in reactor.core.iso[i].xs['ela']:
                             fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + ''.join(['{0:12.5e} '.format(s[1][isig0]) for isig0 in range(nsig0)]) + '\n')
                     fid[indx].write('inelastic scattering\n')
-                    fid[indx].write(' ' + 'igroup'.ljust(12) + 'sigs'.ljust(12) + '\n')
+                    fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sigi'.ljust(12) + '\n')
                     for s in reactor.core.iso[i].xs['ine']:
+                        fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + '{0:12.5e} '.format(s[1]) + '\n')
+                    fid[indx].write('n2n scattering\n')
+                    fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(12) + '\n')
+                    for s in reactor.core.iso[i].xs['n2n']:
                         fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + '{0:12.5e} '.format(s[1]) + '\n')
                     indx += 1
                     reactor.core.iso[i].print_xs = False

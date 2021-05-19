@@ -97,7 +97,6 @@ class Isotope:
             sige = extract_mf6(2, itemp, nlgndr, cards)
             for s in sige:
                 self.xs['ela'].append(s)
-            #print(self.xs['cap'][0][0])
         # number of entries in elastic scattering matrix
         n = len(self.xs['ela'])
         # number of entries in elastic scattering matrix for one temperature
@@ -119,6 +118,12 @@ class Isotope:
             if sigi != []:
                 for i in range(len(sigi)):
                     self.xs['ine'].append(sigi[i])
+
+        # n2n scattering (mt = 16)
+        sign2n = extract_mf6(16, 0, 0, cards)
+        if sign2n != []:
+            for i in range(len(sign2n)):
+                self.xs['n2n'].append(sign2n[i])
 
 #        # open, read, split by eol and close the isotope data file
 #        f = open(nddir + os.sep + self.isoid, 'r')
