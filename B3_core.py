@@ -207,98 +207,137 @@ class Core:
                             # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
                             if isinstance(imix, int):
                                 xs = self.mix[imix]
+                                pitch = 100*reactor.control.input['coregeom']['pitch']
+                                az_over_v = 0.01/self.map['dz'][iz-1]
+                                if reactor.control.input['coregeom']['geom'] == 'square':
+                                    aside_over_v = 1/pitch
+                                elif reactor.control.input['coregeom']['geom'] == 'hex':
+                                    aside_over_v = 2/(3*pitch)
+                                dzvac = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
+                                dxyvac = 0.5*pitch + 0.71/xs.sigt[imix]
+                                Dimix = 1/(3*xs.sigt[imix])
+
                                 for ig in range(self.ng):
                                     mlt = 0
                                     dif = 0
                                     # diffusion term: from bottom
                                     imix_n =  self.map['imix'][iz-1][iy][ix]
-                                    a_over_v = 0.01/self.map['dz'][iz-1]
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dz = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dz * a_over_v
-                                    else:
+                                    if imix_n == 'vac':
+                                        mlt += Dimix/dzvac * az_over_v
+                                    elif imix_n != 'ref':
                                         dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
                                         D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
-                                        mlt += D/dz * a_over_v
-                                        dif += D*self.flux[iz-1][iy][ix][ig]/dz * a_over_v
+                                        mlt += D/dz * az_over_v
+                                        dif += D*self.flux[iz-1][iy][ix][ig]/dz * az_over_v
                                     
                                     # diffusion term: to top
                                     imix_n =  self.map['imix'][iz+1][iy][ix]
-                                    a_over_v = 0.01/self.map['dz'][iz-1]
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dz = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dz * a_over_v
-                                    else:
+                                    if imix_n == 'vac':
+                                        mlt += Dimix/dzvac * az_over_v
+                                    elif imix_n != 'ref':
                                         dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
                                         D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
-                                        mlt += D/dz * a_over_v
-                                        dif += D*self.flux[iz+1][iy][ix][ig]/dz * a_over_v
-                                    
-                                    # diffusion term: from north
-                                    imix_n =  self.map['imix'][iz][iy-1][ix]
-                                    a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dy * a_over_v
-                                    else:
-                                        dy = 100*reactor.control.input['coregeom']['pitch']
-                                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        mlt += D/dy * a_over_v
-                                        dif += D*self.flux[iz][iy-1][ix][ig]/dy * a_over_v
-                                    
-                                    # diffusion term: from south
-                                    imix_n =  self.map['imix'][iz][iy+1][ix]
-                                    a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dy = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]                                        
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dy * a_over_v
-                                    else:
-                                        dy = 100*reactor.control.input['coregeom']['pitch']
-                                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        mlt += D/dy * a_over_v
-                                        dif += D*self.flux[iz][iy+1][ix][ig]/dy * a_over_v
+                                        mlt += D/dz * az_over_v
+                                        dif += D*self.flux[iz+1][iy][ix][ig]/dz * az_over_v
                                     
                                     # diffusion term: from west
                                     imix_n =  self.map['imix'][iz][iy][ix-1]
-                                    a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dx * a_over_v
-                                    else:
-                                        dx = 100*reactor.control.input['coregeom']['pitch']
+                                    if imix_n == 'vac':
+                                        mlt += Dimix/dxyvac * aside_over_v
+                                    elif imix_n != 'ref':
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        mlt += D/dx * a_over_v
-                                        dif += D*self.flux[iz][iy][ix-1][ig]/dx * a_over_v
+                                        mlt += D/pitch * aside_over_v
+                                        dif += D*self.flux[iz][iy][ix-1][ig]/pitch * aside_over_v
                                     
                                     # diffusion term: to east
                                     imix_n =  self.map['imix'][iz][iy][ix+1]
-                                    a_over_v = 0.01/reactor.control.input['coregeom']['pitch']
-                                    if imix_n == 'ref':
-                                        pass
-                                    elif imix_n == 'vac':
-                                        dx = 50*reactor.control.input['coregeom']['pitch'] + 0.71/xs.sigt[imix]
-                                        D = 1/(3*xs.sigt[imix])
-                                        mlt += D/dx * a_over_v
-                                    else:
-                                        dx = 100*reactor.control.input['coregeom']['pitch']
+                                    if imix_n == 'vac':
+                                        mlt += Dimix/dxyvac * aside_over_v
+                                    elif imix_n != 'ref':
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                                        mlt += D/dx * a_over_v
-                                        dif += D*self.flux[iz][iy][ix+1][ig]/dx * a_over_v
+                                        mlt += D/pitch * aside_over_v
+                                        dif += D*self.flux[iz][iy][ix+1][ig]/pitch * aside_over_v
+
+                                    if reactor.control.input['coregeom']['geom'] == 'square':
+                                        # diffusion term: from north
+                                        imix_n =  self.map['imix'][iz][iy-1][ix]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
+                                        
+                                        # diffusion term: from south
+                                        imix_n =  self.map['imix'][iz][iy+1][ix]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
+
+                                    elif reactor.control.input['coregeom']['geom'] == 'hex':
+                                        # diffusion term: from north-west
+                                        if iy % 2 == 0: # even
+                                            imix_n =  self.map['imix'][iz][iy-1][ix]
+                                        else: # odd
+                                            imix_n =  self.map['imix'][iz][iy-1][ix-1]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            if iy % 2 == 0: # even
+                                                dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
+                                            else: # odd
+                                                dif += D*self.flux[iz][iy-1][ix-1][ig]/pitch * aside_over_v
+
+                                        # diffusion term: from north-east
+                                        if iy % 2 == 0: # even
+                                            imix_n =  self.map['imix'][iz][iy-1][ix+1]
+                                        else: # odd
+                                            imix_n =  self.map['imix'][iz][iy-1][ix]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            if iy % 2 == 0: # even
+                                                dif += D*self.flux[iz][iy-1][ix+1][ig]/pitch * aside_over_v
+                                            else: # odd
+                                                dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
+
+                                        # diffusion term: from south-west
+                                        if iy % 2 == 0: # even
+                                            imix_n =  self.map['imix'][iz][iy+1][ix]
+                                        else: # odd
+                                            imix_n =  self.map['imix'][iz][iy+1][ix-1]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            if iy % 2 == 0: # even
+                                                dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
+                                            else: # odd
+                                                dif += D*self.flux[iz][iy+1][ix-1][ig]/pitch * aside_over_v
+
+
+                                        # diffusion term: from south-east
+                                        if iy % 2 == 0: # even
+                                            imix_n =  self.map['imix'][iz][iy+1][ix+1]
+                                        else: # odd
+                                            imix_n =  self.map['imix'][iz][iy+1][ix]
+                                        if imix_n == 'vac':
+                                            mlt += Dimix/dxyvac * aside_over_v
+                                        elif imix_n != 'ref':
+                                            D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                                            mlt += D/pitch * aside_over_v
+                                            if iy % 2 == 0: # even
+                                                dif += D*self.flux[iz][iy+1][ix+1][ig]/pitch * aside_over_v
+                                            else: # odd
+                                                dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
 
                                     # removal xs
                                     sigr = xs.sigt[ig]

@@ -18,7 +18,7 @@ signal    PI        3.14159
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        value
-signal    TEMP      300
+signal    TEMP      900
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     insignal  outsignal
@@ -140,13 +140,12 @@ innergas  FR02      HE1       53e-6
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * NUCLEAR DATA DIRECTORY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-nddir     DATA25
+nddir     DATA025
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        isoid     numdens             sigtemp   sigdens
-*mix       INNER     Pu239j311 1                    TEMP
 mix       INNER     U235j311  3.64947E-05         TEMP
 mix       INNER     U238j311  7.17076E-03         TEMP
 mix       INNER     Pu238j311 6.42641E-06         TEMP
@@ -194,32 +193,29 @@ mix       INNER     Na23j311  8.34742E-03         TEMP
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        mixid     pipeid    pipenodeid
 stack     S01       INNER     UP1       1
-*stack     S01       MOX02     UP1       2
-*stack     S01       MOX02     UP1       3
-*stack     S01       MOX02     UP1       4
-*stack     S01       MOX02     UP1       5
-*stack     S01       MOX02     UP1       6
-*stack     S01       MOX02     UP1       7
-*stack     S01       MOX02     UP1       8
-*stack     S01       MOX02     UP1       9
-*stack     S01       MOX02     UP1       10
+stack     S01       INNER     UP1       2
+stack     S01       INNER     UP1       3
+stack     S01       INNER     UP1       4
+stack     S01       INNER     UP1       5
+stack     S01       INNER     UP1       6
+stack     S01       INNER     UP1       7
+stack     S01       INNER     UP1       8
+stack     S01       INNER     UP1       9
+stack     S01       INNER     UP1       10
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE GEOMETRY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     geometry  pitch(m)  botBC     topBC
-coregeom  square    0.179     1         1
+coregeom  hex       0.179     0         0
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE MAP
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*coremap   1     1     1     1     1     1     1
-*coremap      1    S01   S01   S01   S01   S01   0
-*coremap   1    S01   S01   S01   S01   S01    0
-*coremap      1    S01   S01   S01   S01   S01   0
-*coremap   1    S01   S01   S01   S01   S01    0
-*coremap      1    S01   S01   S01   S01   S01   0
-*coremap   1    S01   S01   S01   S01   S01    0
-*coremap      1    S01   S01   S01   S01   S01   0
-*coremap   0     0     0     0     0     0     0
-coremap   1     1     1
-coremap   1    S01    1
-coremap   1     1     1
+coremap   1     1     1     1     1     1     1
+coremap      1    S01   S01   S01   S01   S01   1
+coremap   1    S01   S01   S01   S01   S01    1
+coremap      1    S01   S01   S01   S01   S01   1
+coremap   1    S01   S01   S01   S01   S01    1
+coremap      1    S01   S01   S01   S01   S01   1
+coremap   1    S01   S01   S01   S01   S01    1
+coremap      1    S01   S01   S01   S01   S01   1
+coremap   1     1     1     1     1     1     1

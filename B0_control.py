@@ -544,7 +544,7 @@ class Control:
                     fid[indx].write(' ' + 'igroup'.ljust(13) + ''.join([str(reactor.core.mix[i].isoid[j]).ljust(13) for j in range(reactor.core.mix[i].niso)]) + '\n')
                     for ig in range(reactor.core.ng):
                         fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for j in range(reactor.core.mix[i].niso)]) + '\n')
-                    fid[indx].write('total XS, production XS and fission spectrum\n')
+                    fid[indx].write('total XS, production XS, fission spectrum, in-group scattering XS, out-group scattering XS, n2n XS\n')
                     fid[indx].write(' ' + 'igroup'.ljust(13) + 'sigt'.ljust(13) + 'nu*sigf'.ljust(13) + 'chi'.ljust(13) + 'sigsi'.ljust(13) + 'sigso'.ljust(13) + 'sign2n'.ljust(13) + '\n')
                     for ig in range(reactor.core.ng):
                         sigso = 0
