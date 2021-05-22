@@ -259,7 +259,7 @@ class Core:
                                         dif += D*self.flux[iz][iy][ix+1][ig]/pitch * aside_over_v
 
                                     if reactor.control.input['coregeom']['geom'] == 'square':
-                                        # diffusion term: from north
+                                        # diffusion term: from north (square geometry)
                                         imix_n =  self.map['imix'][iz][iy-1][ix]
                                         if imix_n == 'vac':
                                             mlt += Dimix/dxyvac * aside_over_v
@@ -268,7 +268,7 @@ class Core:
                                             mlt += D/pitch * aside_over_v
                                             dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
                                         
-                                        # diffusion term: from south
+                                        # diffusion term: from south (square geometry)
                                         imix_n =  self.map['imix'][iz][iy+1][ix]
                                         if imix_n == 'vac':
                                             mlt += Dimix/dxyvac * aside_over_v
@@ -278,7 +278,7 @@ class Core:
                                             dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
 
                                     elif reactor.control.input['coregeom']['geom'] == 'hex':
-                                        # diffusion term: from north-west
+                                        # diffusion term: from north-west (hexagonal geometry)
                                         if iy % 2 == 0: # even
                                             imix_n =  self.map['imix'][iz][iy-1][ix]
                                         else: # odd
@@ -293,7 +293,7 @@ class Core:
                                             else: # odd
                                                 dif += D*self.flux[iz][iy-1][ix-1][ig]/pitch * aside_over_v
 
-                                        # diffusion term: from north-east
+                                        # diffusion term: from north-east (hexagonal geometry)
                                         if iy % 2 == 0: # even
                                             imix_n =  self.map['imix'][iz][iy-1][ix+1]
                                         else: # odd
@@ -308,7 +308,7 @@ class Core:
                                             else: # odd
                                                 dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
 
-                                        # diffusion term: from south-west
+                                        # diffusion term: from south-west (hexagonal geometry)
                                         if iy % 2 == 0: # even
                                             imix_n =  self.map['imix'][iz][iy+1][ix]
                                         else: # odd
@@ -324,7 +324,7 @@ class Core:
                                                 dif += D*self.flux[iz][iy+1][ix-1][ig]/pitch * aside_over_v
 
 
-                                        # diffusion term: from south-east
+                                        # diffusion term: from south-east (hexagonal geometry)
                                         if iy % 2 == 0: # even
                                             imix_n =  self.map['imix'][iz][iy+1][ix+1]
                                         else: # odd
