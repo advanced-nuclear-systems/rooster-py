@@ -184,7 +184,7 @@ class Mix:
                 self.chi[ig] += self.numdens[i]*core.iso[isoindx].xs['chi'][ig]
         # normalize fission spectrum
         s = sum(self.chi)
-        self.chi = [self.chi[ig]/s for ig in range(self.ng)]
+        if s > 0 : self.chi = [self.chi[ig]/s for ig in range(self.ng)]
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic scattering cross sections for the mix
     def calculate_sigs(self, core, reactor):

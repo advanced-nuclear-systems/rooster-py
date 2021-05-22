@@ -92,16 +92,16 @@ pipe-f    PLN       NA        0.1       1.0       1         0.22
 jun-i-p   PLN       DOWN      PMPHEAD_VS_T
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)   dir        areaz(m2) nnodes    signal
-pipe-t    DOWN      NA        0.01      1.0      -1         1.1       10        TEMP_VS_T
+pipe-t    DOWN      NA        0.01      3.0      -1         1.1       30        TEMP_VS_T
 jun-i-f   DOWN      UP1       MDOT_VS_T
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP1       NA        0.01      1.0       1         1.1       10
+pipe      UP1       NA        0.01      3.0       1         1.1       30
 jun       UP1       PLN
 jun       DOWN      UP2
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP2       NA        0.01      1.0       1         1.1       10
+pipe      UP2       NA        0.01      3.0       1         1.1       30
 jun       UP2       PLN
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
@@ -231,80 +231,357 @@ mix       OUTER     Mo98j311  6.92394E-05         TEMP
 mix       OUTER     Mo100j311 2.73188E-05         TEMP
 mix       OUTER     Na23j311  8.34742E-03         TEMP
 *
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       BLANKET   U235j311  2.13421E-05         TEMP
+mix       BLANKET   U238j311  8.40793E-03         TEMP
+mix       BLANKET   O16j311   1.66900E-02         TEMP
+mix       BLANKET   C0j311    4.63230E-05         TEMP
+mix       BLANKET   Si28j311  2.19887E-04         TEMP
+mix       BLANKET   Si29j311  1.07851E-05         TEMP
+mix       BLANKET   Si30j311  6.88110E-06         TEMP
+mix       BLANKET   P31j311   1.07680E-05         TEMP
+mix       BLANKET   Ti46j311  7.98385E-06         TEMP
+mix       BLANKET   Ti47j311  7.04676E-06         TEMP
+mix       BLANKET   Ti48j311  6.83730E-05         TEMP
+mix       BLANKET   Ti49j311  4.91510E-06         TEMP
+mix       BLANKET   Ti50j311  4.61222E-06         TEMP
+mix       BLANKET   Cr50j311  1.54745E-04         TEMP
+mix       BLANKET   Cr52j311  2.86953E-03         TEMP
+mix       BLANKET   Cr53j311  3.19234E-04         TEMP
+mix       BLANKET   Cr54j311  7.79935E-05         TEMP
+mix       BLANKET   Mn55j311  3.44020E-04         TEMP
+mix       BLANKET   Fe54j311  7.79694E-04         TEMP
+mix       BLANKET   Fe56j311  1.18029E-02         TEMP
+mix       BLANKET   Fe57j311  2.67791E-04         TEMP
+mix       BLANKET   Fe58j311  3.50241E-05         TEMP
+mix       BLANKET   Ni58j311  1.82892E-03         TEMP
+mix       BLANKET   Ni60j311  6.81034E-04         TEMP
+mix       BLANKET   Ni61j311  2.91182E-05         TEMP
+mix       BLANKET   Ni62j311  9.13491E-05         TEMP
+mix       BLANKET   Ni64j311  2.25332E-05         TEMP
+mix       BLANKET   Mo92j311  4.39407E-05         TEMP
+mix       BLANKET   Mo94j311  2.70821E-05         TEMP
+mix       BLANKET   Mo95j311  4.63885E-05         TEMP
+mix       BLANKET   Mo96j311  4.83108E-05         TEMP
+mix       BLANKET   Mo97j311  2.75340E-05         TEMP
+mix       BLANKET   Mo98j311  6.92394E-05         TEMP
+mix       BLANKET   Mo100j311 2.73188E-05         TEMP
+mix       BLANKET   Na23j311  8.34742E-03         TEMP
+*
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       SHIELD    Si28j311  4.23000E-04         TEMP
+mix       SHIELD    Si29j311  2.14000E-05         TEMP
+mix       SHIELD    Si30j311  1.42000E-05         TEMP
+mix       SHIELD    Ti46j311  1.57000E-05         TEMP
+mix       SHIELD    Ti47j311  1.43000E-05         TEMP
+mix       SHIELD    Ti48j311  1.44000E-04         TEMP
+mix       SHIELD    Ti49j311  1.08000E-05         TEMP
+mix       SHIELD    Ti50j311  1.06000E-05         TEMP
+mix       SHIELD    Cr50j311  3.32910E-04         TEMP
+mix       SHIELD    Cr52j311  6.41983E-03         TEMP
+mix       SHIELD    Cr53j311  7.27957E-04         TEMP
+mix       SHIELD    Cr54j311  1.81204E-04         TEMP
+mix       SHIELD    Mn55j311  6.39840E-04         TEMP
+mix       SHIELD    Fe54j311  1.54425E-03         TEMP
+mix       SHIELD    Fe56j311  2.44205E-02         TEMP
+mix       SHIELD    Fe57j311  5.85750E-04         TEMP
+mix       SHIELD    Fe58j311  7.45500E-05         TEMP
+mix       SHIELD    Ni58j311  3.80428E-03         TEMP
+mix       SHIELD    Ni60j311  1.46539E-03         TEMP
+mix       SHIELD    Ni61j311  6.37055E-06         TEMP
+mix       SHIELD    Ni62j311  2.03075E-04         TEMP
+mix       SHIELD    Ni64j311  5.17467E-05         TEMP
+mix       SHIELD    Mo92j311  9.96832E-05         TEMP
+mix       SHIELD    Mo94j311  6.21341E-05         TEMP
+mix       SHIELD    Mo95j311  1.06938E-04         TEMP
+mix       SHIELD    Mo96j311  1.12043E-04         TEMP
+mix       SHIELD    Mo97j311  6.41493E-05         TEMP
+mix       SHIELD    Mo98j311  1.62086E-04         TEMP
+mix       SHIELD    Mo100j311 6.46866E-05         TEMP
+mix       SHIELD    Cu63j311  8.93000E-05         TEMP
+mix       SHIELD    Cu65j311  3.98000E-05         TEMP
+mix       SHIELD    Na23j311  1.09310E-02         TEMP
+*
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       DILUENT   Si28j311  6.22000E-04         TEMP
+mix       DILUENT   Si29j311  3.15000E-05         TEMP
+mix       DILUENT   Si30j311  2.09000E-05         TEMP
+mix       DILUENT   Ti46j311  2.30000E-05         TEMP
+mix       DILUENT   Ti47j311  2.10000E-05         TEMP
+mix       DILUENT   Ti48j311  2.12000E-04         TEMP
+mix       DILUENT   Ti49j311  1.58000E-05         TEMP
+mix       DILUENT   Ti50j311  1.55000E-05         TEMP
+mix       DILUENT   Cr50j311  2.19418E-04         TEMP
+mix       DILUENT   Cr52j311  4.23704E-03         TEMP
+mix       DILUENT   Cr53j311  4.80447E-04         TEMP
+mix       DILUENT   Cr54j311  1.19593E-04         TEMP
+mix       DILUENT   Mn55j311  9.40570E-04         TEMP
+mix       DILUENT   Fe54j311  1.01918E-03         TEMP
+mix       DILUENT   Fe56j311  1.61170E-02         TEMP
+mix       DILUENT   Fe57j311  3.86584E-04         TEMP
+mix       DILUENT   Fe58j311  4.92016E-05         TEMP
+mix       DILUENT   Ni58j311  2.51082E-03         TEMP
+mix       DILUENT   Ni60j311  9.64157E-04         TEMP
+mix       DILUENT   Ni61j311  4.20455E-06         TEMP
+mix       DILUENT   Ni62j311  1.34029E-04         TEMP
+mix       DILUENT   Ni64j311  3.41527E-05         TEMP
+mix       DILUENT   Mo92j311  6.57917E-05         TEMP
+mix       DILUENT   Mo94j311  4.10090E-05         TEMP
+mix       DILUENT   Mo95j311  7.05797E-05         TEMP
+mix       DILUENT   Mo96j311  7.39491E-05         TEMP
+mix       DILUENT   Mo97j311  4.23390E-05         TEMP
+mix       DILUENT   Mo98j311  1.06978E-04         TEMP
+mix       DILUENT   Mo100j311 4.26936E-05         TEMP
+mix       DILUENT   Cu63j311  1.31000E-04         TEMP
+mix       DILUENT   Cu65j311  5.85000E-05         TEMP
+mix       DILUENT   Na23j311  5.76350E-03         TEMP
+*
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       FOLLOWER  C0j311    1.88831E-05         TEMP
+mix       FOLLOWER  Si28j311  8.96345E-05         TEMP
+mix       FOLLOWER  Si29j311  4.39643E-06         TEMP
+mix       FOLLOWER  Si30j311  2.80500E-06         TEMP
+mix       FOLLOWER  P31j311   4.38947E-06         TEMP
+mix       FOLLOWER  Ti46j311  3.25452E-06         TEMP
+mix       FOLLOWER  Ti47j311  2.87253E-06         TEMP
+mix       FOLLOWER  Ti48j311  2.78715E-05         TEMP
+mix       FOLLOWER  Ti49j311  2.00358E-06         TEMP
+mix       FOLLOWER  Ti50j311  1.88012E-06         TEMP
+mix       FOLLOWER  Cr50j311  6.30802E-05         TEMP
+mix       FOLLOWER  Cr52j311  1.16973E-03         TEMP
+mix       FOLLOWER  Cr53j311  1.30132E-04         TEMP
+mix       FOLLOWER  Cr54j311  3.17932E-05         TEMP
+mix       FOLLOWER  Mn55j311  1.40236E-04         TEMP
+mix       FOLLOWER  Fe54j311  3.17833E-04         TEMP
+mix       FOLLOWER  Fe56j311  4.81133E-03         TEMP
+mix       FOLLOWER  Fe57j311  1.09162E-04         TEMP
+mix       FOLLOWER  Fe58j311  1.42772E-05         TEMP
+mix       FOLLOWER  Ni58j311  7.45537E-04         TEMP
+mix       FOLLOWER  Ni60j311  2.77616E-04         TEMP
+mix       FOLLOWER  Ni61j311  1.18697E-05         TEMP
+mix       FOLLOWER  Ni62j311  3.72374E-05         TEMP
+mix       FOLLOWER  Ni64j311  9.18540E-06         TEMP
+mix       FOLLOWER  Mo92j311  1.79119E-05         TEMP
+mix       FOLLOWER  Mo94j311  1.10397E-05         TEMP
+mix       FOLLOWER  Mo95j311  1.89097E-05         TEMP
+mix       FOLLOWER  Mo96j311  1.96933E-05         TEMP
+mix       FOLLOWER  Mo97j311  1.12239E-05         TEMP
+mix       FOLLOWER  Mo98j311  2.82247E-05         TEMP
+mix       FOLLOWER  Mo100j311 1.11362E-05         TEMP
+mix       FOLLOWER  Na23j311  2.15216E-02         TEMP
+*
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * STACK OF MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        mixid     pipeid    pipenodeid
-stack     FIN       INNER     UP1       1
-stack     FIN       INNER     UP1       2
-stack     FIN       INNER     UP1       3
-stack     FIN       INNER     UP1       4
-stack     FIN       INNER     UP1       5
+stack     FIN       SHIELD    UP1       1
+stack     FIN       SHIELD    UP1       2
+stack     FIN       SHIELD    UP1       3
+stack     FIN       SHIELD    UP1       4
+stack     FIN       SHIELD    UP1       5
 stack     FIN       INNER     UP1       6
 stack     FIN       INNER     UP1       7
 stack     FIN       INNER     UP1       8
 stack     FIN       INNER     UP1       9
 stack     FIN       INNER     UP1       10
+stack     FIN       INNER     UP1       11
+stack     FIN       INNER     UP1       12
+stack     FIN       INNER     UP1       13
+stack     FIN       INNER     UP1       14
+stack     FIN       INNER     UP1       15
+stack     FIN       INNER     UP1       16
+stack     FIN       INNER     UP1       17
+stack     FIN       INNER     UP1       18
+stack     FIN       INNER     UP1       19
+stack     FIN       INNER     UP1       20
+stack     FIN       INNER     UP1       21
+stack     FIN       INNER     UP1       22
+stack     FIN       INNER     UP1       23
+stack     FIN       SHIELD    UP1       24
+stack     FIN       SHIELD    UP1       25
+stack     FIN       SHIELD    UP1       26
+stack     FIN       SHIELD    UP1       27
+stack     FIN       SHIELD    UP1       28
 *
 *****     id        mixid     pipeid    pipenodeid
-stack     FOU       OUTER     UP1       1
-stack     FOU       OUTER     UP1       2
-stack     FOU       OUTER     UP1       3
-stack     FOU       OUTER     UP1       4
-stack     FOU       OUTER     UP1       5
+stack     FOU       SHIELD    UP1       1
+stack     FOU       SHIELD    UP1       2
+stack     FOU       SHIELD    UP1       3
+stack     FOU       SHIELD    UP1       4
+stack     FOU       SHIELD    UP1       5
 stack     FOU       OUTER     UP1       6
 stack     FOU       OUTER     UP1       7
 stack     FOU       OUTER     UP1       8
 stack     FOU       OUTER     UP1       9
 stack     FOU       OUTER     UP1       10
+stack     FOU       OUTER     UP1       11
+stack     FOU       OUTER     UP1       12
+stack     FOU       OUTER     UP1       13
+stack     FOU       OUTER     UP1       14
+stack     FOU       OUTER     UP1       15
+stack     FOU       OUTER     UP1       16
+stack     FOU       OUTER     UP1       17
+stack     FOU       OUTER     UP1       18
+stack     FOU       OUTER     UP1       19
+stack     FOU       OUTER     UP1       20
+stack     FOU       OUTER     UP1       21
+stack     FOU       OUTER     UP1       22
+stack     FOU       OUTER     UP1       23
+stack     FOU       SHIELD    UP1       24
+stack     FOU       SHIELD    UP1       25
+stack     FOU       SHIELD    UP1       26
+stack     FOU       SHIELD    UP1       27
+stack     FOU       SHIELD    UP1       28
 *
 *****     id        mixid     pipeid    pipenodeid
-stack     BLA       OUTER     UP1       1
-stack     BLA       OUTER     UP1       2
-stack     BLA       OUTER     UP1       3
-stack     BLA       OUTER     UP1       4
-stack     BLA       OUTER     UP1       5
-stack     BLA       OUTER     UP1       6
-stack     BLA       OUTER     UP1       7
-stack     BLA       OUTER     UP1       8
-stack     BLA       OUTER     UP1       9
-stack     BLA       OUTER     UP1       10
+stack     BLA       SHIELD    UP1       1
+stack     BLA       SHIELD    UP1       2
+stack     BLA       SHIELD    UP1       3
+stack     BLA       SHIELD    UP1       4
+stack     BLA       SHIELD    UP1       5
+stack     BLA       BLANKET   UP1       6
+stack     BLA       BLANKET   UP1       7
+stack     BLA       BLANKET   UP1       8
+stack     BLA       BLANKET   UP1       9
+stack     BLA       BLANKET   UP1       10
+stack     BLA       BLANKET   UP1       11
+stack     BLA       BLANKET   UP1       12
+stack     BLA       BLANKET   UP1       13
+stack     BLA       BLANKET   UP1       14
+stack     BLA       BLANKET   UP1       15
+stack     BLA       BLANKET   UP1       16
+stack     BLA       BLANKET   UP1       17
+stack     BLA       BLANKET   UP1       18
+stack     BLA       BLANKET   UP1       19
+stack     BLA       BLANKET   UP1       20
+stack     BLA       BLANKET   UP1       21
+stack     BLA       BLANKET   UP1       22
+stack     BLA       BLANKET   UP1       23
+stack     BLA       SHIELD    UP1       24
+stack     BLA       SHIELD    UP1       25
+stack     BLA       SHIELD    UP1       26
+stack     BLA       SHIELD    UP1       27
+stack     BLA       SHIELD    UP1       28
 *
 *****     id        mixid     pipeid    pipenodeid
-stack     CSD       INNER     UP1       1
-stack     CSD       INNER     UP1       2
-stack     CSD       INNER     UP1       3
-stack     CSD       INNER     UP1       4
-stack     CSD       INNER     UP1       5
-stack     CSD       INNER     UP1       6
-stack     CSD       INNER     UP1       7
-stack     CSD       INNER     UP1       8
-stack     CSD       INNER     UP1       9
-stack     CSD       INNER     UP1       10
+stack     CSD       FOLLOWER  UP1       1
+stack     CSD       FOLLOWER  UP1       2
+stack     CSD       FOLLOWER  UP1       3
+stack     CSD       FOLLOWER  UP1       4
+stack     CSD       FOLLOWER  UP1       5
+stack     CSD       FOLLOWER  UP1       6
+stack     CSD       FOLLOWER  UP1       7
+stack     CSD       FOLLOWER  UP1       8
+stack     CSD       FOLLOWER  UP1       9
+stack     CSD       FOLLOWER  UP1       10
+stack     CSD       FOLLOWER  UP1       11
+stack     CSD       FOLLOWER  UP1       12
+stack     CSD       FOLLOWER  UP1       13
+stack     CSD       FOLLOWER  UP1       14
+stack     CSD       FOLLOWER  UP1       15
+stack     CSD       FOLLOWER  UP1       16
+stack     CSD       FOLLOWER  UP1       17
+stack     CSD       FOLLOWER  UP1       18
+stack     CSD       FOLLOWER  UP1       19
+stack     CSD       FOLLOWER  UP1       20
+stack     CSD       FOLLOWER  UP1       21
+stack     CSD       FOLLOWER  UP1       22
+stack     CSD       FOLLOWER  UP1       23
+stack     CSD       FOLLOWER  UP1       24
+stack     CSD       FOLLOWER  UP1       25
+stack     CSD       FOLLOWER  UP1       26
+stack     CSD       FOLLOWER  UP1       27
+stack     CSD       FOLLOWER  UP1       28
 *
 *****     id        mixid     pipeid    pipenodeid
-stack     DSD       INNER     UP1       1
-stack     DSD       INNER     UP1       2
-stack     DSD       INNER     UP1       3
-stack     DSD       INNER     UP1       4
-stack     DSD       INNER     UP1       5
-stack     DSD       INNER     UP1       6
-stack     DSD       INNER     UP1       7
-stack     DSD       INNER     UP1       8
-stack     DSD       INNER     UP1       9
-stack     DSD       INNER     UP1       10
+stack     DSD       FOLLOWER  UP1       1
+stack     DSD       FOLLOWER  UP1       2
+stack     DSD       FOLLOWER  UP1       3
+stack     DSD       FOLLOWER  UP1       4
+stack     DSD       FOLLOWER  UP1       5
+stack     DSD       FOLLOWER  UP1       6
+stack     DSD       FOLLOWER  UP1       7
+stack     DSD       FOLLOWER  UP1       8
+stack     DSD       FOLLOWER  UP1       9
+stack     DSD       FOLLOWER  UP1       10
+stack     DSD       FOLLOWER  UP1       11
+stack     DSD       FOLLOWER  UP1       12
+stack     DSD       FOLLOWER  UP1       13
+stack     DSD       FOLLOWER  UP1       14
+stack     DSD       FOLLOWER  UP1       15
+stack     DSD       FOLLOWER  UP1       16
+stack     DSD       FOLLOWER  UP1       17
+stack     DSD       FOLLOWER  UP1       18
+stack     DSD       FOLLOWER  UP1       19
+stack     DSD       FOLLOWER  UP1       20
+stack     DSD       FOLLOWER  UP1       21
+stack     DSD       FOLLOWER  UP1       22
+stack     DSD       FOLLOWER  UP1       23
+stack     DSD       FOLLOWER  UP1       24
+stack     DSD       FOLLOWER  UP1       25
+stack     DSD       FOLLOWER  UP1       26
+stack     DSD       FOLLOWER  UP1       27
+stack     DSD       FOLLOWER  UP1       28
 *
 *****     id        mixid     pipeid    pipenodeid
-stack     DIL       INNER     UP1       1
-stack     DIL       INNER     UP1       2
-stack     DIL       INNER     UP1       3
-stack     DIL       INNER     UP1       4
-stack     DIL       INNER     UP1       5
-stack     DIL       INNER     UP1       6
-stack     DIL       INNER     UP1       7
-stack     DIL       INNER     UP1       8
-stack     DIL       INNER     UP1       9
-stack     DIL       INNER     UP1       10
+stack     DIL       DILUENT   UP1       1
+stack     DIL       DILUENT   UP1       2
+stack     DIL       DILUENT   UP1       3
+stack     DIL       DILUENT   UP1       4
+stack     DIL       DILUENT   UP1       5
+stack     DIL       DILUENT   UP1       6
+stack     DIL       DILUENT   UP1       7
+stack     DIL       DILUENT   UP1       8
+stack     DIL       DILUENT   UP1       9
+stack     DIL       DILUENT   UP1       10
+stack     DIL       DILUENT   UP1       11
+stack     DIL       DILUENT   UP1       12
+stack     DIL       DILUENT   UP1       13
+stack     DIL       DILUENT   UP1       14
+stack     DIL       DILUENT   UP1       15
+stack     DIL       DILUENT   UP1       16
+stack     DIL       DILUENT   UP1       17
+stack     DIL       DILUENT   UP1       18
+stack     DIL       DILUENT   UP1       19
+stack     DIL       DILUENT   UP1       20
+stack     DIL       DILUENT   UP1       21
+stack     DIL       DILUENT   UP1       22
+stack     DIL       DILUENT   UP1       23
+stack     DIL       DILUENT   UP1       24
+stack     DIL       DILUENT   UP1       25
+stack     DIL       DILUENT   UP1       26
+stack     DIL       DILUENT   UP1       27
+stack     DIL       DILUENT   UP1       28
+*
+*****     id        mixid     pipeid    pipenodeid
+stack     SHI       SHIELD    UP1       1
+stack     SHI       SHIELD    UP1       2
+stack     SHI       SHIELD    UP1       3
+stack     SHI       SHIELD    UP1       4
+stack     SHI       SHIELD    UP1       5
+stack     SHI       SHIELD    UP1       6
+stack     SHI       SHIELD    UP1       7
+stack     SHI       SHIELD    UP1       8
+stack     SHI       SHIELD    UP1       9
+stack     SHI       SHIELD    UP1       10
+stack     SHI       SHIELD    UP1       11
+stack     SHI       SHIELD    UP1       12
+stack     SHI       SHIELD    UP1       13
+stack     SHI       SHIELD    UP1       14
+stack     SHI       SHIELD    UP1       15
+stack     SHI       SHIELD    UP1       16
+stack     SHI       SHIELD    UP1       17
+stack     SHI       SHIELD    UP1       18
+stack     SHI       SHIELD    UP1       19
+stack     SHI       SHIELD    UP1       20
+stack     SHI       SHIELD    UP1       21
+stack     SHI       SHIELD    UP1       22
+stack     SHI       SHIELD    UP1       23
+stack     SHI       SHIELD    UP1       24
+stack     SHI       SHIELD    UP1       25
+stack     SHI       SHIELD    UP1       26
+stack     SHI       SHIELD    UP1       27
+stack     SHI       SHIELD    UP1       28
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE GEOMETRY
@@ -316,39 +593,39 @@ coregeom  hex       0.179     0         0
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *       018   017   016   015   014   013   012   011   010   009   008   007   006   005   004   003   002   001   000   001   002   003   004   005   006   007   008   009   010   011   012   013   014   015   016   017   018
 coremap  0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     *18
-coremap     0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0  *17
-coremap  0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0     *16
-coremap     0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0  *15
-coremap  0     1     1     1     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     1     1     0     *14
-coremap     0     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     0  *13
-coremap  0     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     0     *12
-coremap     0     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     0  *11
-coremap  0     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     0     *10
-coremap     0     1     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   DIL   FOU   FOU   DIL   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     0  * 9
-coremap  0     1     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   FOU   DIL   CSD   FIN   FIN   CSD   FIN   FIN   CSD   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     1     0     * 8
-coremap     0     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     1     0  * 7
-coremap  0     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     0     * 6
-coremap     0     1     1     1     1     1    BLA   BLA   FOU   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   FOU   BLA   BLA    1     1     1     1     1     1     0  * 5
-coremap  0     1     1     1     1     1    BLA   BLA   FOU   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FOU   FOU   FOU   BLA   BLA    1     1     1     1     1     0     * 4
-coremap     0     1     1     1     1    BLA   BLA   BLA   FOU   FOU   CSD   FIN   FIN   DSD   FIN   FIN   CSD   FIN   FIN   CSD   FIN   FIN   DSD   FIN   FIN   CSD   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     0  * 3
-coremap  0     1     1     1     1     1    BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA    1     1     1     1     1     0     * 2
-coremap     0     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     0  * 1
-coremap  0     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   CSD   FIN   FIN   FIN   FIN   FIN   CSD   FIN   FIN   FIN   FIN   DIL   FOU   FOU   BLA   BLA   BLA    1     1     1     1     0     * 0
-coremap     0     1     1     1     1    BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   DIL   FIN   FIN   DIL   FIN   FIN   FIN   FIN   FIN   CSD   FOU   FOU   FOU   BLA   BLA    1     1     1     1     1     0  * 1
-coremap  0     1     1     1     1     1    BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA    1     1     1     1     1     0     * 2
-coremap     0     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   CSD   FIN   FIN   CSD   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     0  * 3
-coremap  0     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   DIL   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     0     * 4
-coremap     0     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     1     0  * 5
-coremap  0     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   DSD   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     0     * 6
-coremap     0     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   DIL   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     0  * 7
-coremap  0     1     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     0     * 8
-coremap     0     1     1     1     1     1     1    BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   CSD   DIL   FOU   CSD   DIL   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     0  * 9
-coremap  0     1     1     1     1     1     1     1     1    BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA    1     1     1     1     1     1     1     1     0     *10
-coremap     0     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     0  *11
-coremap  0     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     0     *12
-coremap     0     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     0  *13
-coremap  0     1     1     1     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     1     1     0     *14
-coremap     0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1    BLA   BLA   BLA   BLA    1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0  *15
-coremap  0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0     *16
-coremap     0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0  *17
+coremap     0     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0     0  *17
+coremap  0     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0     *16
+coremap     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0  *15
+coremap  0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     *14
+coremap     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0  *13
+coremap  0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     *12
+coremap     0     0     0     0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     0     0     0     0  *11
+coremap  0     0     0     0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     0     0     0     *10
+coremap     0     0     0     0     0    SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   DIL   FOU   FOU   DIL   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0     0  * 9
+coremap  0     0     0     0     0    SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   FOU   DIL   CSD   FIN   FIN   CSD   FIN   FIN   CSD   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0     * 8
+coremap     0     0     0     0    SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0  * 7
+coremap  0     0     0     0    SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI    0     0     0     0     * 6
+coremap     0     0     0    SHI   SHI   SHI   BLA   BLA   FOU   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   FOU   BLA   BLA   SHI   SHI   SHI    0     0     0     0  * 5
+coremap  0     0     0    SHI   SHI   SHI   BLA   BLA   FOU   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FOU   FOU   FOU   BLA   BLA   SHI   SHI   SHI    0     0     0     * 4
+coremap     0     0    SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   CSD   FIN   FIN   DSD   FIN   FIN   CSD   FIN   FIN   CSD   FIN   FIN   DSD   FIN   FIN   CSD   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0  * 3
+coremap  0     0    SHI   SHI   SHI   SHI   BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   SHI   SHI   SHI   SHI    0     0     * 2
+coremap     0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     0  * 1
+coremap  0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   CSD   FIN   FIN   FIN   FIN   FIN   CSD   FIN   FIN   FIN   FIN   DIL   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     * 0
+coremap     0    SHI   SHI   SHI   SHI   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   DIL   FIN   FIN   DIL   FIN   FIN   FIN   FIN   FIN   CSD   FOU   FOU   FOU   BLA   BLA   SHI   SHI   SHI   SHI    0     0  * 1
+coremap  0     0    SHI   SHI   SHI   SHI   BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   SHI   SHI   SHI   SHI    0     0     * 2
+coremap     0     0    SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   CSD   FIN   FIN   CSD   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0  * 3
+coremap  0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   DIL   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     * 4
+coremap     0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     0  * 5
+coremap  0     0     0     0    SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FIN   FIN   FIN   FIN   FIN   DSD   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI    0     0     0     0     * 6
+coremap     0     0     0     0    SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   CSD   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FIN   CSD   DIL   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0  * 7
+coremap  0     0     0     0     0    SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   DIL   FIN   FIN   FIN   FIN   FIN   FIN   FIN   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0     * 8
+coremap     0     0     0     0     0    SHI   SHI   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   CSD   DIL   FOU   CSD   DIL   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   SHI   SHI    0     0     0     0     0     0  * 9
+coremap  0     0     0     0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     0     0     0     *10
+coremap     0     0     0     0     0     0    SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI    0     0     0     0     0     0     0  *11
+coremap  0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   FOU   FOU   FOU   FOU   FOU   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     *12
+coremap     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0  *13
+coremap  0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     *14
+coremap     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   BLA   BLA   BLA   BLA   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0  *15
+coremap  0     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0     *16
+coremap     0     0     0     0     0     0     0     0     0    SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI   SHI    0     0     0     0     0     0     0     0     0     0  *17
 coremap  0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     *18
