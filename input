@@ -96,13 +96,30 @@ pipe-t    DOWN      NA        0.01      3.0      -1         1.1       30        
 jun-i-f   DOWN      UP1       MDOT_VS_T
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP1       NA        0.01      3.0       1         1.1       30
-jun       UP1       PLN
-jun       DOWN      UP2
-*---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP2       NA        0.01      3.0       1         1.1       30
-jun       UP2       PLN
+pipe      UP01      NA        0.01      0.04      1         1.1       1
+jun       UP01      UP02
+pipe      UP02      NA        0.01      0.76      1         1.1       8
+jun       UP02      UP03
+pipe      UP03      NA        0.01      0.03      1         1.1       1
+jun       UP03      UP04
+pipe      UP04      NA        0.01      0.06      1         1.1       1
+jun       UP04      UP05
+pipe      UP05      NA        0.01      0.02      1         1.1       1
+jun       UP05      UP06
+pipe      UP06      NA        0.01      0.3       1         1.1       3
+jun       UP06      UP07
+pipe      UP07      NA        0.01      1.0       1         1.1       10
+jun       UP07      UP08
+pipe      UP08      NA        0.01      0.3       1         1.1       3
+jun       UP08      UP09
+pipe      UP09      NA        0.01      0.162     1         1.1       2
+jun       UP09      UP10
+pipe      UP10      NA        0.01      0.028     1         1.1       1
+jun       UP10      UP11
+pipe      UP11      NA        0.01      0.263     1         1.1       3
+jun       UP11      UP12
+pipe      UP12      NA        0.01      1.066     1         1.1       10
+jun       UP12      PLN
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * FUEL
@@ -231,42 +248,81 @@ mix       OUTER     Mo98j311  6.92394E-05         TEMP
 mix       OUTER     Mo100j311 2.73188E-05         TEMP
 mix       OUTER     Na23j311  8.34742E-03         TEMP
 *
+* Axial blanket in fissile assembly
 *****     id        isoid     numdens             sigtemp   sigdens
-mix       BLANKET   U235j311  2.13421E-05         TEMP
-mix       BLANKET   U238j311  8.40793E-03         TEMP
-mix       BLANKET   O16j311   1.66900E-02         TEMP
-mix       BLANKET   C0j311    4.63230E-05         TEMP
-mix       BLANKET   Si28j311  2.19887E-04         TEMP
-mix       BLANKET   Si29j311  1.07851E-05         TEMP
-mix       BLANKET   Si30j311  6.88110E-06         TEMP
-mix       BLANKET   P31j311   1.07680E-05         TEMP
-mix       BLANKET   Ti46j311  7.98385E-06         TEMP
-mix       BLANKET   Ti47j311  7.04676E-06         TEMP
-mix       BLANKET   Ti48j311  6.83730E-05         TEMP
-mix       BLANKET   Ti49j311  4.91510E-06         TEMP
-mix       BLANKET   Ti50j311  4.61222E-06         TEMP
-mix       BLANKET   Cr50j311  1.54745E-04         TEMP
-mix       BLANKET   Cr52j311  2.86953E-03         TEMP
-mix       BLANKET   Cr53j311  3.19234E-04         TEMP
-mix       BLANKET   Cr54j311  7.79935E-05         TEMP
-mix       BLANKET   Mn55j311  3.44020E-04         TEMP
-mix       BLANKET   Fe54j311  7.79694E-04         TEMP
-mix       BLANKET   Fe56j311  1.18029E-02         TEMP
-mix       BLANKET   Fe57j311  2.67791E-04         TEMP
-mix       BLANKET   Fe58j311  3.50241E-05         TEMP
-mix       BLANKET   Ni58j311  1.82892E-03         TEMP
-mix       BLANKET   Ni60j311  6.81034E-04         TEMP
-mix       BLANKET   Ni61j311  2.91182E-05         TEMP
-mix       BLANKET   Ni62j311  9.13491E-05         TEMP
-mix       BLANKET   Ni64j311  2.25332E-05         TEMP
-mix       BLANKET   Mo92j311  4.39407E-05         TEMP
-mix       BLANKET   Mo94j311  2.70821E-05         TEMP
-mix       BLANKET   Mo95j311  4.63885E-05         TEMP
-mix       BLANKET   Mo96j311  4.83108E-05         TEMP
-mix       BLANKET   Mo97j311  2.75340E-05         TEMP
-mix       BLANKET   Mo98j311  6.92394E-05         TEMP
-mix       BLANKET   Mo100j311 2.73188E-05         TEMP
-mix       BLANKET   Na23j311  8.34742E-03         TEMP
+mix       AXBLA     U235j311  2.13421E-05         TEMP
+mix       AXBLA     U238j311  8.40793E-03         TEMP
+mix       AXBLA     O16j311   1.66900E-02         TEMP
+mix       AXBLA     C0j311    4.63230E-05         TEMP
+mix       AXBLA     Si28j311  2.19887E-04         TEMP
+mix       AXBLA     Si29j311  1.07851E-05         TEMP
+mix       AXBLA     Si30j311  6.88110E-06         TEMP
+mix       AXBLA     P31j311   1.07680E-05         TEMP
+mix       AXBLA     Ti46j311  7.98385E-06         TEMP
+mix       AXBLA     Ti47j311  7.04676E-06         TEMP
+mix       AXBLA     Ti48j311  6.83730E-05         TEMP
+mix       AXBLA     Ti49j311  4.91510E-06         TEMP
+mix       AXBLA     Ti50j311  4.61222E-06         TEMP
+mix       AXBLA     Cr50j311  1.54745E-04         TEMP
+mix       AXBLA     Cr52j311  2.86953E-03         TEMP
+mix       AXBLA     Cr53j311  3.19234E-04         TEMP
+mix       AXBLA     Cr54j311  7.79935E-05         TEMP
+mix       AXBLA     Mn55j311  3.44020E-04         TEMP
+mix       AXBLA     Fe54j311  7.79694E-04         TEMP
+mix       AXBLA     Fe56j311  1.18029E-02         TEMP
+mix       AXBLA     Fe57j311  2.67791E-04         TEMP
+mix       AXBLA     Fe58j311  3.50241E-05         TEMP
+mix       AXBLA     Ni58j311  1.82892E-03         TEMP
+mix       AXBLA     Ni60j311  6.81034E-04         TEMP
+mix       AXBLA     Ni61j311  2.91182E-05         TEMP
+mix       AXBLA     Ni62j311  9.13491E-05         TEMP
+mix       AXBLA     Ni64j311  2.25332E-05         TEMP
+mix       AXBLA     Mo92j311  4.39407E-05         TEMP
+mix       AXBLA     Mo94j311  2.70821E-05         TEMP
+mix       AXBLA     Mo95j311  4.63885E-05         TEMP
+mix       AXBLA     Mo96j311  4.83108E-05         TEMP
+mix       AXBLA     Mo97j311  2.75340E-05         TEMP
+mix       AXBLA     Mo98j311  6.92394E-05         TEMP
+mix       AXBLA     Mo100j311 2.73188E-05         TEMP
+mix       AXBLA     Na23j311  8.34742E-03         TEMP
+*
+* Blanket in radial blanket assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       RADBLA    U235j311  3.17638E-05         TEMP
+mix       RADBLA    U238j311  1.25137E-02         TEMP
+mix       RADBLA    O16j311   2.48400E-02         TEMP
+mix       RADBLA    C0j311    3.67247E-05         TEMP
+mix       RADBLA    Si28j311  1.74326E-04         TEMP
+mix       RADBLA    Si29j311  8.55039E-06         TEMP
+mix       RADBLA    Si30j311  5.45531E-06         TEMP
+mix       RADBLA    P31j311   8.53686E-06         TEMP
+mix       RADBLA    Ti46j311  6.32956E-06         TEMP
+mix       RADBLA    Ti47j311  5.58665E-06         TEMP
+mix       RADBLA    Ti48j311  5.42059E-05         TEMP
+mix       RADBLA    Ti49j311  3.89667E-06         TEMP
+mix       RADBLA    Ti50j311  3.65655E-06         TEMP
+mix       RADBLA    Cr50j311  1.22681E-04         TEMP
+mix       RADBLA    Cr52j311  2.27495E-03         TEMP
+mix       RADBLA    Cr53j311  2.53087E-04         TEMP
+mix       RADBLA    Cr54j311  6.18329E-05         TEMP
+mix       RADBLA    Mn55j311  2.72738E-04         TEMP
+mix       RADBLA    Fe54j311  6.18138E-04         TEMP
+mix       RADBLA    Fe56j311  9.35732E-03         TEMP
+mix       RADBLA    Fe57j311  2.12303E-04         TEMP
+mix       RADBLA    Fe58j311  2.77670E-05         TEMP
+mix       RADBLA    Ni58j311  1.44996E-03         TEMP
+mix       RADBLA    Ni60j311  5.39921E-04         TEMP
+mix       RADBLA    Ni61j311  2.30848E-05         TEMP
+mix       RADBLA    Ni62j311  7.24212E-05         TEMP
+mix       RADBLA    Ni64j311  1.78642E-05         TEMP
+mix       RADBLA    Mo92j311  3.48360E-05         TEMP
+mix       RADBLA    Mo94j311  2.14706E-05         TEMP
+mix       RADBLA    Mo95j311  3.67766E-05         TEMP
+mix       RADBLA    Mo96j311  3.83006E-05         TEMP
+mix       RADBLA    Mo97j311  2.18289E-05         TEMP
+mix       RADBLA    Mo98j311  5.48928E-05         TEMP
+mix       RADBLA    Mo100j311 2.16582E-05         TEMP
+mix       RADBLA    Na23j311  6.23637E-03         TEMP
 *
 *****     id        isoid     numdens             sigtemp   sigdens
 mix       SHIELD    Si28j311  4.23000E-04         TEMP
@@ -337,251 +393,614 @@ mix       DILUENT   Cu65j311  5.85000E-05         TEMP
 mix       DILUENT   Na23j311  5.76350E-03         TEMP
 *
 *****     id        isoid     numdens             sigtemp   sigdens
-mix       FOLLOWER  C0j311    1.88831E-05         TEMP
-mix       FOLLOWER  Si28j311  8.96345E-05         TEMP
-mix       FOLLOWER  Si29j311  4.39643E-06         TEMP
-mix       FOLLOWER  Si30j311  2.80500E-06         TEMP
-mix       FOLLOWER  P31j311   4.38947E-06         TEMP
-mix       FOLLOWER  Ti46j311  3.25452E-06         TEMP
-mix       FOLLOWER  Ti47j311  2.87253E-06         TEMP
-mix       FOLLOWER  Ti48j311  2.78715E-05         TEMP
-mix       FOLLOWER  Ti49j311  2.00358E-06         TEMP
-mix       FOLLOWER  Ti50j311  1.88012E-06         TEMP
-mix       FOLLOWER  Cr50j311  6.30802E-05         TEMP
-mix       FOLLOWER  Cr52j311  1.16973E-03         TEMP
-mix       FOLLOWER  Cr53j311  1.30132E-04         TEMP
-mix       FOLLOWER  Cr54j311  3.17932E-05         TEMP
-mix       FOLLOWER  Mn55j311  1.40236E-04         TEMP
-mix       FOLLOWER  Fe54j311  3.17833E-04         TEMP
-mix       FOLLOWER  Fe56j311  4.81133E-03         TEMP
-mix       FOLLOWER  Fe57j311  1.09162E-04         TEMP
-mix       FOLLOWER  Fe58j311  1.42772E-05         TEMP
-mix       FOLLOWER  Ni58j311  7.45537E-04         TEMP
-mix       FOLLOWER  Ni60j311  2.77616E-04         TEMP
-mix       FOLLOWER  Ni61j311  1.18697E-05         TEMP
-mix       FOLLOWER  Ni62j311  3.72374E-05         TEMP
-mix       FOLLOWER  Ni64j311  9.18540E-06         TEMP
-mix       FOLLOWER  Mo92j311  1.79119E-05         TEMP
-mix       FOLLOWER  Mo94j311  1.10397E-05         TEMP
-mix       FOLLOWER  Mo95j311  1.89097E-05         TEMP
-mix       FOLLOWER  Mo96j311  1.96933E-05         TEMP
-mix       FOLLOWER  Mo97j311  1.12239E-05         TEMP
-mix       FOLLOWER  Mo98j311  2.82247E-05         TEMP
-mix       FOLLOWER  Mo100j311 1.11362E-05         TEMP
-mix       FOLLOWER  Na23j311  2.15216E-02         TEMP
+mix       EMPTY     C0j311    1.88831E-05         TEMP
+mix       EMPTY     Si28j311  8.96345E-05         TEMP
+mix       EMPTY     Si29j311  4.39643E-06         TEMP
+mix       EMPTY     Si30j311  2.80500E-06         TEMP
+mix       EMPTY     P31j311   4.38947E-06         TEMP
+mix       EMPTY     Ti46j311  3.25452E-06         TEMP
+mix       EMPTY     Ti47j311  2.87253E-06         TEMP
+mix       EMPTY     Ti48j311  2.78715E-05         TEMP
+mix       EMPTY     Ti49j311  2.00358E-06         TEMP
+mix       EMPTY     Ti50j311  1.88012E-06         TEMP
+mix       EMPTY     Cr50j311  6.30802E-05         TEMP
+mix       EMPTY     Cr52j311  1.16973E-03         TEMP
+mix       EMPTY     Cr53j311  1.30132E-04         TEMP
+mix       EMPTY     Cr54j311  3.17932E-05         TEMP
+mix       EMPTY     Mn55j311  1.40236E-04         TEMP
+mix       EMPTY     Fe54j311  3.17833E-04         TEMP
+mix       EMPTY     Fe56j311  4.81133E-03         TEMP
+mix       EMPTY     Fe57j311  1.09162E-04         TEMP
+mix       EMPTY     Fe58j311  1.42772E-05         TEMP
+mix       EMPTY     Ni58j311  7.45537E-04         TEMP
+mix       EMPTY     Ni60j311  2.77616E-04         TEMP
+mix       EMPTY     Ni61j311  1.18697E-05         TEMP
+mix       EMPTY     Ni62j311  3.72374E-05         TEMP
+mix       EMPTY     Ni64j311  9.18540E-06         TEMP
+mix       EMPTY     Mo92j311  1.79119E-05         TEMP
+mix       EMPTY     Mo94j311  1.10397E-05         TEMP
+mix       EMPTY     Mo95j311  1.89097E-05         TEMP
+mix       EMPTY     Mo96j311  1.96933E-05         TEMP
+mix       EMPTY     Mo97j311  1.12239E-05         TEMP
+mix       EMPTY     Mo98j311  2.82247E-05         TEMP
+mix       EMPTY     Mo100j311 1.11362E-05         TEMP
+mix       EMPTY     Na23j311  2.15216E-02         TEMP
+*
+* Fuel pin plug in fissile assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       PLUG1     C0j311    1.29435E-04         TEMP
+mix       PLUG1     Si28j311  6.14405E-04         TEMP
+mix       PLUG1     Si29j311  3.01355E-05         TEMP
+mix       PLUG1     Si30j311  1.92270E-05         TEMP
+mix       PLUG1     P31j311   3.00879E-05         TEMP
+mix       PLUG1     Ti46j311  2.23083E-05         TEMP
+mix       PLUG1     Ti47j311  1.96899E-05         TEMP
+mix       PLUG1     Ti48j311  1.91047E-04         TEMP
+mix       PLUG1     Ti49j311  1.37337E-05         TEMP
+mix       PLUG1     Ti50j311  1.28874E-05         TEMP
+mix       PLUG1     Cr50j311  4.32387E-04         TEMP
+mix       PLUG1     Cr52j311  8.01799E-03         TEMP
+mix       PLUG1     Cr53j311  8.91996E-04         TEMP
+mix       PLUG1     Cr54j311  2.17928E-04         TEMP
+mix       PLUG1     Mn55j311  9.61255E-04         TEMP
+mix       PLUG1     Fe54j311  2.17861E-03         TEMP
+mix       PLUG1     Fe56j311  3.29795E-02         TEMP
+mix       PLUG1     Fe57j311  7.48256E-04         TEMP
+mix       PLUG1     Fe58j311  9.78638E-05         TEMP
+mix       PLUG1     Ni58j311  5.11033E-03         TEMP
+mix       PLUG1     Ni60j311  1.90293E-03         TEMP
+mix       PLUG1     Ni61j311  8.13615E-05         TEMP
+mix       PLUG1     Ni62j311  2.55246E-04         TEMP
+mix       PLUG1     Ni64j311  6.29618E-05         TEMP
+mix       PLUG1     Mo92j311  1.22778E-04         TEMP
+mix       PLUG1     Mo94j311  7.56724E-05         TEMP
+mix       PLUG1     Mo95j311  1.29618E-04         TEMP
+mix       PLUG1     Mo96j311  1.34989E-04         TEMP
+mix       PLUG1     Mo97j311  7.69350E-05         TEMP
+mix       PLUG1     Mo98j311  1.93468E-04         TEMP
+mix       PLUG1     Mo100j311 7.63336E-05         TEMP
+mix       PLUG1     Na23j311  8.34742E-03         TEMP
+*
+* Fuel pin plug in blanket assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       PLUG2     C0j311    1.47150E-04         TEMP
+mix       PLUG2     Si28j311  6.98494E-04         TEMP
+mix       PLUG2     Si29j311  3.42600E-05         TEMP
+mix       PLUG2     Si30j311  2.18585E-05         TEMP
+mix       PLUG2     P31j311   3.42058E-05         TEMP
+mix       PLUG2     Ti46j311  2.53615E-05         TEMP
+mix       PLUG2     Ti47j311  2.23848E-05         TEMP
+mix       PLUG2     Ti48j311  2.17194E-04         TEMP
+mix       PLUG2     Ti49j311  1.56133E-05         TEMP
+mix       PLUG2     Ti50j311  1.46512E-05         TEMP
+mix       PLUG2     Cr50j311  4.91565E-04         TEMP
+mix       PLUG2     Cr52j311  9.11537E-03         TEMP
+mix       PLUG2     Cr53j311  1.01408E-03         TEMP
+mix       PLUG2     Cr54j311  2.47755E-04         TEMP
+mix       PLUG2     Mn55j311  1.09282E-03         TEMP
+mix       PLUG2     Fe54j311  2.47678E-03         TEMP
+mix       PLUG2     Fe56j311  3.74932E-02         TEMP
+mix       PLUG2     Fe57j311  8.50666E-04         TEMP
+mix       PLUG2     Fe58j311  1.11258E-04         TEMP
+mix       PLUG2     Ni58j311  5.80975E-03         TEMP
+mix       PLUG2     Ni60j311  2.16338E-03         TEMP
+mix       PLUG2     Ni61j311  9.24970E-05         TEMP
+mix       PLUG2     Ni62j311  2.90180E-04         TEMP
+mix       PLUG2     Ni64j311  7.15790E-05         TEMP
+mix       PLUG2     Mo92j311  1.39582E-04         TEMP
+mix       PLUG2     Mo94j311  8.60292E-05         TEMP
+mix       PLUG2     Mo95j311  1.47358E-04         TEMP
+mix       PLUG2     Mo96j311  1.53464E-04         TEMP
+mix       PLUG2     Mo97j311  8.74647E-05         TEMP
+mix       PLUG2     Mo98j311  2.19946E-04         TEMP
+mix       PLUG2     Mo100j311 8.67809E-05         TEMP
+mix       PLUG2     Na23j311  6.23637E-03         TEMP
+*
+* Fuel pellet support in fissile assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       SUPPOR1   C0j311    9.11817E-05         TEMP
+mix       SUPPOR1   Si28j311  4.32823E-04         TEMP
+mix       SUPPOR1   Si29j311  2.12293E-05         TEMP
+mix       SUPPOR1   Si30j311  1.35447E-05         TEMP
+mix       SUPPOR1   P31j311   2.11957E-05         TEMP
+mix       SUPPOR1   Ti46j311  1.57153E-05         TEMP
+mix       SUPPOR1   Ti47j311  1.38708E-05         TEMP
+mix       SUPPOR1   Ti48j311  1.34585E-04         TEMP
+mix       SUPPOR1   Ti49j311  9.67481E-06         TEMP
+mix       SUPPOR1   Ti50j311  9.07863E-06         TEMP
+mix       SUPPOR1   Cr50j311  3.04599E-04         TEMP
+mix       SUPPOR1   Cr52j311  5.64835E-03         TEMP
+mix       SUPPOR1   Cr53j311  6.28375E-04         TEMP
+mix       SUPPOR1   Cr54j311  1.53521E-04         TEMP
+mix       SUPPOR1   Mn55j311  6.77165E-04         TEMP
+mix       SUPPOR1   Fe54j311  1.53474E-03         TEMP
+mix       SUPPOR1   Fe56j311  2.32327E-02         TEMP
+mix       SUPPOR1   Fe57j311  5.27116E-04         TEMP
+mix       SUPPOR1   Fe58j311  6.89411E-05         TEMP
+mix       SUPPOR1   Ni58j311  3.60002E-03         TEMP
+mix       SUPPOR1   Ni60j311  1.34054E-03         TEMP
+mix       SUPPOR1   Ni61j311  5.73159E-05         TEMP
+mix       SUPPOR1   Ni62j311  1.79811E-04         TEMP
+mix       SUPPOR1   Ni64j311  4.43541E-05         TEMP
+mix       SUPPOR1   Mo92j311  8.64924E-05         TEMP
+mix       SUPPOR1   Mo94j311  5.33081E-05         TEMP
+mix       SUPPOR1   Mo95j311  9.13106E-05         TEMP
+mix       SUPPOR1   Mo96j311  9.50944E-05         TEMP
+mix       SUPPOR1   Mo97j311  5.41976E-05         TEMP
+mix       SUPPOR1   Mo98j311  1.36290E-04         TEMP
+mix       SUPPOR1   Mo100j311 5.37739E-05         TEMP
+mix       SUPPOR1   Na23j311  8.34742E-03         TEMP
+*
+* Fuel pellet support in blanket assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       SUPPOR2   C0j311    1.34305E-04         TEMP
+mix       SUPPOR2   Si28j311  6.37521E-04         TEMP
+mix       SUPPOR2   Si29j311  3.12694E-05         TEMP
+mix       SUPPOR2   Si30j311  1.99504E-05         TEMP
+mix       SUPPOR2   P31j311   3.12199E-05         TEMP
+mix       SUPPOR2   Ti46j311  2.31476E-05         TEMP
+mix       SUPPOR2   Ti47j311  2.04307E-05         TEMP
+mix       SUPPOR2   Ti48j311  1.98235E-04         TEMP
+mix       SUPPOR2   Ti49j311  1.42504E-05         TEMP
+mix       SUPPOR2   Ti50j311  1.33722E-05         TEMP
+mix       SUPPOR2   Cr50j311  4.48655E-04         TEMP
+mix       SUPPOR2   Cr52j311  8.31966E-03         TEMP
+mix       SUPPOR2   Cr53j311  9.25557E-04         TEMP
+mix       SUPPOR2   Cr54j311  2.26127E-04         TEMP
+mix       SUPPOR2   Mn55j311  9.97421E-04         TEMP
+mix       SUPPOR2   Fe54j311  2.26057E-03         TEMP
+mix       SUPPOR2   Fe56j311  3.42203E-02         TEMP
+mix       SUPPOR2   Fe57j311  7.76408E-04         TEMP
+mix       SUPPOR2   Fe58j311  1.01546E-04         TEMP
+mix       SUPPOR2   Ni58j311  5.30260E-03         TEMP
+mix       SUPPOR2   Ni60j311  1.97453E-03         TEMP
+mix       SUPPOR2   Ni61j311  8.44226E-05         TEMP
+mix       SUPPOR2   Ni62j311  2.64849E-04         TEMP
+mix       SUPPOR2   Ni64j311  6.53307E-05         TEMP
+mix       SUPPOR2   Mo92j311  1.27398E-04         TEMP
+mix       SUPPOR2   Mo94j311  7.85194E-05         TEMP
+mix       SUPPOR2   Mo95j311  1.34495E-04         TEMP
+mix       SUPPOR2   Mo96j311  1.40068E-04         TEMP
+mix       SUPPOR2   Mo97j311  7.98296E-05         TEMP
+mix       SUPPOR2   Mo98j311  2.00747E-04         TEMP
+mix       SUPPOR2   Mo100j311 7.92055E-05         TEMP
+mix       SUPPOR2   Na23j311  6.23637E-03         TEMP
+*
+* Gas plenum in fissile assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       GASPLE1   C0j311    4.63230E-05         TEMP
+mix       GASPLE1   Si28j311  2.19887E-04         TEMP
+mix       GASPLE1   Si29j311  1.07851E-05         TEMP
+mix       GASPLE1   Si30j311  6.88110E-06         TEMP
+mix       GASPLE1   P31j311   1.07680E-05         TEMP
+mix       GASPLE1   Ti46j311  7.98385E-06         TEMP
+mix       GASPLE1   Ti47j311  7.04676E-06         TEMP
+mix       GASPLE1   Ti48j311  6.83730E-05         TEMP
+mix       GASPLE1   Ti49j311  4.91510E-06         TEMP
+mix       GASPLE1   Ti50j311  4.61222E-06         TEMP
+mix       GASPLE1   Cr50j311  1.54745E-04         TEMP
+mix       GASPLE1   Cr52j311  2.86953E-03         TEMP
+mix       GASPLE1   Cr53j311  3.19234E-04         TEMP
+mix       GASPLE1   Cr54j311  7.79935E-05         TEMP
+mix       GASPLE1   Mn55j311  3.44020E-04         TEMP
+mix       GASPLE1   Fe54j311  7.79694E-04         TEMP
+mix       GASPLE1   Fe56j311  1.18029E-02         TEMP
+mix       GASPLE1   Fe57j311  2.67791E-04         TEMP
+mix       GASPLE1   Fe58j311  3.50241E-05         TEMP
+mix       GASPLE1   Ni58j311  1.82892E-03         TEMP
+mix       GASPLE1   Ni60j311  6.81034E-04         TEMP
+mix       GASPLE1   Ni61j311  2.91182E-05         TEMP
+mix       GASPLE1   Ni62j311  9.13491E-05         TEMP
+mix       GASPLE1   Ni64j311  2.25332E-05         TEMP
+mix       GASPLE1   Mo92j311  4.39407E-05         TEMP
+mix       GASPLE1   Mo94j311  2.70821E-05         TEMP
+mix       GASPLE1   Mo95j311  4.63885E-05         TEMP
+mix       GASPLE1   Mo96j311  4.83108E-05         TEMP
+mix       GASPLE1   Mo97j311  2.75340E-05         TEMP
+mix       GASPLE1   Mo98j311  6.92394E-05         TEMP
+mix       GASPLE1   Mo100j311 2.73188E-05         TEMP
+mix       GASPLE1   Na23j311  8.34742E-03         TEMP
+*
+* Gas plenum in blanket assembly
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       GASPLE2   C0j311    4.63230E-05         TEMP
+mix       GASPLE2   Si28j311  2.19887E-04         TEMP
+mix       GASPLE2   Si29j311  1.07851E-05         TEMP
+mix       GASPLE2   Si30j311  6.88110E-06         TEMP
+mix       GASPLE2   P31j311   1.07680E-05         TEMP
+mix       GASPLE2   Ti46j311  7.98385E-06         TEMP
+mix       GASPLE2   Ti47j311  7.04676E-06         TEMP
+mix       GASPLE2   Ti48j311  6.83730E-05         TEMP
+mix       GASPLE2   Ti49j311  4.91510E-06         TEMP
+mix       GASPLE2   Ti50j311  4.61222E-06         TEMP
+mix       GASPLE2   Cr50j311  1.54745E-04         TEMP
+mix       GASPLE2   Cr52j311  2.86953E-03         TEMP
+mix       GASPLE2   Cr53j311  3.19234E-04         TEMP
+mix       GASPLE2   Cr54j311  7.79935E-05         TEMP
+mix       GASPLE2   Mn55j311  3.44020E-04         TEMP
+mix       GASPLE2   Fe54j311  7.79694E-04         TEMP
+mix       GASPLE2   Fe56j311  1.18029E-02         TEMP
+mix       GASPLE2   Fe57j311  2.67791E-04         TEMP
+mix       GASPLE2   Fe58j311  3.50241E-05         TEMP
+mix       GASPLE2   Ni58j311  1.82892E-03         TEMP
+mix       GASPLE2   Ni60j311  6.81034E-04         TEMP
+mix       GASPLE2   Ni61j311  2.91182E-05         TEMP
+mix       GASPLE2   Ni62j311  9.13491E-05         TEMP
+mix       GASPLE2   Ni64j311  2.25332E-05         TEMP
+mix       GASPLE2   Mo92j311  4.39407E-05         TEMP
+mix       GASPLE2   Mo94j311  2.70821E-05         TEMP
+mix       GASPLE2   Mo95j311  4.63885E-05         TEMP
+mix       GASPLE2   Mo96j311  4.83108E-05         TEMP
+mix       GASPLE2   Mo97j311  2.75340E-05         TEMP
+mix       GASPLE2   Mo98j311  6.92394E-05         TEMP
+mix       GASPLE2   Mo100j311 2.73188E-05         TEMP
+mix       GASPLE2   Na23j311  8.34742E-03         TEMP
+*
+*****     id        isoid     numdens             sigtemp   sigdens
+mix       OUTLET    C0j311    1.58667E-04         TEMP
+mix       OUTLET    Si28j311  7.53166E-04         TEMP
+mix       OUTLET    Si29j311  3.69416E-05         TEMP
+mix       OUTLET    Si30j311  2.35694E-05         TEMP
+mix       OUTLET    P31j311   3.68831E-05         TEMP
+mix       OUTLET    Ti46j311  2.73466E-05         TEMP
+mix       OUTLET    Ti47j311  2.41368E-05         TEMP
+mix       OUTLET    Ti48j311  2.34194E-04         TEMP
+mix       OUTLET    Ti49j311  1.68354E-05         TEMP
+mix       OUTLET    Ti50j311  1.57979E-05         TEMP
+mix       OUTLET    Cr50j311  5.30040E-04         TEMP
+mix       OUTLET    Cr52j311  9.82883E-03         TEMP
+mix       OUTLET    Cr53j311  1.09345E-03         TEMP
+mix       OUTLET    Cr54j311  2.67146E-04         TEMP
+mix       OUTLET    Mn55j311  1.17835E-03         TEMP
+mix       OUTLET    Fe54j311  2.67064E-03         TEMP
+mix       OUTLET    Fe56j311  4.04278E-02         TEMP
+mix       OUTLET    Fe57j311  9.17247E-04         TEMP
+mix       OUTLET    Fe58j311  1.19966E-04         TEMP
+mix       OUTLET    Ni58j311  6.26448E-03         TEMP
+mix       OUTLET    Ni60j311  2.33271E-03         TEMP
+mix       OUTLET    Ni61j311  9.97367E-05         TEMP
+mix       OUTLET    Ni62j311  3.12893E-04         TEMP
+mix       OUTLET    Ni64j311  7.71815E-05         TEMP
+mix       OUTLET    Mo92j311  1.50507E-04         TEMP
+mix       OUTLET    Mo94j311  9.27627E-05         TEMP
+mix       OUTLET    Mo95j311  1.58892E-04         TEMP
+mix       OUTLET    Mo96j311  1.65476E-04         TEMP
+mix       OUTLET    Mo97j311  9.43106E-05         TEMP
+mix       OUTLET    Mo98j311  2.37162E-04         TEMP
+mix       OUTLET    Mo100j311 9.35732E-05         TEMP
+mix       OUTLET    Na23j311  4.86387E-03         TEMP
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * STACK OF MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+* Fissile subassembly of inner zone
 *****     id        mixid     pipeid    pipenodeid
-stack     FIN       SHIELD    UP1       1
-stack     FIN       SHIELD    UP1       2
-stack     FIN       SHIELD    UP1       3
-stack     FIN       SHIELD    UP1       4
-stack     FIN       SHIELD    UP1       5
-stack     FIN       INNER     UP1       6
-stack     FIN       INNER     UP1       7
-stack     FIN       INNER     UP1       8
-stack     FIN       INNER     UP1       9
-stack     FIN       INNER     UP1       10
-stack     FIN       INNER     UP1       11
-stack     FIN       INNER     UP1       12
-stack     FIN       INNER     UP1       13
-stack     FIN       INNER     UP1       14
-stack     FIN       INNER     UP1       15
-stack     FIN       INNER     UP1       16
-stack     FIN       INNER     UP1       17
-stack     FIN       INNER     UP1       18
-stack     FIN       INNER     UP1       19
-stack     FIN       INNER     UP1       20
-stack     FIN       INNER     UP1       21
-stack     FIN       INNER     UP1       22
-stack     FIN       INNER     UP1       23
-stack     FIN       SHIELD    UP1       24
-stack     FIN       SHIELD    UP1       25
-stack     FIN       SHIELD    UP1       26
-stack     FIN       SHIELD    UP1       27
-stack     FIN       SHIELD    UP1       28
+stack     FIN       PLUG1     UP01      1         * 1
+stack     FIN       GASPLE1   UP02      1         * 2
+stack     FIN       GASPLE1   UP02      2         * 3
+stack     FIN       GASPLE1   UP02      3         * 4
+stack     FIN       GASPLE1   UP02      4         * 5
+stack     FIN       GASPLE1   UP02      5         * 6
+stack     FIN       GASPLE1   UP02      6         * 7
+stack     FIN       GASPLE1   UP02      7         * 8
+stack     FIN       GASPLE1   UP02      8         * 9
+stack     FIN       GASPLE1   UP03      1         * 10
+stack     FIN       GASPLE1   UP04      1         * 11
+stack     FIN       SUPPOR1   UP05      1         * 12
+stack     FIN       AXBLA     UP06      1         * 13
+stack     FIN       AXBLA     UP06      2         * 14
+stack     FIN       AXBLA     UP06      3         * 15
+stack     FIN       INNER     UP07      1         * 16
+stack     FIN       INNER     UP07      2         * 17
+stack     FIN       INNER     UP07      3         * 18
+stack     FIN       INNER     UP07      4         * 19
+stack     FIN       INNER     UP07      5         * 20
+stack     FIN       INNER     UP07      6         * 21
+stack     FIN       INNER     UP07      7         * 22
+stack     FIN       INNER     UP07      8         * 23
+stack     FIN       INNER     UP07      9         * 24
+stack     FIN       INNER     UP07      10        * 25
+stack     FIN       AXBLA     UP08      1         * 26
+stack     FIN       AXBLA     UP08      2         * 27
+stack     FIN       AXBLA     UP08      3         * 28
+stack     FIN       GASPLE1   UP09      1         * 29
+stack     FIN       GASPLE1   UP09      2         * 30
+stack     FIN       PLUG1     UP10      1         * 31
+stack     FIN       EMPTY     UP11      1         * 32
+stack     FIN       EMPTY     UP11      2         * 33
+stack     FIN       EMPTY     UP11      3         * 34
+stack     FIN       OUTLET    UP12      1         * 35
+stack     FIN       OUTLET    UP12      2         * 36
+stack     FIN       OUTLET    UP12      3         * 37
+stack     FIN       OUTLET    UP12      4         * 38
+stack     FIN       OUTLET    UP12      5         * 39
+stack     FIN       OUTLET    UP12      6         * 40
+stack     FIN       OUTLET    UP12      7         * 41
+stack     FIN       OUTLET    UP12      8         * 42
+stack     FIN       OUTLET    UP12      9         * 43
+stack     FIN       OUTLET    UP12      10        * 44
 *
+* Fissile subassembly of outer zone
 *****     id        mixid     pipeid    pipenodeid
-stack     FOU       SHIELD    UP1       1
-stack     FOU       SHIELD    UP1       2
-stack     FOU       SHIELD    UP1       3
-stack     FOU       SHIELD    UP1       4
-stack     FOU       SHIELD    UP1       5
-stack     FOU       OUTER     UP1       6
-stack     FOU       OUTER     UP1       7
-stack     FOU       OUTER     UP1       8
-stack     FOU       OUTER     UP1       9
-stack     FOU       OUTER     UP1       10
-stack     FOU       OUTER     UP1       11
-stack     FOU       OUTER     UP1       12
-stack     FOU       OUTER     UP1       13
-stack     FOU       OUTER     UP1       14
-stack     FOU       OUTER     UP1       15
-stack     FOU       OUTER     UP1       16
-stack     FOU       OUTER     UP1       17
-stack     FOU       OUTER     UP1       18
-stack     FOU       OUTER     UP1       19
-stack     FOU       OUTER     UP1       20
-stack     FOU       OUTER     UP1       21
-stack     FOU       OUTER     UP1       22
-stack     FOU       OUTER     UP1       23
-stack     FOU       SHIELD    UP1       24
-stack     FOU       SHIELD    UP1       25
-stack     FOU       SHIELD    UP1       26
-stack     FOU       SHIELD    UP1       27
-stack     FOU       SHIELD    UP1       28
+stack     FOU       PLUG1     UP01      1         * 1
+stack     FOU       GASPLE1   UP02      1         * 2
+stack     FOU       GASPLE1   UP02      2         * 3
+stack     FOU       GASPLE1   UP02      3         * 4
+stack     FOU       GASPLE1   UP02      4         * 5
+stack     FOU       GASPLE1   UP02      5         * 6
+stack     FOU       GASPLE1   UP02      6         * 7
+stack     FOU       GASPLE1   UP02      7         * 8
+stack     FOU       GASPLE1   UP02      8         * 9
+stack     FOU       GASPLE1   UP03      1         * 10
+stack     FOU       GASPLE1   UP04      1         * 11
+stack     FOU       SUPPOR1   UP05      1         * 12
+stack     FOU       AXBLA     UP06      1         * 13
+stack     FOU       AXBLA     UP06      2         * 14
+stack     FOU       AXBLA     UP06      3         * 15
+stack     FOU       OUTER     UP07      1         * 16
+stack     FOU       OUTER     UP07      2         * 17
+stack     FOU       OUTER     UP07      3         * 18
+stack     FOU       OUTER     UP07      4         * 19
+stack     FOU       OUTER     UP07      5         * 20
+stack     FOU       OUTER     UP07      6         * 21
+stack     FOU       OUTER     UP07      7         * 22
+stack     FOU       OUTER     UP07      8         * 23
+stack     FOU       OUTER     UP07      9         * 24
+stack     FOU       OUTER     UP07      10        * 25
+stack     FOU       AXBLA     UP08      1         * 26
+stack     FOU       AXBLA     UP08      2         * 27
+stack     FOU       AXBLA     UP08      3         * 28
+stack     FOU       GASPLE1   UP09      1         * 29
+stack     FOU       GASPLE1   UP09      2         * 30
+stack     FOU       PLUG1     UP10      1         * 31
+stack     FOU       EMPTY     UP11      1         * 32
+stack     FOU       EMPTY     UP11      2         * 33
+stack     FOU       EMPTY     UP11      3         * 34
+stack     FOU       OUTLET    UP12      1         * 35
+stack     FOU       OUTLET    UP12      2         * 36
+stack     FOU       OUTLET    UP12      3         * 37
+stack     FOU       OUTLET    UP12      4         * 38
+stack     FOU       OUTLET    UP12      5         * 39
+stack     FOU       OUTLET    UP12      6         * 40
+stack     FOU       OUTLET    UP12      7         * 41
+stack     FOU       OUTLET    UP12      8         * 42
+stack     FOU       OUTLET    UP12      9         * 43
+stack     FOU       OUTLET    UP12      10        * 44
 *
+* Blanket assembly
 *****     id        mixid     pipeid    pipenodeid
-stack     BLA       SHIELD    UP1       1
-stack     BLA       SHIELD    UP1       2
-stack     BLA       SHIELD    UP1       3
-stack     BLA       SHIELD    UP1       4
-stack     BLA       SHIELD    UP1       5
-stack     BLA       BLANKET   UP1       6
-stack     BLA       BLANKET   UP1       7
-stack     BLA       BLANKET   UP1       8
-stack     BLA       BLANKET   UP1       9
-stack     BLA       BLANKET   UP1       10
-stack     BLA       BLANKET   UP1       11
-stack     BLA       BLANKET   UP1       12
-stack     BLA       BLANKET   UP1       13
-stack     BLA       BLANKET   UP1       14
-stack     BLA       BLANKET   UP1       15
-stack     BLA       BLANKET   UP1       16
-stack     BLA       BLANKET   UP1       17
-stack     BLA       BLANKET   UP1       18
-stack     BLA       BLANKET   UP1       19
-stack     BLA       BLANKET   UP1       20
-stack     BLA       BLANKET   UP1       21
-stack     BLA       BLANKET   UP1       22
-stack     BLA       BLANKET   UP1       23
-stack     BLA       SHIELD    UP1       24
-stack     BLA       SHIELD    UP1       25
-stack     BLA       SHIELD    UP1       26
-stack     BLA       SHIELD    UP1       27
-stack     BLA       SHIELD    UP1       28
+stack     BLA       EMPTY     UP01      1         * 1
+stack     BLA       EMPTY     UP02      1         * 2
+stack     BLA       EMPTY     UP02      2         * 3
+stack     BLA       EMPTY     UP02      3         * 4
+stack     BLA       EMPTY     UP02      4         * 5
+stack     BLA       EMPTY     UP02      5         * 6
+stack     BLA       EMPTY     UP02      6         * 7
+stack     BLA       EMPTY     UP02      7         * 8
+stack     BLA       EMPTY     UP02      8         * 9
+stack     BLA       PLUG2     UP03      1         * 10
+stack     BLA       GASPLE2   UP04      1         * 11
+stack     BLA       SUPPOR2   UP05      1         * 12
+stack     BLA       RADBLA    UP06      1         * 13
+stack     BLA       RADBLA    UP06      2         * 14
+stack     BLA       RADBLA    UP06      3         * 15
+stack     BLA       RADBLA    UP07      1         * 16
+stack     BLA       RADBLA    UP07      2         * 17
+stack     BLA       RADBLA    UP07      3         * 18
+stack     BLA       RADBLA    UP07      4         * 19
+stack     BLA       RADBLA    UP07      5         * 20
+stack     BLA       RADBLA    UP07      6         * 21
+stack     BLA       RADBLA    UP07      7         * 22
+stack     BLA       RADBLA    UP07      8         * 23
+stack     BLA       RADBLA    UP07      9         * 24
+stack     BLA       RADBLA    UP07      10        * 25
+stack     BLA       RADBLA    UP08      1         * 26
+stack     BLA       RADBLA    UP08      2         * 27
+stack     BLA       RADBLA    UP08      3         * 28
+stack     BLA       GASPLE2   UP09      1         * 29
+stack     BLA       GASPLE2   UP09      2         * 30
+stack     BLA       PLUG2     UP10      1         * 31
+stack     BLA       EMPTY     UP11      1         * 32
+stack     BLA       EMPTY     UP11      2         * 33
+stack     BLA       EMPTY     UP11      3         * 34
+stack     BLA       OUTLET    UP12      1         * 35
+stack     BLA       OUTLET    UP12      2         * 36
+stack     BLA       OUTLET    UP12      3         * 37
+stack     BLA       OUTLET    UP12      4         * 38
+stack     BLA       OUTLET    UP12      5         * 39
+stack     BLA       OUTLET    UP12      6         * 40
+stack     BLA       OUTLET    UP12      7         * 41
+stack     BLA       OUTLET    UP12      8         * 42
+stack     BLA       OUTLET    UP12      9         * 43
+stack     BLA       OUTLET    UP12      10        * 44
 *
+* Diluent assembly
 *****     id        mixid     pipeid    pipenodeid
-stack     CSD       FOLLOWER  UP1       1
-stack     CSD       FOLLOWER  UP1       2
-stack     CSD       FOLLOWER  UP1       3
-stack     CSD       FOLLOWER  UP1       4
-stack     CSD       FOLLOWER  UP1       5
-stack     CSD       FOLLOWER  UP1       6
-stack     CSD       FOLLOWER  UP1       7
-stack     CSD       FOLLOWER  UP1       8
-stack     CSD       FOLLOWER  UP1       9
-stack     CSD       FOLLOWER  UP1       10
-stack     CSD       FOLLOWER  UP1       11
-stack     CSD       FOLLOWER  UP1       12
-stack     CSD       FOLLOWER  UP1       13
-stack     CSD       FOLLOWER  UP1       14
-stack     CSD       FOLLOWER  UP1       15
-stack     CSD       FOLLOWER  UP1       16
-stack     CSD       FOLLOWER  UP1       17
-stack     CSD       FOLLOWER  UP1       18
-stack     CSD       FOLLOWER  UP1       19
-stack     CSD       FOLLOWER  UP1       20
-stack     CSD       FOLLOWER  UP1       21
-stack     CSD       FOLLOWER  UP1       22
-stack     CSD       FOLLOWER  UP1       23
-stack     CSD       FOLLOWER  UP1       24
-stack     CSD       FOLLOWER  UP1       25
-stack     CSD       FOLLOWER  UP1       26
-stack     CSD       FOLLOWER  UP1       27
-stack     CSD       FOLLOWER  UP1       28
+stack     DIL       EMPTY     UP01      1         * 1
+stack     DIL       EMPTY     UP02      1         * 2
+stack     DIL       EMPTY     UP02      2         * 3
+stack     DIL       EMPTY     UP02      3         * 4
+stack     DIL       EMPTY     UP02      4         * 5
+stack     DIL       EMPTY     UP02      5         * 6
+stack     DIL       EMPTY     UP02      6         * 7
+stack     DIL       EMPTY     UP02      7         * 8
+stack     DIL       EMPTY     UP02      8         * 9
+stack     DIL       EMPTY     UP03      1         * 10
+stack     DIL       EMPTY     UP04      1         * 11
+stack     DIL       EMPTY     UP05      1         * 12
+stack     DIL       DILUENT   UP06      1         * 13
+stack     DIL       DILUENT   UP06      2         * 14
+stack     DIL       DILUENT   UP06      3         * 15
+stack     DIL       DILUENT   UP07      1         * 16
+stack     DIL       DILUENT   UP07      2         * 17
+stack     DIL       DILUENT   UP07      3         * 18
+stack     DIL       DILUENT   UP07      4         * 19
+stack     DIL       DILUENT   UP07      5         * 20
+stack     DIL       DILUENT   UP07      6         * 21
+stack     DIL       DILUENT   UP07      7         * 22
+stack     DIL       DILUENT   UP07      8         * 23
+stack     DIL       DILUENT   UP07      9         * 24
+stack     DIL       DILUENT   UP07      10        * 25
+stack     DIL       DILUENT   UP08      1         * 26
+stack     DIL       DILUENT   UP08      2         * 27
+stack     DIL       DILUENT   UP08      3         * 28
+stack     DIL       OUTLET    UP09      1         * 29
+stack     DIL       OUTLET    UP09      2         * 30
+stack     DIL       OUTLET    UP10      1         * 31
+stack     DIL       OUTLET    UP11      1         * 32
+stack     DIL       OUTLET    UP11      2         * 33
+stack     DIL       OUTLET    UP11      3         * 34
+stack     DIL       OUTLET    UP12      1         * 35
+stack     DIL       OUTLET    UP12      2         * 36
+stack     DIL       OUTLET    UP12      3         * 37
+stack     DIL       OUTLET    UP12      4         * 38
+stack     DIL       OUTLET    UP12      5         * 39
+stack     DIL       OUTLET    UP12      6         * 40
+stack     DIL       OUTLET    UP12      7         * 41
+stack     DIL       OUTLET    UP12      8         * 42
+stack     DIL       OUTLET    UP12      9         * 43
+stack     DIL       OUTLET    UP12      10        * 44
 *
+* CSD assembly
 *****     id        mixid     pipeid    pipenodeid
-stack     DSD       FOLLOWER  UP1       1
-stack     DSD       FOLLOWER  UP1       2
-stack     DSD       FOLLOWER  UP1       3
-stack     DSD       FOLLOWER  UP1       4
-stack     DSD       FOLLOWER  UP1       5
-stack     DSD       FOLLOWER  UP1       6
-stack     DSD       FOLLOWER  UP1       7
-stack     DSD       FOLLOWER  UP1       8
-stack     DSD       FOLLOWER  UP1       9
-stack     DSD       FOLLOWER  UP1       10
-stack     DSD       FOLLOWER  UP1       11
-stack     DSD       FOLLOWER  UP1       12
-stack     DSD       FOLLOWER  UP1       13
-stack     DSD       FOLLOWER  UP1       14
-stack     DSD       FOLLOWER  UP1       15
-stack     DSD       FOLLOWER  UP1       16
-stack     DSD       FOLLOWER  UP1       17
-stack     DSD       FOLLOWER  UP1       18
-stack     DSD       FOLLOWER  UP1       19
-stack     DSD       FOLLOWER  UP1       20
-stack     DSD       FOLLOWER  UP1       21
-stack     DSD       FOLLOWER  UP1       22
-stack     DSD       FOLLOWER  UP1       23
-stack     DSD       FOLLOWER  UP1       24
-stack     DSD       FOLLOWER  UP1       25
-stack     DSD       FOLLOWER  UP1       26
-stack     DSD       FOLLOWER  UP1       27
-stack     DSD       FOLLOWER  UP1       28
+stack     CSD       EMPTY     UP01      1         * 1
+stack     CSD       EMPTY     UP02      1         * 2
+stack     CSD       EMPTY     UP02      2         * 3
+stack     CSD       EMPTY     UP02      3         * 4
+stack     CSD       EMPTY     UP02      4         * 5
+stack     CSD       EMPTY     UP02      5         * 6
+stack     CSD       EMPTY     UP02      6         * 7
+stack     CSD       EMPTY     UP02      7         * 8
+stack     CSD       EMPTY     UP02      8         * 9
+stack     CSD       EMPTY     UP03      1         * 10
+stack     CSD       EMPTY     UP04      1         * 11
+stack     CSD       EMPTY     UP05      1         * 12
+stack     CSD       EMPTY     UP06      1         * 13
+stack     CSD       EMPTY     UP06      2         * 14
+stack     CSD       EMPTY     UP06      3         * 15
+stack     CSD       EMPTY     UP07      1         * 16
+stack     CSD       EMPTY     UP07      2         * 17
+stack     CSD       EMPTY     UP07      3         * 18
+stack     CSD       EMPTY     UP07      4         * 19
+stack     CSD       EMPTY     UP07      5         * 20
+stack     CSD       EMPTY     UP07      6         * 21
+stack     CSD       EMPTY     UP07      7         * 22
+stack     CSD       EMPTY     UP07      8         * 23
+stack     CSD       EMPTY     UP07      9         * 24
+stack     CSD       EMPTY     UP07      10        * 25
+stack     CSD       EMPTY     UP08      1         * 26
+stack     CSD       EMPTY     UP08      2         * 27
+stack     CSD       EMPTY     UP08      3         * 28
+stack     CSD       EMPTY     UP09      1         * 29
+stack     CSD       EMPTY     UP09      2         * 30
+stack     CSD       EMPTY     UP10      1         * 31
+stack     CSD       EMPTY     UP11      1         * 32
+stack     CSD       EMPTY     UP11      2         * 33
+stack     CSD       EMPTY     UP11      3         * 34
+stack     CSD       EMPTY     UP12      1         * 35
+stack     CSD       EMPTY     UP12      2         * 36
+stack     CSD       EMPTY     UP12      3         * 37
+stack     CSD       EMPTY     UP12      4         * 38
+stack     CSD       EMPTY     UP12      5         * 39
+stack     CSD       EMPTY     UP12      6         * 40
+stack     CSD       EMPTY     UP12      7         * 41
+stack     CSD       EMPTY     UP12      8         * 42
+stack     CSD       EMPTY     UP12      9         * 43
+stack     CSD       EMPTY     UP12      10        * 44
 *
+* DSD assembly
 *****     id        mixid     pipeid    pipenodeid
-stack     DIL       DILUENT   UP1       1
-stack     DIL       DILUENT   UP1       2
-stack     DIL       DILUENT   UP1       3
-stack     DIL       DILUENT   UP1       4
-stack     DIL       DILUENT   UP1       5
-stack     DIL       DILUENT   UP1       6
-stack     DIL       DILUENT   UP1       7
-stack     DIL       DILUENT   UP1       8
-stack     DIL       DILUENT   UP1       9
-stack     DIL       DILUENT   UP1       10
-stack     DIL       DILUENT   UP1       11
-stack     DIL       DILUENT   UP1       12
-stack     DIL       DILUENT   UP1       13
-stack     DIL       DILUENT   UP1       14
-stack     DIL       DILUENT   UP1       15
-stack     DIL       DILUENT   UP1       16
-stack     DIL       DILUENT   UP1       17
-stack     DIL       DILUENT   UP1       18
-stack     DIL       DILUENT   UP1       19
-stack     DIL       DILUENT   UP1       20
-stack     DIL       DILUENT   UP1       21
-stack     DIL       DILUENT   UP1       22
-stack     DIL       DILUENT   UP1       23
-stack     DIL       DILUENT   UP1       24
-stack     DIL       DILUENT   UP1       25
-stack     DIL       DILUENT   UP1       26
-stack     DIL       DILUENT   UP1       27
-stack     DIL       DILUENT   UP1       28
+stack     DSD       EMPTY     UP01      1         * 1
+stack     DSD       EMPTY     UP02      1         * 2
+stack     DSD       EMPTY     UP02      2         * 3
+stack     DSD       EMPTY     UP02      3         * 4
+stack     DSD       EMPTY     UP02      4         * 5
+stack     DSD       EMPTY     UP02      5         * 6
+stack     DSD       EMPTY     UP02      6         * 7
+stack     DSD       EMPTY     UP02      7         * 8
+stack     DSD       EMPTY     UP02      8         * 9
+stack     DSD       EMPTY     UP03      1         * 10
+stack     DSD       EMPTY     UP04      1         * 11
+stack     DSD       EMPTY     UP05      1         * 12
+stack     DSD       EMPTY     UP06      1         * 13
+stack     DSD       EMPTY     UP06      2         * 14
+stack     DSD       EMPTY     UP06      3         * 15
+stack     DSD       EMPTY     UP07      1         * 16
+stack     DSD       EMPTY     UP07      2         * 17
+stack     DSD       EMPTY     UP07      3         * 18
+stack     DSD       EMPTY     UP07      4         * 19
+stack     DSD       EMPTY     UP07      5         * 20
+stack     DSD       EMPTY     UP07      6         * 21
+stack     DSD       EMPTY     UP07      7         * 22
+stack     DSD       EMPTY     UP07      8         * 23
+stack     DSD       EMPTY     UP07      9         * 24
+stack     DSD       EMPTY     UP07      10        * 25
+stack     DSD       EMPTY     UP08      1         * 26
+stack     DSD       EMPTY     UP08      2         * 27
+stack     DSD       EMPTY     UP08      3         * 28
+stack     DSD       EMPTY     UP09      1         * 29
+stack     DSD       EMPTY     UP09      2         * 30
+stack     DSD       EMPTY     UP10      1         * 31
+stack     DSD       EMPTY     UP11      1         * 32
+stack     DSD       EMPTY     UP11      2         * 33
+stack     DSD       EMPTY     UP11      3         * 34
+stack     DSD       EMPTY     UP12      1         * 35
+stack     DSD       EMPTY     UP12      2         * 36
+stack     DSD       EMPTY     UP12      3         * 37
+stack     DSD       EMPTY     UP12      4         * 38
+stack     DSD       EMPTY     UP12      5         * 39
+stack     DSD       EMPTY     UP12      6         * 40
+stack     DSD       EMPTY     UP12      7         * 41
+stack     DSD       EMPTY     UP12      8         * 42
+stack     DSD       EMPTY     UP12      9         * 43
+stack     DSD       EMPTY     UP12      10        * 44
 *
+* Diluent assembly
 *****     id        mixid     pipeid    pipenodeid
-stack     SHI       SHIELD    UP1       1
-stack     SHI       SHIELD    UP1       2
-stack     SHI       SHIELD    UP1       3
-stack     SHI       SHIELD    UP1       4
-stack     SHI       SHIELD    UP1       5
-stack     SHI       SHIELD    UP1       6
-stack     SHI       SHIELD    UP1       7
-stack     SHI       SHIELD    UP1       8
-stack     SHI       SHIELD    UP1       9
-stack     SHI       SHIELD    UP1       10
-stack     SHI       SHIELD    UP1       11
-stack     SHI       SHIELD    UP1       12
-stack     SHI       SHIELD    UP1       13
-stack     SHI       SHIELD    UP1       14
-stack     SHI       SHIELD    UP1       15
-stack     SHI       SHIELD    UP1       16
-stack     SHI       SHIELD    UP1       17
-stack     SHI       SHIELD    UP1       18
-stack     SHI       SHIELD    UP1       19
-stack     SHI       SHIELD    UP1       20
-stack     SHI       SHIELD    UP1       21
-stack     SHI       SHIELD    UP1       22
-stack     SHI       SHIELD    UP1       23
-stack     SHI       SHIELD    UP1       24
-stack     SHI       SHIELD    UP1       25
-stack     SHI       SHIELD    UP1       26
-stack     SHI       SHIELD    UP1       27
-stack     SHI       SHIELD    UP1       28
+stack     SHI       EMPTY     UP01      1         * 1
+stack     SHI       EMPTY     UP02      1         * 2
+stack     SHI       EMPTY     UP02      2         * 3
+stack     SHI       EMPTY     UP02      3         * 4
+stack     SHI       EMPTY     UP02      4         * 5
+stack     SHI       EMPTY     UP02      5         * 6
+stack     SHI       EMPTY     UP02      6         * 7
+stack     SHI       EMPTY     UP02      7         * 8
+stack     SHI       EMPTY     UP02      8         * 9
+stack     SHI       EMPTY     UP03      1         * 10
+stack     SHI       EMPTY     UP04      1         * 11
+stack     SHI       EMPTY     UP05      1         * 12
+stack     SHI       SHIELD    UP06      1         * 13
+stack     SHI       SHIELD    UP06      2         * 14
+stack     SHI       SHIELD    UP06      3         * 15
+stack     SHI       SHIELD    UP07      1         * 16
+stack     SHI       SHIELD    UP07      2         * 17
+stack     SHI       SHIELD    UP07      3         * 18
+stack     SHI       SHIELD    UP07      4         * 19
+stack     SHI       SHIELD    UP07      5         * 20
+stack     SHI       SHIELD    UP07      6         * 21
+stack     SHI       SHIELD    UP07      7         * 22
+stack     SHI       SHIELD    UP07      8         * 23
+stack     SHI       SHIELD    UP07      9         * 24
+stack     SHI       SHIELD    UP07      10        * 25
+stack     SHI       SHIELD    UP08      1         * 26
+stack     SHI       SHIELD    UP08      2         * 27
+stack     SHI       SHIELD    UP08      3         * 28
+stack     SHI       OUTLET    UP09      1         * 29
+stack     SHI       OUTLET    UP09      2         * 30
+stack     SHI       OUTLET    UP10      1         * 31
+stack     SHI       OUTLET    UP11      1         * 32
+stack     SHI       OUTLET    UP11      2         * 33
+stack     SHI       OUTLET    UP11      3         * 34
+stack     SHI       OUTLET    UP12      1         * 35
+stack     SHI       OUTLET    UP12      2         * 36
+stack     SHI       OUTLET    UP12      3         * 37
+stack     SHI       OUTLET    UP12      4         * 38
+stack     SHI       OUTLET    UP12      5         * 39
+stack     SHI       OUTLET    UP12      6         * 40
+stack     SHI       OUTLET    UP12      7         * 41
+stack     SHI       OUTLET    UP12      8         * 42
+stack     SHI       OUTLET    UP12      9         * 43
+stack     SHI       OUTLET    UP12      10        * 44
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE GEOMETRY

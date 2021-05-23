@@ -88,9 +88,15 @@ class Fluid:
         self.t = []
         for j in range(self.njun):
             idf = reactor.control.input['junction']['from'][j]
+            idt = reactor.control.input['junction']['to'][j]
+            if idf not in self.pipeid:
+                print('****ERROR: pipe id (' + idf + ') in junction (' + idf + '-' + idt + ') does not exist in input.')
+                sys.exit()
+            if idt not in self.pipeid:
+                print('****ERROR: pipe id (' + idt + ') in junction (' + idf + '-' + idt + ') does not exist in input.')
+                sys.exit()
             indx = self.pipeid.index(idf)
             self.f.append((indx, self.pipennodes[indx]-1))
-            idt = reactor.control.input['junction']['to'][j]
             indx = self.pipeid.index(idt)
             self.t.append((indx, 0))
         # add internal junctions
