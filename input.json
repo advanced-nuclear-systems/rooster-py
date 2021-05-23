@@ -1591,7 +1591,7 @@
     ],
     "to": [
       "DOWN",
-      "UP1",
+      "UP01",
       "UP02",
       "UP03",
       "UP04",
@@ -1607,7 +1607,7 @@
     ],
     "type": [
       "independent",
-      "independent",
+      "dependent",
       "dependent",
       "dependent",
       "dependent",
@@ -1639,7 +1639,7 @@
     ],
     "flowrate": [
       "",
-      "MDOT_VS_T",
+      "",
       "",
       "",
       "",

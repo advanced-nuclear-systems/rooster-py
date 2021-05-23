@@ -93,7 +93,7 @@ jun-i-p   PLN       DOWN      PMPHEAD_VS_T
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)   dir        areaz(m2) nnodes    signal
 pipe-t    DOWN      NA        0.01      3.0      -1         1.1       30        TEMP_VS_T
-jun-i-f   DOWN      UP1       MDOT_VS_T
+jun       DOWN      UP01
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
 pipe      UP01      NA        0.01      0.04      1         1.1       1
