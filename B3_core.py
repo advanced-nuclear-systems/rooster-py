@@ -2,6 +2,7 @@ from B3A_isotope import Isotope
 from B3B_mix import Mix
 
 import math
+import multiprocessing as mp
 import os
 import sys
 
@@ -189,21 +190,27 @@ class Core:
         self.k = [1]
 
         # correct!
-        rtol = 1e-6
-        atol = 1e-6
+        rtol = 1e-14
+        atol = 1e-14
 
         converge_qf = False
         converge_k = False
         while not converge_qf and not converge_k:
             converge_flux = False
             iter = 0
-            while not converge_flux:
+            while not converge_flux and iter < 10:
                 converge_flux = True
                 iter += 1
-                for iz in range(self.nz):
-                    for iy in range(self.ny):
-                        for ix in range(self.nx):
-                            self.iterate_flux_eigenvalue_problem(reactor, ix, iy, iz)
+                # initialize multiprocessing pool
+                #mp_pool = mp.Pool(mp.cpu_count())
+                if __name__ == 'B3_core':
+                    for iz in range(self.nz):
+                        for iy in range(self.ny):
+                            for ix in range(self.nx):
+                                arg = [reactor, ix, iy, iz, converge_flux, rtol, atol]
+                                converge_flux = self.solve_flux_eigenvalue_problem(arg)
+                # close multiprocessing pool
+                #mp_pool.close() 
 
             converge_qf = True
             for iz in range(self.nz):
@@ -234,8 +241,11 @@ class Core:
             print('k-effective: ', '{0:12.5f} '.format(self.k[-1]), '| flux iterations: ', iter)
 
     #----------------------------------------------------------------------------------------------
-    # flux iterations in steady-state eigenvalue problem
-    def iterate_flux_eigenvalue_problem(self, reactor, ix, iy, iz):
+    # calculate flux at node ix, iy, iz for steady-state eigenvalue problem and 
+    # return convergence_flux True if difference with the previous iteration is within rtol, atol
+    
+    def solve_flux_eigenvalue_problem(self, arg):
+        reactor, ix, iy, iz, converge_flux, rtol, atol = arg
         imix = self.map['imix'][iz][iy][ix]
         # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
         if isinstance(imix, int):
@@ -400,5 +410,6 @@ class Core:
         
                 # neutron flux
                 flux = (dif + qs + qn2n + qf)/mlt
-                if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol or iter >= 10
+                if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol
                 self.flux[iz][iy][ix][ig] = flux
+        return converge_flux
