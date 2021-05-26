@@ -25,6 +25,11 @@ class Core:
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
 
         if 'spatialkinetics' in reactor.solve:
+
+            # correct!
+            self.rtol = 1e-14
+            self.atol = 1e-14
+
             # number of energy groups
             self.ng = reactor.control.input['ng']
 
@@ -82,6 +87,7 @@ class Core:
                         self.flux[iz][iy].append([1]*self.ng)
 
             # initialize map
+            self.geom = reactor.control.input['coregeom']['geom']
             self.map = {'dz':[], 'imix':[], 'ipipe':[]}
             mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
             self.nstack = len(reactor.control.input['stack'])
@@ -144,8 +150,9 @@ class Core:
                                 # node height
                                 if len(self.map['dz']) < iz:
                                     self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
+            # core assembly pitch                                    
+            self.pitch = 100*reactor.control.input['coregeom']['pitch']
         self.solve_eigenvalue_problem(reactor)
-
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
     def calculate_rhs(self, reactor, t):
@@ -189,28 +196,55 @@ class Core:
         # flux is normalise to total fission cource = 1 at previous iteration 
         self.k = [1]
 
-        # correct!
-        rtol = 1e-14
-        atol = 1e-14
-
         converge_qf = False
         converge_k = False
         while not converge_qf and not converge_k:
-            converge_flux = False
+            # initialize flux convergence flag list
+            self.converge_flux = [[[False for ix in range(self.nx)] for iy in range(self.ny)] for iz in range(self.nz)]
             iter = 0
-            while not converge_flux and iter < 10:
-                converge_flux = True
+            while False in sum(sum(self.converge_flux,[]),[]) and iter < 10:
                 iter += 1
+                for iz in range(self.nz):
+                    for iy in range(self.ny):
+                        for ix in range(self.nx):
+                            imix = self.map['imix'][iz][iy][ix]
+                            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                            if isinstance(imix, int):
+                                self.solve_flux_eigenvalue_problem(ix, iy, iz)
+                            else:
+                                self.converge_flux[iz][iy][ix] = True
+
+                #arg1, arg2, arg3 = [], [], []
+                #for iz in range(self.nz):
+                #    for iy in range(self.ny):
+                #        for ix in range(self.nx):
+                #            imix = self.map['imix'][iz][iy][ix]
+                #            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                #            if isinstance(imix, int):
+                #                arg1.append(ix)
+                #                arg2.append(iy)
+                #                arg3.append(iz)
+                #            else:
+                #                self.converge_flux[iz][iy][ix] = True
+                #list(map(self.solve_flux_eigenvalue_problem, arg1, arg2, arg3))
+                
                 # initialize multiprocessing pool
-                #mp_pool = mp.Pool(mp.cpu_count())
-                if __name__ == 'B3_core':
-                    for iz in range(self.nz):
-                        for iy in range(self.ny):
-                            for ix in range(self.nx):
-                                arg = [reactor, ix, iy, iz, converge_flux, rtol, atol]
-                                converge_flux = self.solve_flux_eigenvalue_problem(arg)
-                # close multiprocessing pool
-                #mp_pool.close() 
+                #pool = mp.Pool(mp.cpu_count())
+                #pool = mp.Pool(1])
+                #if __name__ == 'B3_core':
+                #    arg = []
+                #    for iz in range(self.nz):
+                #        for iy in range(self.ny):
+                #            for ix in range(self.nx):
+                #                imix = self.map['imix'][iz][iy][ix]
+                #                # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                #                if isinstance(imix, int):
+                #                    arg.append((ix, iy, iz))
+                #                else:
+                #                    self.converge_flux[iz][iy][ix] = True
+                #    list(pool.starmap(self.solve_flux_eigenvalue_problem, arg))
+                ## close multiprocessing pool
+                #pool.close() 
 
             converge_qf = True
             for iz in range(self.nz):
@@ -223,7 +257,7 @@ class Core:
                             qf = 0
                             for ig in range(self.ng):
                                 qf += xs.sigp[ig]*self.flux[iz][iy][ix][ig]
-                            if converge_qf : converge_qf = abs(qf - self.qf[iz][iy][ix]) < rtol*abs(qf) + atol
+                            if converge_qf : converge_qf = abs(qf - self.qf[iz][iy][ix]) < self.rtol*abs(qf) + self.atol
                             self.qf[iz][iy][ix] = qf
 
             converge_k = True
@@ -236,180 +270,180 @@ class Core:
                         if isinstance(imix, int):
                             for ig in range(self.ng):
                                 k += self.qf[iz][iy][ix]
-            converge_k = abs(k - self.k[-1]) < rtol*abs(k) + atol
+            converge_k = abs(k - self.k[-1]) < self.rtol*abs(k) + self.atol
             self.k.append(k)
             print('k-effective: ', '{0:12.5f} '.format(self.k[-1]), '| flux iterations: ', iter)
 
     #----------------------------------------------------------------------------------------------
     # calculate flux at node ix, iy, iz for steady-state eigenvalue problem and 
-    # return convergence_flux True if difference with the previous iteration is within rtol, atol
+    # return convergence_flux True if difference with the previous iteration is within self.rtol, self.atol
     
-    def solve_flux_eigenvalue_problem(self, arg):
-        reactor, ix, iy, iz, converge_flux, rtol, atol = arg
+    def solve_flux_eigenvalue_problem(self, ix, iy, iz):
         imix = self.map['imix'][iz][iy][ix]
-        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-        if isinstance(imix, int):
-            xs = self.mix[imix]
-            pitch = 100*reactor.control.input['coregeom']['pitch']
-            az_over_v = 0.01/self.map['dz'][iz-1]
-            if reactor.control.input['coregeom']['geom'] == 'square':
-                aside_over_v = 1/pitch
-            elif reactor.control.input['coregeom']['geom'] == 'hex':
-                aside_over_v = 2/(3*pitch)
-            dzvac = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
-            dxyvac = 0.5*pitch + 0.71/xs.sigt[imix]
-            Dimix = 1/(3*xs.sigt[imix])
+        xs = self.mix[imix]
+        az_over_v = 0.01/self.map['dz'][iz-1]
+        if self.geom == 'square':
+            aside_over_v = 1/self.pitch
+        elif self.geom == 'hex':
+            aside_over_v = 2/(3*self.pitch)
+        dzvac = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
+        dxyvac = 0.5*self.pitch + 0.71/xs.sigt[imix]
+        Dimix = 1/(3*xs.sigt[imix])
+
+        self.converge_flux[iz][iy][ix] = True
+        for ig in range(self.ng):
+            mlt = 0
+            dif = 0
+            # diffusion term: from bottom
+            imix_n =  self.map['imix'][iz-1][iy][ix]
+            if imix_n == 'vac':
+                mlt += Dimix/dzvac * az_over_v
+            elif imix_n != 'ref':
+                dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
+                D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
+                mlt += D/dz * az_over_v
+                dif += D*self.flux[iz-1][iy][ix][ig]/dz * az_over_v
+            
+            # diffusion term: to top
+            imix_n =  self.map['imix'][iz+1][iy][ix]
+            if imix_n == 'vac':
+                mlt += Dimix/dzvac * az_over_v
+            elif imix_n != 'ref':
+                dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
+                D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
+                mlt += D/dz * az_over_v
+                dif += D*self.flux[iz+1][iy][ix][ig]/dz * az_over_v
+            
+            # diffusion term: from west
+            imix_n =  self.map['imix'][iz][iy][ix-1]
+            if imix_n == 'vac':
+                mlt += Dimix/dxyvac * aside_over_v
+            elif imix_n != 'ref':
+                D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                mlt += D/self.pitch * aside_over_v
+                dif += D*self.flux[iz][iy][ix-1][ig]/self.pitch * aside_over_v
+            
+            # diffusion term: to east
+            imix_n =  self.map['imix'][iz][iy][ix+1]
+            if imix_n == 'vac':
+                mlt += Dimix/dxyvac * aside_over_v
+            elif imix_n != 'ref':
+                D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                mlt += D/self.pitch * aside_over_v
+                dif += D*self.flux[iz][iy][ix+1][ig]/self.pitch * aside_over_v
         
-            for ig in range(self.ng):
-                mlt = 0
-                dif = 0
-                # diffusion term: from bottom
-                imix_n =  self.map['imix'][iz-1][iy][ix]
-                if imix_n == 'vac':
-                    mlt += Dimix/dzvac * az_over_v
-                elif imix_n != 'ref':
-                    dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
-                    D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
-                    mlt += D/dz * az_over_v
-                    dif += D*self.flux[iz-1][iy][ix][ig]/dz * az_over_v
-                
-                # diffusion term: to top
-                imix_n =  self.map['imix'][iz+1][iy][ix]
-                if imix_n == 'vac':
-                    mlt += Dimix/dzvac * az_over_v
-                elif imix_n != 'ref':
-                    dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
-                    D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
-                    mlt += D/dz * az_over_v
-                    dif += D*self.flux[iz+1][iy][ix][ig]/dz * az_over_v
-                
-                # diffusion term: from west
-                imix_n =  self.map['imix'][iz][iy][ix-1]
+            if self.geom == 'square':
+                # diffusion term: from north (square geometry)
+                imix_n =  self.map['imix'][iz][iy-1][ix]
                 if imix_n == 'vac':
                     mlt += Dimix/dxyvac * aside_over_v
                 elif imix_n != 'ref':
                     D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                    mlt += D/pitch * aside_over_v
-                    dif += D*self.flux[iz][iy][ix-1][ig]/pitch * aside_over_v
+                    mlt += D/self.pitch * aside_over_v
+                    dif += D*self.flux[iz][iy-1][ix][ig]/self.pitch * aside_over_v
                 
-                # diffusion term: to east
-                imix_n =  self.map['imix'][iz][iy][ix+1]
+                # diffusion term: from south (square geometry)
+                imix_n =  self.map['imix'][iz][iy+1][ix]
                 if imix_n == 'vac':
                     mlt += Dimix/dxyvac * aside_over_v
                 elif imix_n != 'ref':
                     D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                    mlt += D/pitch * aside_over_v
-                    dif += D*self.flux[iz][iy][ix+1][ig]/pitch * aside_over_v
+                    mlt += D/self.pitch * aside_over_v
+                    dif += D*self.flux[iz][iy+1][ix][ig]/self.pitch * aside_over_v
         
-                if reactor.control.input['coregeom']['geom'] == 'square':
-                    # diffusion term: from north (square geometry)
+            elif self.geom == 'hex':
+                # diffusion term: from north-west (hexagonal geometry)
+                if iy % 2 == 0: # even
                     imix_n =  self.map['imix'][iz][iy-1][ix]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
-                    
-                    # diffusion term: from south (square geometry)
+                else: # odd
+                    imix_n =  self.map['imix'][iz][iy-1][ix-1]
+                if imix_n == 'vac':
+                    mlt += Dimix/dxyvac * aside_over_v
+                elif imix_n != 'ref':
+                    D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                    mlt += D/self.pitch * aside_over_v
+                    if iy % 2 == 0: # even
+                        dif += D*self.flux[iz][iy-1][ix][ig]/self.pitch * aside_over_v
+                    else: # odd
+                        dif += D*self.flux[iz][iy-1][ix-1][ig]/self.pitch * aside_over_v
+        
+                # diffusion term: from north-east (hexagonal geometry)
+                if iy % 2 == 0: # even
+                    imix_n =  self.map['imix'][iz][iy-1][ix+1]
+                else: # odd
+                    imix_n =  self.map['imix'][iz][iy-1][ix]
+                if imix_n == 'vac':
+                    mlt += Dimix/dxyvac * aside_over_v
+                elif imix_n != 'ref':
+                    D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                    mlt += D/self.pitch * aside_over_v
+                    if iy % 2 == 0: # even
+                        dif += D*self.flux[iz][iy-1][ix+1][ig]/self.pitch * aside_over_v
+                    else: # odd
+                        dif += D*self.flux[iz][iy-1][ix][ig]/self.pitch * aside_over_v
+        
+                # diffusion term: from south-west (hexagonal geometry)
+                if iy % 2 == 0: # even
                     imix_n =  self.map['imix'][iz][iy+1][ix]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
-        
-                elif reactor.control.input['coregeom']['geom'] == 'hex':
-                    # diffusion term: from north-west (hexagonal geometry)
+                else: # odd
+                    imix_n =  self.map['imix'][iz][iy+1][ix-1]
+                if imix_n == 'vac':
+                    mlt += Dimix/dxyvac * aside_over_v
+                elif imix_n != 'ref':
+                    D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                    mlt += D/self.pitch * aside_over_v
                     if iy % 2 == 0: # even
-                        imix_n =  self.map['imix'][iz][iy-1][ix]
+                        dif += D*self.flux[iz][iy+1][ix][ig]/self.pitch * aside_over_v
                     else: # odd
-                        imix_n =  self.map['imix'][iz][iy-1][ix-1]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        if iy % 2 == 0: # even
-                            dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
-                        else: # odd
-                            dif += D*self.flux[iz][iy-1][ix-1][ig]/pitch * aside_over_v
+                        dif += D*self.flux[iz][iy+1][ix-1][ig]/self.pitch * aside_over_v
         
-                    # diffusion term: from north-east (hexagonal geometry)
+        
+                # diffusion term: from south-east (hexagonal geometry)
+                if iy % 2 == 0: # even
+                    imix_n =  self.map['imix'][iz][iy+1][ix+1]
+                else: # odd
+                    imix_n =  self.map['imix'][iz][iy+1][ix]
+                if imix_n == 'vac':
+                    mlt += Dimix/dxyvac * aside_over_v
+                elif imix_n != 'ref':
+                    D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
+                    mlt += D/self.pitch * aside_over_v
                     if iy % 2 == 0: # even
-                        imix_n =  self.map['imix'][iz][iy-1][ix+1]
+                        dif += D*self.flux[iz][iy+1][ix+1][ig]/self.pitch * aside_over_v
                     else: # odd
-                        imix_n =  self.map['imix'][iz][iy-1][ix]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        if iy % 2 == 0: # even
-                            dif += D*self.flux[iz][iy-1][ix+1][ig]/pitch * aside_over_v
-                        else: # odd
-                            dif += D*self.flux[iz][iy-1][ix][ig]/pitch * aside_over_v
+                        dif += D*self.flux[iz][iy+1][ix][ig]/self.pitch * aside_over_v
         
-                    # diffusion term: from south-west (hexagonal geometry)
-                    if iy % 2 == 0: # even
-                        imix_n =  self.map['imix'][iz][iy+1][ix]
-                    else: # odd
-                        imix_n =  self.map['imix'][iz][iy+1][ix-1]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        if iy % 2 == 0: # even
-                            dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
-                        else: # odd
-                            dif += D*self.flux[iz][iy+1][ix-1][ig]/pitch * aside_over_v
+            # removal xs
+            sigr = xs.sigt[ig]
+            # scattering source
+            qs = 0
+            for indx in range(len(xs.sigs)):
+                f = xs.sigs[indx][0][0]
+                t = xs.sigs[indx][0][1]
+                if f != ig and t == ig:
+                    qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
+                if f == ig and t == ig:
+                    sigr -= xs.sigs[indx][1]
+            # n2n source
+            qn2n = 0
+            for indx in range(len(xs.sign2n)):
+                f = xs.sign2n[indx][0][0]
+                t = xs.sign2n[indx][0][1]
+                if f != ig and t == ig:
+                    qn2n += 2*xs.sign2n[indx][1] * self.flux[iz][iy][ix][f]
+                if f == ig and t == ig:
+                    sigr -= xs.sign2n[indx][1]
         
+            mlt += sigr
         
-                    # diffusion term: from south-east (hexagonal geometry)
-                    if iy % 2 == 0: # even
-                        imix_n =  self.map['imix'][iz][iy+1][ix+1]
-                    else: # odd
-                        imix_n =  self.map['imix'][iz][iy+1][ix]
-                    if imix_n == 'vac':
-                        mlt += Dimix/dxyvac * aside_over_v
-                    elif imix_n != 'ref':
-                        D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
-                        mlt += D/pitch * aside_over_v
-                        if iy % 2 == 0: # even
-                            dif += D*self.flux[iz][iy+1][ix+1][ig]/pitch * aside_over_v
-                        else: # odd
-                            dif += D*self.flux[iz][iy+1][ix][ig]/pitch * aside_over_v
+            # fission source
+            qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
         
-                # removal xs
-                sigr = xs.sigt[ig]
-                # scattering source
-                qs = 0
-                for indx in range(len(xs.sigs)):
-                    f = xs.sigs[indx][0][0]
-                    t = xs.sigs[indx][0][1]
-                    if f != ig and t == ig:
-                        qs += xs.sigs[indx][1] * self.flux[iz][iy][ix][f]
-                    if f == ig and t == ig:
-                        sigr -= xs.sigs[indx][1]
-                # n2n source
-                qn2n = 0
-                for indx in range(len(xs.sign2n)):
-                    f = xs.sign2n[indx][0][0]
-                    t = xs.sign2n[indx][0][1]
-                    if f != ig and t == ig:
-                        qn2n += 2*xs.sign2n[indx][1] * self.flux[iz][iy][ix][f]
-                    if f == ig and t == ig:
-                        sigr -= xs.sign2n[indx][1]
-        
-                mlt += sigr
-        
-                # fission source
-                qf = xs.chi[ig]*self.qf[iz][iy][ix]/self.k[-1]
-        
-                # neutron flux
-                flux = (dif + qs + qn2n + qf)/mlt
-                if converge_flux : converge_flux = abs(flux - self.flux[iz][iy][ix][ig]) < rtol*abs(flux) + atol
-                self.flux[iz][iy][ix][ig] = flux
-        return converge_flux
+            # neutron flux
+            flux = (dif + qs + qn2n + qf)/mlt
+            if self.converge_flux[iz][iy][ix] : self.converge_flux[iz][iy][ix] = abs(flux - self.flux[iz][iy][ix][ig]) < self.rtol*abs(flux) + self.atol
+            self.flux[iz][iy][ix][ig] = flux
+            #print(ix, iy, iz, ig, flux)
+        #print(self.converge_flux[iz][iy][ix])
+        return
+  
