@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 #--------------------------------------------------------------------------------------------------
 class Isotope:
@@ -128,6 +129,10 @@ class Isotope:
         if sign2n != []:
             for i in range(len(sign2n)):
                 self.xs['n2n'].append(sign2n[i])
+
+        tac = time.time()
+        print('{0:.3f}'.format(tac - reactor.tic), ' s | isotope cross sections processed: ', nddir + os.sep + self.isoid)
+        reactor.tic = tac
 
 #----------------------------------------------------------------------------------------------
 # The function reads n words from row irow of matrix cards and returns them in

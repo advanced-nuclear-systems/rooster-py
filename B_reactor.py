@@ -22,14 +22,17 @@ from B3_core import Core
 # SciPy requires installation : python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.integrate import ode
 
-import shutil
-import os
+import time
 
 #--------------------------------------------------------------------------------------------------
 class Reactor:
 
     # constructor: self is a 'reactor' object created in A
     def __init__(self):
+
+        # starting time
+        self.tic0 = time.time()
+        self.tic = self.tic0
 
         # create control object
         self.control = Control(self)
@@ -85,13 +88,11 @@ class Reactor:
             dtout = t_dt[1]
             # solve the whole system of ODEs
             while solver.successful() and solver.t < tend:
-                time = solver.t + dtout
-                y = solver.integrate(time)
-
-                #print('time: {0:12.5e}'.format(time))
+                t = solver.t + dtout
+                y = solver.integrate(t)
 
                 # print to output files
-                self.control.print_output_files(self, fid, time, 1)
+                self.control.print_output_files(self, fid, t, 1)
 
         # close all output files
         for f in fid:
