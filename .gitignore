@@ -8,3 +8,4 @@ output
 *.zip
 papers
 DATA*
+*.so

@@ -78,7 +78,8 @@ class Reactor:
         self.control.print_output_files(self, fid, t0, 0)
 
         # create ODE solver, initialize and set integrator
-        solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
+        #solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
+        solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'adams')
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 

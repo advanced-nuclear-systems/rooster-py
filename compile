@@ -1,0 +1,2 @@
+python3 -m numpy.f2py -c B3_core.for -m B3_core
+mv B3_core.* B3_core.so

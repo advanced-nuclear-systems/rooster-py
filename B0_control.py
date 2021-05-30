@@ -125,10 +125,6 @@ class Control:
                 elif key == 'clad':
                      inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
                 #--------------------------------------------------------------------------------------
-                # constant
-                elif key == 'constant':
-                     inp[word[1]] = float(word[2])
-                #--------------------------------------------------------------------------------------
                 # core geometry
                 elif key == 'coregeom':
                     if len(word)-1 < 4:
@@ -278,7 +274,10 @@ class Control:
                 elif key == 'signal':
                      signal = {}
                      signal['id'] = word[1]
-                     signal['value'] = word[2]
+                     if len(word[2:]) == 1:
+                         signal['value'] = word[2]
+                     else:
+                         signal['symexp'] = word[2:]
                      inp['signal'].append(signal)
                 #--------------------------------------------------------------------------------------
                 # models to be solved
@@ -383,7 +382,7 @@ class Control:
         if os.path.isfile(path4results): os.remove(path4results)
         if not os.path.isdir(path4results): os.mkdir(path4results)
 
-        # copy input and open output files to output folder
+        # copy input files to output folder
         shutil.copyfile('input', path4results + os.sep + 'input')
         shutil.copyfile('input.json', path4results + os.sep + 'input.json')
         # open files for output
@@ -641,6 +640,15 @@ class Control:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
                 y.append(reactor.core.cdnp[i])
+        if 'spatialkinetics' in reactor.solve:
+            for iz in range(reactor.core.nz):
+                for iy in range(reactor.core.ny):
+                    for ix in range(reactor.core.nx):
+                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                        imix = reactor.core.map['imix'][iz][iy][ix]
+                        if isinstance(imix, int):
+                            for ig in reversed(range(reactor.core.ng)):
+                                y.append(reactor.core.flux[iz][iy][ix][ig])
         return y
 
     #----------------------------------------------------------------------------------------------
@@ -702,3 +710,13 @@ class Control:
             for i in range(reactor.core.ndnp):
                 reactor.core.cdnp[i] = y[indx]
                 indx += 1
+        if 'spatialkinetics' in reactor.solve:
+            for iz in range(reactor.core.nz):
+                for iy in range(reactor.core.ny):
+                    for ix in range(reactor.core.nx):
+                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                        imix = reactor.core.map['imix'][iz][iy][ix]
+                        if isinstance(imix, int):
+                            for ig in reversed(range(reactor.core.ng)):
+                                reactor.core.flux[iz][iy][ix][ig] = y[indx]
+                                indx += 1
