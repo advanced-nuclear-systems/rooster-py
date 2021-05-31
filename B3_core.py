@@ -2,7 +2,9 @@ from B3A_isotope import Isotope
 from B3B_mix import Mix
 from multiprocessing import Pool
 
+import B3_coreF
 import multiprocessing as mp
+import numpy
 import sys
 import time
 
@@ -26,6 +28,15 @@ class Core:
 
         if 'spatialkinetics' in reactor.solve:
 
+            a = numpy.array([[1., 2., 3., 4., 5.],[6., 7., 8., 9., 0.]], order='F')
+            b = numpy.array([-1., -2., -3., -4., -5.], order='F')
+            print(B3_coreF.solve_eigenvalue_problem.__doc__)
+            n, m = 2, 5
+            B3_coreF.solve_eigenvalue_problem(n, m, a, b)
+            print(a)
+            print(b)
+            sys.exit()
+
             # correct!
             self.rtol = 1e-6
             self.atol = 1e-6
@@ -47,6 +58,15 @@ class Core:
                 if len(reactor.control.input['coremap'][i]) != self.nx:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
                     sys.exit()
+
+            # initialize flux
+            self.flux = []
+            for iz in range(self.nz):
+                self.flux.append([])
+                for iy in range(self.ny):
+                    self.flux[iz].append([])
+                    for ix in range(self.nx):
+                        self.flux[iz][iy].append([1]*self.ng)
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -80,15 +100,6 @@ class Core:
                 tac = time.time()
                 print('{0:.3f}'.format(tac - reactor.tic), ' s | mix cross sections processed: ', self.mix[i].mixid)
                 reactor.tic = tac
-
-            # initialize flux
-            self.flux = []
-            for iz in range(self.nz):
-                self.flux.append([])
-                for iy in range(self.ny):
-                    self.flux[iz].append([])
-                    for ix in range(self.nx):
-                        self.flux[iz][iy].append([1]*self.ng)
 
             # initialize map
             self.geom = reactor.control.input['coregeom']['geom']

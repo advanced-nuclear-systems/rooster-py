@@ -1,2 +1,2 @@
-python3 -m numpy.f2py -c B3_core.for -m B3_core
-mv B3_core.* B3_core.so
+python3 -m numpy.f2py -c --build-dir _f2py B3_coreF.for -m B3_coreF
+mv B3_coreF.*.so B3_coreF.so
