@@ -28,15 +28,6 @@ class Core:
 
         if 'spatialkinetics' in reactor.solve:
 
-            a = numpy.array([[1., 2., 3., 4., 5.],[6., 7., 8., 9., 0.]], order='F')
-            b = numpy.array([-1., -2., -3., -4., -5.], order='F')
-            print(B3_coreF.solve_eigenvalue_problem.__doc__)
-            n, m = 2, 5
-            B3_coreF.solve_eigenvalue_problem(n, m, a, b)
-            print(a)
-            print(b)
-            sys.exit()
-
             # correct!
             self.rtol = 1e-6
             self.atol = 1e-6
@@ -60,13 +51,8 @@ class Core:
                     sys.exit()
 
             # initialize flux
-            self.flux = []
-            for iz in range(self.nz):
-                self.flux.append([])
-                for iy in range(self.ny):
-                    self.flux[iz].append([])
-                    for ix in range(self.nx):
-                        self.flux[iz][iy].append([1]*self.ng)
+            self.flux = numpy.ones(shape=(self.nz, self.ny, self.nx, self.ng), order='F')
+            self.flux[1][2][3][4] = -1.
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -109,7 +95,8 @@ class Core:
             stackid_list = [reactor.control.input['stack'][i]['stackid'] for i in range(self.nstack)]
             self.npipe = len(reactor.control.input['pipe'])
             pipeid_list = [reactor.control.input['pipe'][i]['id'] for i in range(self.npipe)]
-            bc = ['vac','ref']
+            # vacuum is -1 and reflective is -2
+            bc = [-1,-2]
             for iz in range(self.nz):
                 self.map['imix'].append([])
                 self.map['ipipe'].append([])
@@ -172,7 +159,14 @@ class Core:
                 self.aside_over_v = 1/self.pitch
             elif self.geom == 'hex':
                 self.aside_over_v = 2/(3*self.pitch)
-        self.solve_eigenvalue_problem(reactor)
+
+            print(B3_coreF.solve_eigenvalue_problem.__doc__)
+            sigt = [[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)]
+            sigp = [[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)]
+            B3_coreF.solve_eigenvalue_problem(self.nz, self.ny, self.nx, self.ng, self.nmix, self.flux, self.map['imix'], sigt, sigp, self.pitch, self.map['dz'])
+            sys.exit()
+
+            self.solve_eigenvalue_problem(reactor)
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
     def calculate_rhs(self, reactor, t):
@@ -237,8 +231,8 @@ class Core:
             #        for iy in range(self.ny):
             #            for ix in range(self.nx):
             #                imix = self.map['imix'][iz][iy][ix]
-            #                # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-            #                if isinstance(imix, int):
+            #                # if (ix, iy, ]iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+            #                if imix >= 0:
             #                    for ig in range(self.ng):
             #                        if converge_flux : converge_flux = abs(flux[k] - self.flux[iz][iy][ix][ig]) < self.rtol*abs(flux[k]) + self.atol
             #                        self.flux[iz][iy][ix][ig] = flux[k]
@@ -249,8 +243,8 @@ class Core:
             #    for iy in range(self.ny):
             #        for ix in range(self.nx):
             #            imix = self.map['imix'][iz][iy][ix]
-            #            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-            #            if isinstance(imix, int):
+            #            # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+            #            if imix >= 0:
             #                arg1.append(ix)
             #                arg2.append(iy)
             #                arg3.append(iz)
@@ -266,8 +260,8 @@ class Core:
             #        for iy in range(self.ny):
             #            for ix in range(self.nx):
             #                imix = self.map['imix'][iz][iy][ix]
-            #                # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-            #                if isinstance(imix, int):
+            #                # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+            #                if imix >= 0:
             #                    for ig in range(self.ng):
             #                        if converge_flux : converge_flux = abs(flux[iz-1][k] - self.flux[iz][iy][ix][ig]) < self.rtol*abs(flux[iz-1][k]) + self.atol
             #                        self.flux[iz][iy][ix][ig] = flux[iz-1][k]
@@ -278,8 +272,8 @@ class Core:
                 for iy in range(self.ny):
                     for ix in range(self.nx):
                         imix = self.map['imix'][iz][iy][ix]
-                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-                        if isinstance(imix, int):
+                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        if imix >= 0:
                             xs = self.mix[imix]
                             qf = 0
                             for ig in range(self.ng):
@@ -293,8 +287,8 @@ class Core:
                 for iy in range(self.ny):
                     for ix in range(self.nx):
                         imix = self.map['imix'][iz][iy][ix]
-                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-                        if isinstance(imix, int):
+                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        if imix >= 0:
                             for ig in range(self.ng):
                                 k += self.qf[iz][iy][ix]
             converge_k = abs(k - self.k[-1]) < self.rtol*abs(k) + self.atol
@@ -317,9 +311,9 @@ class Core:
             for iz in range(1,self.nz-1):
                 for iy in range(self.ny):
                     for ix in range(self.nx):
-                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                         imix = self.map['imix'][iz][iy][ix]
-                        if isinstance(imix, int):
+                        if imix >= 0:
                             xs = self.mix[imix]
                             az_over_v = 0.01/self.map['dz'][iz-1]
                             dzvac = 50*self.map['dz'][iz-1] + 0.71/xs.sigt[imix]
@@ -330,9 +324,9 @@ class Core:
                                 dif = 0
                                 # diffusion term: from bottom
                                 imix_n =  self.map['imix'][iz-1][iy][ix]
-                                if imix_n == 'vac':
+                                if imix_n == -1:
                                     mlt += Dimix/dzvac * az_over_v
-                                elif imix_n != 'ref':
+                                elif imix_n != -2:
                                     dz = 50*(self.map['dz'][iz-2] + self.map['dz'][iz-1])
                                     D = dz/(3*xs.sigt[imix_n]*self.map['dz'][iz-2] + 3*xs.sigt[imix]*self.map['dz'][iz-1])
                                     mlt += D/dz * az_over_v
@@ -340,9 +334,9 @@ class Core:
                                 
                                 # diffusion term: to top
                                 imix_n =  self.map['imix'][iz+1][iy][ix]
-                                if imix_n == 'vac':
+                                if imix_n == -1:
                                     mlt += Dimix/dzvac * az_over_v
-                                elif imix_n != 'ref':
+                                elif imix_n != -2:
                                     dz = 50*(self.map['dz'][iz-1] + self.map['dz'][iz])
                                     D = dz/(3*xs.sigt[imix]*self.map['dz'][iz-1] + 3*xs.sigt[imix_n]*self.map['dz'][iz])
                                     mlt += D/dz * az_over_v
@@ -350,18 +344,18 @@ class Core:
                                 
                                 # diffusion term: from west
                                 imix_n =  self.map['imix'][iz][iy][ix-1]
-                                if imix_n == 'vac':
+                                if imix_n == -1:
                                     mlt += Dimix/dxyvac * self.aside_over_v
-                                elif imix_n != 'ref':
+                                elif imix_n != -2:
                                     D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                     mlt += D/self.pitch * self.aside_over_v
                                     dif += D*self.flux[iz][iy][ix-1][ig]/self.pitch * self.aside_over_v
                                 
                                 # diffusion term: to east
                                 imix_n =  self.map['imix'][iz][iy][ix+1]
-                                if imix_n == 'vac':
+                                if imix_n == -1:
                                     mlt += Dimix/dxyvac * self.aside_over_v
-                                elif imix_n != 'ref':
+                                elif imix_n != -2:
                                     D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                     mlt += D/self.pitch * self.aside_over_v
                                     dif += D*self.flux[iz][iy][ix+1][ig]/self.pitch * self.aside_over_v
@@ -369,18 +363,18 @@ class Core:
                                 if self.geom == 'square':
                                     # diffusion term: from north (square geometry)
                                     imix_n =  self.map['imix'][iz][iy-1][ix]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         dif += D*self.flux[iz][iy-1][ix][ig]/self.pitch * self.aside_over_v
                                     
                                     # diffusion term: from south (square geometry)
                                     imix_n =  self.map['imix'][iz][iy+1][ix]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         dif += D*self.flux[iz][iy+1][ix][ig]/self.pitch * self.aside_over_v
@@ -391,9 +385,9 @@ class Core:
                                         imix_n =  self.map['imix'][iz][iy-1][ix]
                                     else: # odd
                                         imix_n =  self.map['imix'][iz][iy-1][ix-1]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         if iy % 2 == 0: # even
@@ -406,9 +400,9 @@ class Core:
                                         imix_n =  self.map['imix'][iz][iy-1][ix+1]
                                     else: # odd
                                         imix_n =  self.map['imix'][iz][iy-1][ix]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         if iy % 2 == 0: # even
@@ -421,9 +415,9 @@ class Core:
                                         imix_n =  self.map['imix'][iz][iy+1][ix]
                                     else: # odd
                                         imix_n =  self.map['imix'][iz][iy+1][ix-1]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         if iy % 2 == 0: # even
@@ -437,9 +431,9 @@ class Core:
                                         imix_n =  self.map['imix'][iz][iy+1][ix+1]
                                     else: # odd
                                         imix_n =  self.map['imix'][iz][iy+1][ix]
-                                    if imix_n == 'vac':
+                                    if imix_n == -1:
                                         mlt += Dimix/dxyvac * self.aside_over_v
-                                    elif imix_n != 'ref':
+                                    elif imix_n != -2:
                                         D = 2/(3*xs.sigt[imix] + 3*xs.sigt[imix_n])
                                         mlt += D/self.pitch * self.aside_over_v
                                         if iy % 2 == 0: # even
@@ -491,9 +485,9 @@ class Core:
         irow, k = -1, -1
         for iy in range(self.ny):
             for ix in range(self.nx):
-                # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
+                # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                 imix = self.map['imix'][iz][iy][ix]
-                if isinstance(imix, int):
+                if imix >= 0:
                     xs = self.mix[imix]
                     ftsca_list = [s[0] for s in xs.sigs]
                     ftn2n_list = [s[0] for s in xs.sign2n]
