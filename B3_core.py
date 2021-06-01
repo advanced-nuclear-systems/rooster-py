@@ -52,7 +52,6 @@ class Core:
 
             # initialize flux
             self.flux = numpy.ones(shape=(self.nz, self.ny, self.nx, self.ng), order='F')
-            self.flux[1][2][3][4] = -1.
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -161,12 +160,18 @@ class Core:
                 self.aside_over_v = 2/(3*self.pitch)
 
             print(B3_coreF.solve_eigenvalue_problem.__doc__)
-            sigt = [[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)]
-            sigp = [[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)]
-            B3_coreF.solve_eigenvalue_problem(self.nz, self.ny, self.nx, self.ng, self.nmix, self.flux, self.map['imix'], sigt, sigp, self.pitch, self.map['dz'])
+            sigt = numpy.array([[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            sigp = numpy.array([[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            nsigs = numpy.array([len(self.mix[imix].sigs) for imix in range(self.nmix)], order='F')
+            sigs = numpy.zeros(shape=(self.nmix, max(nsigs)), order='F')
+            for imix in range(self.nmix):
+                for indx in range(nsigs[imix]):
+                    sigs[imix][indx] = self.mix[imix].sigs[indx][1]
+            B3_coreF.solve_eigenvalue_problem(self.nz, self.ny, self.nx, self.ng, self.nmix, self.flux, self.map['imix'], sigt, sigp, nsigs, sigs, self.pitch, self.map['dz'])
             sys.exit()
 
-            self.solve_eigenvalue_problem(reactor)
+            #self.solve_eigenvalue_problem(reactor)
+            self.k = [1]
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
     def calculate_rhs(self, reactor, t):

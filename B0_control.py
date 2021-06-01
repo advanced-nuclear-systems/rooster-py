@@ -434,10 +434,10 @@ class Control:
                 fid.append(open(path4results + os.sep + 'core-iso-microxs-' + reactor.core.isoname[i] + '.dat', 'w'))
             for i in range(reactor.core.nmix):
                 fid.append(open(path4results + os.sep + 'core-mix-macroxs-' + reactor.core.mix[i].mixid + '.dat', 'w'))
-                fid.append(open(path4results + os.sep + 'core-k.dat', 'w'))
-                fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
-                fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'flux'.ljust(13) + '\n')
+            fid.append(open(path4results + os.sep + 'core-k.dat', 'w'))
+            fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
+            fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'flux'.ljust(13) + '\n')
         return fid
 
     #----------------------------------------------------------------------------------------------
