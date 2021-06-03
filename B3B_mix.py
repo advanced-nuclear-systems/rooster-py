@@ -120,7 +120,7 @@ class Mix:
         return sig
 
     #----------------------------------------------------------------------------------------------
-    # given microscopic XSs without temperature dimension sig1 (absorption or total) perform sig0 interpolation for energy group ig
+    # given microscopic XSs without temperature dimension sig1 (total) perform sig0 interpolation for energy group ig
     # for all isotopes of the mix and return sig2: microscopic XSs without sig0 dimension
     def interpolate_sig0(self, ig, core, sig1):
         sig2 = [0]*self.niso
@@ -137,17 +137,6 @@ class Mix:
             f = interp1d(x, y) #scipy function
             sig2[i] = f(self.sig0[ig][i])
         return sig2
-
-    #----------------------------------------------------------------------------------------------
-    # calculates absorption macroscopic cross sections for the mix
-    def calculate_siga(self, core, reactor):
-        # perform temperature and sig0 interpolations for all isotopes and all groups
-        sig_tmp1 = self.interpolate_temp(core, reactor, 'abs')
-        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
-        self.siga = [0]*self.ng
-        for ig in range(self.ng):
-            for i in range(self.niso):
-                self.siga[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
     # calculates total macroscopic cross sections for the mix

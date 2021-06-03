@@ -503,11 +503,6 @@ class Control:
                         for ig in range(reactor.core.ng):
                             fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['tot'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
                     for itemp in range(ntemp):
-                        fid[indx].write('capture XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
-                        fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
-                        for ig in range(reactor.core.ng):
-                            fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['cap'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
-                    for itemp in range(ntemp):
                         fid[indx].write('fission XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
                         fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                         for ig in range(reactor.core.ng):
@@ -587,8 +582,8 @@ class Control:
                     for iy in range(reactor.core.ny):
                         for ix in range(reactor.core.nx):
                             imix = reactor.core.map['imix'][iz][iy][ix]
-                            # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-                            if isinstance(imix, int):
+                            # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref')
+                            if imix >= 0:
                                 for ig in range(reactor.core.ng):
                                     fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig).ljust(13) + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.flux[iz][iy][ix][ig]) + '\n')
             indx += 1
@@ -640,15 +635,6 @@ class Control:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
                 y.append(reactor.core.cdnp[i])
-        if 'spatialkinetics' in reactor.solve:
-            for iz in range(reactor.core.nz):
-                for iy in range(reactor.core.ny):
-                    for ix in range(reactor.core.nx):
-                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-                        imix = reactor.core.map['imix'][iz][iy][ix]
-                        if isinstance(imix, int):
-                            for ig in reversed(range(reactor.core.ng)):
-                                y.append(reactor.core.flux[iz][iy][ix][ig])
         return y
 
     #----------------------------------------------------------------------------------------------
@@ -710,13 +696,3 @@ class Control:
             for i in range(reactor.core.ndnp):
                 reactor.core.cdnp[i] = y[indx]
                 indx += 1
-        if 'spatialkinetics' in reactor.solve:
-            for iz in range(reactor.core.nz):
-                for iy in range(reactor.core.ny):
-                    for ix in range(reactor.core.nx):
-                        # if (ix, iy, iz) is not a boundary condition node (i.e. 'vac' or 'ref')
-                        imix = reactor.core.map['imix'][iz][iy][ix]
-                        if isinstance(imix, int):
-                            for ig in reversed(range(reactor.core.ng)):
-                                reactor.core.flux[iz][iy][ix][ig] = y[indx]
-                                indx += 1

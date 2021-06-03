@@ -63,15 +63,16 @@ class Isotope:
         self.sig0 = a[1:]
 
         # dictionary of cross sections
-        self.xs = {'abs':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)],  'cap':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'ine':[], 'inv':[0]*ng, 'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
+        self.xs = {'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'ine':[], 'inv':[0]*ng, 'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], 'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], 'tot1':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
 
         # fission spectrum (mf = 5, mt = 18)
         chi = extract_mf_mt(5, 18, 0, 0, cards)
         if chi != [] : self.xs['chi'] = chi
         # inverted neutron velocity (mf = 3, mt = 259)
         inv = extract_mf_mt(3, 259, 0, 0, cards)
-        for ig in range(ng):
-            self.xs['inv'][ig] = inv[ig][0]
+        if inv != []:
+            for ig in range(ng):
+                self.xs['inv'][ig] = inv[ig][0]
         for itemp in range(ntemp):
             # first Legendre component of total xs (mf = 3, mt = 1)
             nlgndr = 1
@@ -86,18 +87,12 @@ class Isotope:
             nubar = extract_mf_mt(3, 452, itemp, nlgndr, cards)
             # fission xs (mf = 3, mt = 18)
             sigf = extract_mf_mt(3, 18, itemp, nlgndr, cards)
-            # capture xs (mf = 3, mt = 102)
-            sigc = extract_mf_mt(3, 102, itemp, nlgndr, cards)
             for ig in range(ng):
                 for i in range(nsig0):
                     self.xs['tot'][ig][itemp][i] = sigt[ig][i]
-                    self.xs['cap'][ig][itemp][i] = sigc[ig][i]
-                    self.xs['abs'][ig][itemp][i] = sigc[ig][i]
-                if nubar != [] : 
+                if nubar != [] :
                     self.xs['nub'][ig][itemp] = nubar[ig][0]
                     self.xs['fis'][ig][itemp] = sigf[ig]
-                    for i in range(nsig0):
-                        self.xs['abs'][ig][itemp][i] += sigf[ig][i]
             # elastic scattering (mt = 2)
             sige = extract_mf6(2, itemp, nlgndr, cards)
             for s in sige:
@@ -229,10 +224,12 @@ def extract_mf6(mt, itemp, nl, cards):
 
 def extract_mf_mt(mf, mt, itemp, nl, cards):
 
+    # number of energy groups
+    ng = cards[1][2]
     # find index irow of the row with required mf and mt
     ntemp = -1
     irow = 0
-    out = []
+    out = [0]*ng
     while ntemp < itemp and irow < len(cards):
         if cards[irow][6] == (mf,mt) and cards[irow][7] == 1: ntemp += 1
         irow += 1
@@ -252,10 +249,11 @@ def extract_mf_mt(mf, mt, itemp, nl, cards):
                 a, irownew = extract_n_words(nsig0*nlgn*2, irow, cards)
                 # the first nlgn*nsig0 words are flux -- skip.
                 a = a[nsig0*nlgn:]
-                out.append(a[0::nlgn])
+                out[ig-1] = a[0::nlgn]
                 irow = irownew + 2
         elif mf == 5:
             ng = cards[irow-1][5]
             out, irownew = extract_n_words(ng, irow, cards)
 
+    if out == [0]*ng : out = []
     return out
