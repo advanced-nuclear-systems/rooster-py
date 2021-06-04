@@ -70,11 +70,10 @@ class Core:
             for i in range(self.nmix):
                 self.mix[i].calculate_sig0(self, reactor)
                 self.mix[i].calculate_sigt(self, reactor)
-                self.mix[i].calculate_sigt1(self, reactor)
+                self.mix[i].calculate_sigtra(self, reactor)
                 self.mix[i].calculate_sigp(self, reactor)
                 self.mix[i].calculate_chi(self)
                 self.mix[i].calculate_sigs(self, reactor)
-                self.mix[i].calculate_sigs1(self, reactor)
                 self.mix[i].calculate_sign2n(self, reactor)
                 self.mix[i].update_xs = False
                 self.mix[i].print_xs = True
@@ -200,12 +199,8 @@ class Core:
                     tsign2n[imix][indx] = self.mix[imix].sign2n[indx][0][1]            
                     sign2n[imix][indx] = self.mix[imix].sign2n[indx][1]
 
-            # transport cross section = first Legendre component of total cross section - first Legendre component of total out-scattering cross section 
-            sigtra = numpy.array([[self.mix[imix].sigt1[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
-            for imix in range(self.nmix):
-                for indx in range(nsigs[imix]):
-                    f = self.mix[imix].sigs1[indx][0][0]
-                    #sigtra[imix][f] -= self.mix[imix].sigs1[indx][1]
+            # transport cross section = total cross section - first Legendre component of elastic out-scattering cross section 
+            sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
             # call the Fortran eigenvalue problem solver
             B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.ng, \
