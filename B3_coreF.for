@@ -4,7 +4,7 @@
       subroutine solve_eigenvalue_problem(
      +           geom,
      +           nz, ny, nx, ng,
-     +           flux, imap, sigt, sigp,
+     +           flux, imap, sigt, sigtra, sigp,
      +           nsigs, fsigs, tsigs, sigs,
      +           nsign2n, fsign2n, tsign2n, sign2n,
      +           chi,
@@ -23,6 +23,8 @@
       integer imap(:,:,:)
       ! total cross section: sigt(nmix,ng)
       real*8 sigt(:,:)
+      ! transport cross section: sigtra(nmix,ng)
+      real*8 sigtra(:,:)
       ! production cross section: sigp(nmix,ng)
       real*8 sigp(:,:)
       ! number of entries in scattering cross section matrix: sigs(nmix)
@@ -98,6 +100,8 @@
       real*8 rtol
       ! removal cross section
       real*8 sigr
+      ! transport cross sections in the node and neighbouring node
+      real*8 sigtr, sigtr_n
 
       ! relative tolerance
       rtol = 1.0e-6
@@ -108,7 +112,7 @@
       do iz = 1, nz
          do iy = 1, ny
             do ix = 1, nx
-               qf(iz,iy,ix) = 1e-6
+               qf(iz,iy,ix) = 1.
             end do
          end do
       end do
@@ -150,100 +154,104 @@
                            mlt = 0.
                            dif = 0.
          
-                           ! diffusion term: from bottom
+                           ! transport cross section
+                           sigtr = sigtra(imix, ig)
+                           ! diffusion term: bottom
                            imix_n = imap(iz-1,iy,ix)+1
                            if(imix_n == 0)then
                               ! neighbour is vacuum
-                              dzvac = 0.5*dz(iz-1) + 0.71/sigt(imix, ig)
-                              D = 1./(3.*sigt(imix,ig))
+                              dzvac = 0.5*dz(iz-1) + 0.71/sigtr
+                              D = 1./(3.*sigtr)
                               mlt = mlt + D/dzvac * az_over_v
                            else if(imix_n .ne. -1)then
                               ! neighbour is normal node (neither vacuum nor reflective)
+                              sigtr_n = sigtra(imix_n, ig)
                               dzb = 0.5*(dz(iz-2) + dz(iz-1))
-                              D = 2.*dzb/(3.*sigt(imix_n,ig)*dz(iz-2) + 
-     +                                 3.*sigt(imix,ig)*dz(iz-1))
+                              D = 2.*dzb/(3.*sigtr_n*dz(iz-2) + 
+     +                                    3.*sigtr*dz(iz-1))
                               mlt = mlt + D/dzb * az_over_v
                               dif = dif + D*flux(iz-1,iy,ix,ig)/dzb * 
      +                                    az_over_v
                            end if
          
-                           ! diffusion term: to top
+                           ! diffusion term: top
                            imix_n = imap(iz+1,iy,ix)+1
                            if(imix_n == 0)then
                               ! neighbour is vacuum
-                              dzvac = 0.5*dz(iz) + 0.71/sigt(imix, ig)
-                              D = 1./(3.*sigt(imix,ig))
+                              dzvac = 0.5*dz(iz) + 0.71/sigtr
+                              D = 1./(3.*sigtr)
                               mlt = mlt + D/dzvac * az_over_v
                            else if(imix_n .ne. -1)then
                               ! neighbour is normal node (neither vacuum nor reflective)
+                              sigtr_n = sigtra(imix_n, ig)
                               dzb = 0.5*(dz(iz-1) + dz(iz))
-                              D = 2.*dzb/(3.*sigt(imix_n,ig)*dz(iz) + 
-     +                                    3.*sigt(imix,ig)*dz(iz-1))
+                              D = 2.*dzb/(3.*sigtr_n*dz(iz) + 
+     +                                    3.*sigtr*dz(iz-1))
                               mlt = mlt + D/dzb * az_over_v
                               dif = dif + D*flux(iz+1,iy,ix,ig)/dzb * 
      +                                    az_over_v
                            end if
          
-                           ! diffusion term: from west
+                           ! diffusion term: west
                            imix_n = imap(iz,iy,ix-1)+1
                            if(imix_n == 0)then
                               ! neighbour is vacuum
-                              dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                              D = 1./(3.*sigt(imix,ig))
+                              dxyvac = 0.5*pitch + 0.71/sigtr
+                              D = 1./(3.*sigtr)
                               mlt = mlt + D/dxyvac * aside_over_v
                            else if(imix_n .ne. -1)then
                               ! neighbour is normal node (neither vacuum nor reflective)
-                              D = 2./(3.*sigt(imix,ig) + 
-     +                               3.*sigt(imix_n,ig))
+                              sigtr_n = sigtra(imix_n, ig)
+                              D = 2./(3.*sigtr + 3.*sigtr_n)
                               mlt = mlt + D/pitch * aside_over_v
                               dif = dif + D*flux(iz,iy,ix-1,ig)/pitch * 
      +                                    aside_over_v
                            end if
          
-                           ! diffusion term: to east
+                           ! diffusion term: east
                            imix_n = imap(iz,iy,ix+1)+1
                            if(imix_n == 0)then
                               ! neighbour is vacuum
-                              dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                              D = 1./(3.*sigt(imix,ig))
+                              dxyvac = 0.5*pitch + 0.71/sigtr
+                              D = 1./(3.*sigtr)
                               mlt = mlt + D/dxyvac * aside_over_v
                            else if(imix_n .ne. -1)then
                               ! neighbour is normal node (neither vacuum nor reflective)
-                              D = 2./(3.*sigt(imix,ig) + 
-     +                               3.*sigt(imix_n,ig))
+                              sigtr_n = sigtra(imix_n, ig)
+                              D = 2./(3.*sigtr + 3.*sigtr_n)
                               mlt = mlt + D/pitch * aside_over_v
                               dif = dif + D*flux(iz,iy,ix+1,ig)/pitch * 
      +                                    aside_over_v
                            end if
          
                            if(geom == 'squ')then
-                              ! diffusion term: from north (square geometry)
+                              ! diffusion term: north (square geometry)
                               imix_n = imap(iz,iy-1,ix)+1
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                  3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr + 3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  dif = dif + D*flux(iz,iy-1,ix,ig)/pitch
      +                                      *aside_over_v
                               end if
          
-                              ! diffusion term: to south
+                              ! diffusion term: south
                               imix_n = imap(iz,iy+1,ix)+1
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                  3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr + 3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  dif = dif + D*flux(iz,iy+1,ix,ig)/pitch
      +                                      *aside_over_v
@@ -251,7 +259,7 @@
          
                            else if(geom == 'hex')then
          
-                              ! diffusion term: from north-west (hexagonal geometry)
+                              ! diffusion term: north-west (hexagonal geometry)
                               if(mod(iy,2) == 0)then ! even
                                  imix_n = imap(iz,iy-1,ix)+1
                               else ! odd
@@ -259,13 +267,13 @@
                               end if
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                   3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr + 3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  if(mod(iy,2) == 0)then ! even
                                     dif = dif + D*flux(iz,iy-1,ix,ig)
@@ -276,7 +284,7 @@
                                  end if
                               end if
          
-                              ! diffusion term: from north-east (hexagonal geometry)
+                              ! diffusion term: north-east (hexagonal geometry)
                               if(mod(iy,2) == 0)then ! even
                                  imix_n = imap(iz,iy-1,ix+1)+1
                               else ! odd
@@ -284,13 +292,13 @@
                               end if
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                   3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr + 3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  if(mod(iy,2) == 0)then ! even
                                     dif = dif + D*flux(iz,iy-1,ix+1,ig)
@@ -301,7 +309,7 @@
                                  end if
                               end if
          
-                              ! diffusion term: to south-west (hexagonal geometry)
+                              ! diffusion term: south-west (hexagonal geometry)
                               if(mod(iy,2) == 0)then ! even
                                  imix_n = imap(iz,iy+1,ix)+1
                               else ! odd
@@ -309,13 +317,13 @@
                               end if
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                   3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr +3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  if(mod(iy,2) == 0)then ! even
                                     dif = dif + D*flux(iz,iy+1,ix,ig)
@@ -334,13 +342,13 @@
                               end if
                               if(imix_n == 0)then
                                  ! neighbour is vacuum
-                                 dxyvac = 0.5*pitch + 0.71/sigt(imix,ig)
-                                 D = 1./(3.*sigt(imix,ig))
+                                 dxyvac = 0.5*pitch + 0.71/sigtr
+                                 D = 1./(3.*sigtr)
                                  mlt = mlt + D/dxyvac * aside_over_v
                               else if(imix_n .ne. -1)then
                                  ! neighbour is normal node (neither vacuum nor reflective)
-                                 D = 2./(3.*sigt(imix,ig) + 
-     +                                   3.*sigt(imix_n,ig))
+                                 sigtr_n = sigtra(imix_n, ig)
+                                 D = 2./(3.*sigtr + 3.*sigtr_n)
                                  mlt = mlt + D/pitch * aside_over_v
                                  if(mod(iy,2) == 0)then ! even
                                     dif = dif + D*flux(iz,iy+1,ix+1,ig)
@@ -410,7 +418,7 @@
                   ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                   imix = imap(iz,iy,ix)+1
                   if(imix > 0)then
-                     qfnew = 0
+                     qfnew = 0.
                      do ig = 1, ng
                         qfnew = qfnew + sigp(imix,ig)*flux(iz,iy,ix,ig)
                         if(converge_qf)then

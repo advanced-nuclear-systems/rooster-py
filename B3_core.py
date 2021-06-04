@@ -28,10 +28,6 @@ class Core:
 
         if 'spatialkinetics' in reactor.solve:
 
-            # correct!
-            self.rtol = 1e-6
-            self.atol = 1e-6
-
             # number of energy groups
             self.ng = reactor.control.input['ng']
 
@@ -39,7 +35,7 @@ class Core:
             self.nz = len(reactor.control.input['stack'][0]['mixid'])
             for i in range(len(reactor.control.input['stack'])):
                 if len(reactor.control.input['stack'][i]['mixid']) != self.nz:
-                    print('****ERROR: all stacks should have the same number of axial nodes.')
+                    print('****ERROR: all stacks should have the same number of axial nodes:', self.nz)
                     sys.exit()
             # add bottom and top layers for boundary conditions
             self.nz += 2
@@ -74,9 +70,11 @@ class Core:
             for i in range(self.nmix):
                 self.mix[i].calculate_sig0(self, reactor)
                 self.mix[i].calculate_sigt(self, reactor)
+                self.mix[i].calculate_sigt1(self, reactor)
                 self.mix[i].calculate_sigp(self, reactor)
                 self.mix[i].calculate_chi(self)
                 self.mix[i].calculate_sigs(self, reactor)
+                self.mix[i].calculate_sigs1(self, reactor)
                 self.mix[i].calculate_sign2n(self, reactor)
                 self.mix[i].update_xs = False
                 self.mix[i].print_xs = True
@@ -159,7 +157,7 @@ class Core:
                 self.aside_over_v = 2/(3*self.pitch)
 
             # initialize multiplication factor
-            self.k = numpy.array([1])
+            self.k = numpy.array([1.])
 
             # prepare arrays for Fortran solver of eigenvalue problem             
             #print(B3_coreF.solve_eigenvalue_problem.__doc__)
@@ -169,7 +167,7 @@ class Core:
             sigp = numpy.array([[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # number of elements in scattering matrix
             nsigs = numpy.array([len(self.mix[imix].sigs) for imix in range(self.nmix)], order='F')
-            # scattering matrix )1D_
+            # scattering matrix
             sigs = numpy.zeros(shape=(self.nmix, max(nsigs)), order='F')
             # 'from' index of scattering matrix elements
             fsigs = numpy.zeros(shape=(self.nmix, max(nsigs)), dtype=int, order='F')
@@ -191,17 +189,29 @@ class Core:
             # fill out scattering arrays
             for imix in range(self.nmix):
                 for indx in range(nsigs[imix]):
-                    sigs[imix][indx] = self.mix[imix].sigs[indx][1]
                     fsigs[imix][indx] = self.mix[imix].sigs[indx][0][0]
                     tsigs[imix][indx] = self.mix[imix].sigs[indx][0][1]
+                    sigs[imix][indx] = self.mix[imix].sigs[indx][1]
 
             # fill out n2n arrays
             for imix in range(self.nmix):
                 for indx in range(nsign2n[imix]):
-                    sign2n[imix][indx] = self.mix[imix].sign2n[indx][1]
                     fsign2n[imix][indx] = self.mix[imix].sign2n[indx][0][0]
                     tsign2n[imix][indx] = self.mix[imix].sign2n[indx][0][1]            
-            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.ng, self.flux, self.map['imix'], sigt, sigp, nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, self.pitch, dz)
+                    sign2n[imix][indx] = self.mix[imix].sign2n[indx][1]
+
+            # transport cross section = first Legendre component of total cross section - first Legendre component of total out-scattering cross section 
+            sigtra = numpy.array([[self.mix[imix].sigt1[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            for imix in range(self.nmix):
+                for indx in range(nsigs[imix]):
+                    f = self.mix[imix].sigs1[indx][0][0]
+                    #sigtra[imix][f] -= self.mix[imix].sigs1[indx][1]
+
+            # call the Fortran eigenvalue problem solver
+            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.ng, \
+                                              self.flux, self.map['imix'], sigt, sigtra, sigp, \
+                                              nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, \
+                                              self.pitch, dz)
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
