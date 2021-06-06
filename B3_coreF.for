@@ -421,12 +421,12 @@
                      qfnew = 0.
                      do ig = 1, ng
                         qfnew = qfnew + sigp(imix,ig)*flux(iz,iy,ix,ig)
-                        if(converge_qf)then
-                           converge_qf = abs(qfnew - qf(iz,iy,ix)) < 
-     +                                   rtol*abs(qfnew) + atol
-                        end if
-                        qf(iz,iy,ix) = qfnew
                      end do
+                     if(converge_qf)then
+                        converge_qf = abs(qfnew - qf(iz,iy,ix)) < 
+     +                                rtol*abs(qfnew) + atol
+                     end if
+                     qf(iz,iy,ix) = qfnew
                   end if
                end do
             end do
@@ -442,16 +442,16 @@
                   if(imix > 0)then
                      do ig = 1, ng
                         knew = knew + qf(iz,iy,ix)
-                        if(converge_k)then
-                           converge_k = abs(knew - keff) < 
-     +                                  rtol*abs(knew) + atol
-                        end if
-                        keff = knew
                      end do
                   end if
                end do
             end do
          end do
+         if(converge_k)then
+            converge_k = abs(knew - keff) < 
+     +                   rtol*abs(knew) + atol
+         end if
+         keff = knew
 
          write(*,*)'k-effective: ', keff, 'nitero = ', nitero
          !if(isnan(keff)) stop

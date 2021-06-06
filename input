@@ -18,7 +18,7 @@ signal    PI        3.14159
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        value
-signal    TEMP      900
+signal    TEMP      453.
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     insignal  outsignal
@@ -63,7 +63,7 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 *solve     fuelrod
 solve     fluid
 *solve     fuelgrain
-solve     pointkinetics
+*solve     pointkinetics
 solve     spatialkinetics     25
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
@@ -96,29 +96,29 @@ pipe-t    DOWN      NA        0.01      3.0      -1         1.1       30        
 jun       DOWN      UP01
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP01      NA        0.01      0.04      1         1.1       1
+pipe      UP01      NA        0.01      0.04011   1         1.1       1
 jun       UP01      UP02
-pipe      UP02      NA        0.01      0.76      1         1.1       8
+pipe      UP02      NA        0.01      0.762008  1         1.1       8
 jun       UP02      UP03
-pipe      UP03      NA        0.01      0.03      1         1.1       1
+pipe      UP03      NA        0.01      0.03008   1         1.1       1
 jun       UP03      UP04
-pipe      UP04      NA        0.01      0.06      1         1.1       1
+pipe      UP04      NA        0.01      0.06016   1         1.1       1
 jun       UP04      UP05
-pipe      UP05      NA        0.01      0.02      1         1.1       1
+pipe      UP05      NA        0.01      0.02005   1         1.1       1
 jun       UP05      UP06
-pipe      UP06      NA        0.01      0.3       1         1.1       6
+pipe      UP06      NA        0.01      0.30047   1         1.1       6
 jun       UP06      UP07
-pipe      UP07      NA        0.01      1.0       1         1.1       20
+pipe      UP07      NA        0.01      1.00157   1         1.1       20
 jun       UP07      UP08
-pipe      UP08      NA        0.01      0.3       1         1.1       6
+pipe      UP08      NA        0.01      0.30047   1         1.1       6
 jun       UP08      UP09
-pipe      UP09      NA        0.01      0.162     1         1.1       2
+pipe      UP09      NA        0.01      0.16415   1         1.1       2
 jun       UP09      UP10
-pipe      UP10      NA        0.01      0.028     1         1.1       1
+pipe      UP10      NA        0.01      0.02807   1         1.1       1
 jun       UP10      UP11
-pipe      UP11      NA        0.01      0.263     1         1.1       3
+pipe      UP11      NA        0.01      0.26369   1         1.1       3
 jun       UP11      UP12
-pipe      UP12      NA        0.01      1.066     1         1.1       10
+pipe      UP12      NA        0.01      1.06881   1         1.1       10
 jun       UP12      PLN
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
@@ -162,558 +162,565 @@ nddir     DATA025
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       INNER     U235j311  3.64947E-05         TEMP
-mix       INNER     U238j311  7.17076E-03         TEMP
-mix       INNER     Pu238j311 6.42641E-06         TEMP
-mix       INNER     Pu239j311 8.86389E-04         TEMP
-mix       INNER     Pu240j311 2.64282E-04         TEMP
-mix       INNER     Pu241j311 7.10528E-05         TEMP
-mix       INNER     Pu242j311 2.46603E-05         TEMP
-mix       INNER     Am241j311 1.73902E-05         TEMP
-mix       INNER     O16j311   1.67853E-02         TEMP
-mix       INNER     C0j311    4.63230E-05         TEMP
-mix       INNER     Si28j311  2.19887E-04         TEMP
-mix       INNER     Si29j311  1.07851E-05         TEMP
-mix       INNER     Si30j311  6.88110E-06         TEMP
-mix       INNER     P31j311   1.07680E-05         TEMP
-mix       INNER     Ti46j311  7.98385E-06         TEMP
-mix       INNER     Ti47j311  7.04676E-06         TEMP
-mix       INNER     Ti48j311  6.83730E-05         TEMP
-mix       INNER     Ti49j311  4.91510E-06         TEMP
-mix       INNER     Ti50j311  4.61222E-06         TEMP
-mix       INNER     Cr50j311  1.54745E-04         TEMP
-mix       INNER     Cr52j311  2.86953E-03         TEMP
-mix       INNER     Cr53j311  3.19234E-04         TEMP
-mix       INNER     Cr54j311  7.79935E-05         TEMP
-mix       INNER     Mn55j311  3.44020E-04         TEMP
-mix       INNER     Fe54j311  7.79694E-04         TEMP
-mix       INNER     Fe56j311  1.18029E-02         TEMP
-mix       INNER     Fe57j311  2.67791E-04         TEMP
-mix       INNER     Fe58j311  3.50241E-05         TEMP
-mix       INNER     Ni58j311  1.82892E-03         TEMP
-mix       INNER     Ni60j311  6.81034E-04         TEMP
-mix       INNER     Ni61j311  2.91182E-05         TEMP
-mix       INNER     Ni62j311  9.13491E-05         TEMP
-mix       INNER     Ni64j311  2.25332E-05         TEMP
-mix       INNER     Mo92j311  4.39407E-05         TEMP
-mix       INNER     Mo94j311  2.70821E-05         TEMP
-mix       INNER     Mo95j311  4.63885E-05         TEMP
-mix       INNER     Mo96j311  4.83108E-05         TEMP
-mix       INNER     Mo97j311  2.75340E-05         TEMP
-mix       INNER     Mo98j311  6.92394E-05         TEMP
-mix       INNER     Mo100j311 2.73188E-05         TEMP
-mix       INNER     Na23j311  8.34742E-03         TEMP
-mix       INNER     He4j311   5.62806E-07         TEMP
+* Fuel in inner zone
+*****     id        isoid     numdens_180C        sigtemp
+mix       INNER     U235j311  3.62512E-05         TEMP
+mix       INNER     U238j311  7.12290E-03         TEMP
+mix       INNER     Pu238j311 6.38350E-06         TEMP
+mix       INNER     Pu239j311 8.80474E-04         TEMP
+mix       INNER     Pu240j311 2.62518E-04         TEMP
+mix       INNER     Pu241j311 7.05786E-05         TEMP
+mix       INNER     Pu242j311 2.44957E-05         TEMP
+mix       INNER     Am241j311 1.72741E-05         TEMP
+mix       INNER     O16j311   1.66733E-02         TEMP
+mix       INNER     C0j311    4.81636E-05         TEMP
+mix       INNER     Si28j311  2.28624E-04         TEMP
+mix       INNER     Si29j311  1.12136E-05         TEMP
+mix       INNER     Si30j311  7.15451E-06         TEMP
+mix       INNER     P31j311   1.11959E-05         TEMP
+mix       INNER     Ti46j311  8.30106E-06         TEMP
+mix       INNER     Ti47j311  7.32676E-06         TEMP
+mix       INNER     Ti48j311  7.10898E-05         TEMP
+mix       INNER     Ti49j311  5.11038E-06         TEMP
+mix       INNER     Ti50j311  4.79548E-06         TEMP
+mix       INNER     Cr50j311  1.60894E-04         TEMP
+mix       INNER     Cr52j311  2.98354E-03         TEMP
+mix       INNER     Cr53j311  3.31917E-04         TEMP
+mix       INNER     Cr54j311  8.10925E-05         TEMP
+mix       INNER     Mn55j311  3.57689E-04         TEMP
+mix       INNER     Fe54j311  8.10672E-04         TEMP
+mix       INNER     Fe56j311  1.22719E-02         TEMP
+mix       INNER     Fe57j311  2.78430E-04         TEMP
+mix       INNER     Fe58j311  3.64157E-05         TEMP
+mix       INNER     Ni58j311  1.90158E-03         TEMP
+mix       INNER     Ni60j311  7.08094E-04         TEMP
+mix       INNER     Ni61j311  3.02751E-05         TEMP
+mix       INNER     Ni62j311  9.49787E-05         TEMP
+mix       INNER     Ni64j311  2.34285E-05         TEMP
+mix       INNER     Mo92j311  4.56867E-05         TEMP
+mix       INNER     Mo94j311  2.81581E-05         TEMP
+mix       INNER     Mo95j311  4.82317E-05         TEMP
+mix       INNER     Mo96j311  5.02304E-05         TEMP
+mix       INNER     Mo97j311  2.86281E-05         TEMP
+mix       INNER     Mo98j311  7.19904E-05         TEMP
+mix       INNER     Mo100j311 2.84042E-05         TEMP
+mix       INNER     Na23j311  8.08239E-03         TEMP
+mix       INNER     He4j311   5.81324E-07         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       OUTER     U235j311  3.50009E-05         TEMP
-mix       OUTER     U238j311  6.87721E-03         TEMP
-mix       OUTER     Pu238j311 7.97763E-06         TEMP
-mix       OUTER     Pu239j311 1.10034E-03         TEMP
-mix       OUTER     Pu240j311 3.28074E-04         TEMP
-mix       OUTER     Pu241j311 8.82036E-05         TEMP
-mix       OUTER     Pu242j311 3.06128E-05         TEMP
-mix       OUTER     Am241j311 2.15878E-05         TEMP
-mix       OUTER     O16j311   1.68082E-02         TEMP
-mix       OUTER     C0j311    4.63230E-05         TEMP
-mix       OUTER     Si28j311  2.19887E-04         TEMP
-mix       OUTER     Si29j311  1.07851E-05         TEMP
-mix       OUTER     Si30j311  6.88110E-06         TEMP
-mix       OUTER     P31j311   1.07680E-05         TEMP
-mix       OUTER     Ti46j311  7.98385E-06         TEMP
-mix       OUTER     Ti47j311  7.04676E-06         TEMP
-mix       OUTER     Ti48j311  6.83730E-05         TEMP
-mix       OUTER     Ti49j311  4.91510E-06         TEMP
-mix       OUTER     Ti50j311  4.61222E-06         TEMP
-mix       OUTER     Cr50j311  1.54745E-04         TEMP
-mix       OUTER     Cr52j311  2.86953E-03         TEMP
-mix       OUTER     Cr53j311  3.19234E-04         TEMP
-mix       OUTER     Cr54j311  7.79935E-05         TEMP
-mix       OUTER     Mn55j311  3.44020E-04         TEMP
-mix       OUTER     Fe54j311  7.79694E-04         TEMP
-mix       OUTER     Fe56j311  1.18029E-02         TEMP
-mix       OUTER     Fe57j311  2.67791E-04         TEMP
-mix       OUTER     Fe58j311  3.50241E-05         TEMP
-mix       OUTER     Ni58j311  1.82892E-03         TEMP
-mix       OUTER     Ni60j311  6.81034E-04         TEMP
-mix       OUTER     Ni61j311  2.91182E-05         TEMP
-mix       OUTER     Ni62j311  9.13491E-05         TEMP
-mix       OUTER     Ni64j311  2.25332E-05         TEMP
-mix       OUTER     Mo92j311  4.39407E-05         TEMP
-mix       OUTER     Mo94j311  2.70821E-05         TEMP
-mix       OUTER     Mo95j311  4.63885E-05         TEMP
-mix       OUTER     Mo96j311  4.83108E-05         TEMP
-mix       OUTER     Mo97j311  2.75340E-05         TEMP
-mix       OUTER     Mo98j311  6.92394E-05         TEMP
-mix       OUTER     Mo100j311 2.73188E-05         TEMP
-mix       OUTER     Na23j311  8.34742E-03         TEMP
-mix       OUTER     He4j311   5.62806E-07         TEMP
+* Fuel in outer zone
+*****     id        isoid     numdens_180C        sigtemp
+mix       OUTER     U235j311  3.47673E-05         TEMP
+mix       OUTER     U238j311  6.83132E-03         TEMP
+mix       OUTER     Pu238j311 7.92438E-06         TEMP
+mix       OUTER     Pu239j311 1.09300E-03         TEMP
+mix       OUTER     Pu240j311 3.25884E-04         TEMP
+mix       OUTER     Pu241j311 8.76147E-05         TEMP
+mix       OUTER     Pu242j311 3.04084E-05         TEMP
+mix       OUTER     Am241j311 2.14438E-05         TEMP
+mix       OUTER     O16j311   1.66960E-02         TEMP
+mix       OUTER     C0j311    4.81636E-05         TEMP
+mix       OUTER     Si28j311  2.28624E-04         TEMP
+mix       OUTER     Si29j311  1.12136E-05         TEMP
+mix       OUTER     Si30j311  7.15451E-06         TEMP
+mix       OUTER     P31j311   1.11959E-05         TEMP
+mix       OUTER     Ti46j311  8.30106E-06         TEMP
+mix       OUTER     Ti47j311  7.32676E-06         TEMP
+mix       OUTER     Ti48j311  7.10898E-05         TEMP
+mix       OUTER     Ti49j311  5.11038E-06         TEMP
+mix       OUTER     Ti50j311  4.79548E-06         TEMP
+mix       OUTER     Cr50j311  1.60894E-04         TEMP
+mix       OUTER     Cr52j311  2.98354E-03         TEMP
+mix       OUTER     Cr53j311  3.31917E-04         TEMP
+mix       OUTER     Cr54j311  8.10925E-05         TEMP
+mix       OUTER     Mn55j311  3.57689E-04         TEMP
+mix       OUTER     Fe54j311  8.10672E-04         TEMP
+mix       OUTER     Fe56j311  1.22719E-02         TEMP
+mix       OUTER     Fe57j311  2.78430E-04         TEMP
+mix       OUTER     Fe58j311  3.64157E-05         TEMP
+mix       OUTER     Ni58j311  1.90158E-03         TEMP
+mix       OUTER     Ni60j311  7.08094E-04         TEMP
+mix       OUTER     Ni61j311  3.02751E-05         TEMP
+mix       OUTER     Ni62j311  9.49787E-05         TEMP
+mix       OUTER     Ni64j311  2.34285E-05         TEMP
+mix       OUTER     Mo92j311  4.56867E-05         TEMP
+mix       OUTER     Mo94j311  2.81581E-05         TEMP
+mix       OUTER     Mo95j311  4.82317E-05         TEMP
+mix       OUTER     Mo96j311  5.02304E-05         TEMP
+mix       OUTER     Mo97j311  2.86281E-05         TEMP
+mix       OUTER     Mo98j311  7.19904E-05         TEMP
+mix       OUTER     Mo100j311 2.84042E-05         TEMP
+mix       OUTER     Na23j311  8.08239E-03         TEMP
+mix       OUTER     He4j311   5.81324E-07         TEMP
 *
-* Axial blanket in fissile assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       AXBLA     U235j311  2.13421E-05         TEMP
-mix       AXBLA     U238j311  8.40793E-03         TEMP
-mix       AXBLA     O16j311   1.66900E-02         TEMP
-mix       AXBLA     C0j311    4.63230E-05         TEMP
-mix       AXBLA     Si28j311  2.19887E-04         TEMP
-mix       AXBLA     Si29j311  1.07851E-05         TEMP
-mix       AXBLA     Si30j311  6.88110E-06         TEMP
-mix       AXBLA     P31j311   1.07680E-05         TEMP
-mix       AXBLA     Ti46j311  7.98385E-06         TEMP
-mix       AXBLA     Ti47j311  7.04676E-06         TEMP
-mix       AXBLA     Ti48j311  6.83730E-05         TEMP
-mix       AXBLA     Ti49j311  4.91510E-06         TEMP
-mix       AXBLA     Ti50j311  4.61222E-06         TEMP
-mix       AXBLA     Cr50j311  1.54745E-04         TEMP
-mix       AXBLA     Cr52j311  2.86953E-03         TEMP
-mix       AXBLA     Cr53j311  3.19234E-04         TEMP
-mix       AXBLA     Cr54j311  7.79935E-05         TEMP
-mix       AXBLA     Mn55j311  3.44020E-04         TEMP
-mix       AXBLA     Fe54j311  7.79694E-04         TEMP
-mix       AXBLA     Fe56j311  1.18029E-02         TEMP
-mix       AXBLA     Fe57j311  2.67791E-04         TEMP
-mix       AXBLA     Fe58j311  3.50241E-05         TEMP
-mix       AXBLA     Ni58j311  1.82892E-03         TEMP
-mix       AXBLA     Ni60j311  6.81034E-04         TEMP
-mix       AXBLA     Ni61j311  2.91182E-05         TEMP
-mix       AXBLA     Ni62j311  9.13491E-05         TEMP
-mix       AXBLA     Ni64j311  2.25332E-05         TEMP
-mix       AXBLA     Mo92j311  4.39407E-05         TEMP
-mix       AXBLA     Mo94j311  2.70821E-05         TEMP
-mix       AXBLA     Mo95j311  4.63885E-05         TEMP
-mix       AXBLA     Mo96j311  4.83108E-05         TEMP
-mix       AXBLA     Mo97j311  2.75340E-05         TEMP
-mix       AXBLA     Mo98j311  6.92394E-05         TEMP
-mix       AXBLA     Mo100j311 2.73188E-05         TEMP
-mix       AXBLA     Na23j311  8.34742E-03         TEMP
-mix       AXBLA     He4j311   5.62806E-07         TEMP
+* Axial blanket in fissile SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       AXBLA     U235j311  2.25558E-05         TEMP
+mix       AXBLA     U238j311  8.88607E-03         TEMP
+mix       AXBLA     O16j311   1.76391E-02         TEMP
+mix       AXBLA     C0j311    4.81636E-05         TEMP
+mix       AXBLA     Si28j311  2.28624E-04         TEMP
+mix       AXBLA     Si29j311  1.12136E-05         TEMP
+mix       AXBLA     Si30j311  7.15451E-06         TEMP
+mix       AXBLA     P31j311   1.11959E-05         TEMP
+mix       AXBLA     Ti46j311  8.30106E-06         TEMP
+mix       AXBLA     Ti47j311  7.32676E-06         TEMP
+mix       AXBLA     Ti48j311  7.10898E-05         TEMP
+mix       AXBLA     Ti49j311  5.11038E-06         TEMP
+mix       AXBLA     Ti50j311  4.79548E-06         TEMP
+mix       AXBLA     Cr50j311  1.60894E-04         TEMP
+mix       AXBLA     Cr52j311  2.98354E-03         TEMP
+mix       AXBLA     Cr53j311  3.31917E-04         TEMP
+mix       AXBLA     Cr54j311  8.10925E-05         TEMP
+mix       AXBLA     Mn55j311  3.57689E-04         TEMP
+mix       AXBLA     Fe54j311  8.10672E-04         TEMP
+mix       AXBLA     Fe56j311  1.22719E-02         TEMP
+mix       AXBLA     Fe57j311  2.78430E-04         TEMP
+mix       AXBLA     Fe58j311  3.64157E-05         TEMP
+mix       AXBLA     Ni58j311  1.90158E-03         TEMP
+mix       AXBLA     Ni60j311  7.08094E-04         TEMP
+mix       AXBLA     Ni61j311  3.02751E-05         TEMP
+mix       AXBLA     Ni62j311  9.49787E-05         TEMP
+mix       AXBLA     Ni64j311  2.34285E-05         TEMP
+mix       AXBLA     Mo92j311  4.56867E-05         TEMP
+mix       AXBLA     Mo94j311  2.81581E-05         TEMP
+mix       AXBLA     Mo95j311  4.82317E-05         TEMP
+mix       AXBLA     Mo96j311  5.02304E-05         TEMP
+mix       AXBLA     Mo97j311  2.86281E-05         TEMP
+mix       AXBLA     Mo98j311  7.19904E-05         TEMP
+mix       AXBLA     Mo100j311 2.84042E-05         TEMP
+mix       AXBLA     Na23j311  8.08239E-03         TEMP
+mix       AXBLA     He4j311   3.51983E-07         TEMP
 *
-* Blanket in radial blanket assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       RADBLA    U235j311  3.17638E-05         TEMP
-mix       RADBLA    U238j311  1.25137E-02         TEMP
-mix       RADBLA    O16j311   2.48400E-02         TEMP
-mix       RADBLA    C0j311    3.67247E-05         TEMP
-mix       RADBLA    Si28j311  1.74326E-04         TEMP
-mix       RADBLA    Si29j311  8.55039E-06         TEMP
-mix       RADBLA    Si30j311  5.45531E-06         TEMP
-mix       RADBLA    P31j311   8.53686E-06         TEMP
-mix       RADBLA    Ti46j311  6.32956E-06         TEMP
-mix       RADBLA    Ti47j311  5.58665E-06         TEMP
-mix       RADBLA    Ti48j311  5.42059E-05         TEMP
-mix       RADBLA    Ti49j311  3.89667E-06         TEMP
-mix       RADBLA    Ti50j311  3.65655E-06         TEMP
-mix       RADBLA    Cr50j311  1.22681E-04         TEMP
-mix       RADBLA    Cr52j311  2.27495E-03         TEMP
-mix       RADBLA    Cr53j311  2.53087E-04         TEMP
-mix       RADBLA    Cr54j311  6.18329E-05         TEMP
-mix       RADBLA    Mn55j311  2.72738E-04         TEMP
-mix       RADBLA    Fe54j311  6.18138E-04         TEMP
-mix       RADBLA    Fe56j311  9.35732E-03         TEMP
-mix       RADBLA    Fe57j311  2.12303E-04         TEMP
-mix       RADBLA    Fe58j311  2.77670E-05         TEMP
-mix       RADBLA    Ni58j311  1.44996E-03         TEMP
-mix       RADBLA    Ni60j311  5.39921E-04         TEMP
-mix       RADBLA    Ni61j311  2.30848E-05         TEMP
-mix       RADBLA    Ni62j311  7.24212E-05         TEMP
-mix       RADBLA    Ni64j311  1.78642E-05         TEMP
-mix       RADBLA    Mo92j311  3.48360E-05         TEMP
-mix       RADBLA    Mo94j311  2.14706E-05         TEMP
-mix       RADBLA    Mo95j311  3.67766E-05         TEMP
-mix       RADBLA    Mo96j311  3.83006E-05         TEMP
-mix       RADBLA    Mo97j311  2.18289E-05         TEMP
-mix       RADBLA    Mo98j311  5.48928E-05         TEMP
-mix       RADBLA    Mo100j311 2.16582E-05         TEMP
-mix       RADBLA    Na23j311  6.23637E-03         TEMP
-mix       RADBLA    He4j311   1.72332E-07         TEMP
+* Fertile in radial blanket SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       RADBLA    U235j311  3.12464E-05         TEMP
+mix       RADBLA    U238j311  1.23098E-02         TEMP
+mix       RADBLA    O16j311   2.44353E-02         TEMP
+mix       RADBLA    C0j311    3.70048E-05         TEMP
+mix       RADBLA    Si28j311  1.75655E-04         TEMP
+mix       RADBLA    Si29j311  8.61562E-06         TEMP
+mix       RADBLA    Si30j311  5.49692E-06         TEMP
+mix       RADBLA    P31j311   8.60199E-06         TEMP
+mix       RADBLA    Ti46j311  6.37784E-06         TEMP
+mix       RADBLA    Ti47j311  5.62927E-06         TEMP
+mix       RADBLA    Ti48j311  5.46194E-05         TEMP
+mix       RADBLA    Ti49j311  3.92639E-06         TEMP
+mix       RADBLA    Ti50j311  3.68444E-06         TEMP
+mix       RADBLA    Cr50j311  1.23617E-04         TEMP
+mix       RADBLA    Cr52j311  2.29230E-03         TEMP
+mix       RADBLA    Cr53j311  2.55017E-04         TEMP
+mix       RADBLA    Cr54j311  6.23047E-05         TEMP
+mix       RADBLA    Mn55j311  2.74818E-04         TEMP
+mix       RADBLA    Fe54j311  6.22852E-04         TEMP
+mix       RADBLA    Fe56j311  9.42870E-03         TEMP
+mix       RADBLA    Fe57j311  2.13922E-04         TEMP
+mix       RADBLA    Fe58j311  2.79788E-05         TEMP
+mix       RADBLA    Ni58j311  1.46102E-03         TEMP
+mix       RADBLA    Ni60j311  5.44040E-04         TEMP
+mix       RADBLA    Ni61j311  2.32608E-05         TEMP
+mix       RADBLA    Ni62j311  7.29737E-05         TEMP
+mix       RADBLA    Ni64j311  1.80005E-05         TEMP
+mix       RADBLA    Mo92j311  3.51018E-05         TEMP
+mix       RADBLA    Mo94j311  2.16343E-05         TEMP
+mix       RADBLA    Mo95j311  3.70572E-05         TEMP
+mix       RADBLA    Mo96j311  3.85928E-05         TEMP
+mix       RADBLA    Mo97j311  2.19954E-05         TEMP
+mix       RADBLA    Mo98j311  5.53114E-05         TEMP
+mix       RADBLA    Mo100j311 2.18234E-05         TEMP
+mix       RADBLA    Na23j311  6.16563E-03         TEMP
+mix       RADBLA    He4j311   2.52433E-07         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       SHIELD    Si28j311  4.23000E-04         TEMP
-mix       SHIELD    Si29j311  2.14000E-05         TEMP
-mix       SHIELD    Si30j311  1.42000E-05         TEMP
-mix       SHIELD    Ti46j311  1.57000E-05         TEMP
-mix       SHIELD    Ti47j311  1.43000E-05         TEMP
-mix       SHIELD    Ti48j311  1.44000E-04         TEMP
-mix       SHIELD    Ti49j311  1.08000E-05         TEMP
-mix       SHIELD    Ti50j311  1.06000E-05         TEMP
-mix       SHIELD    Cr50j311  3.32910E-04         TEMP
-mix       SHIELD    Cr52j311  6.41983E-03         TEMP
-mix       SHIELD    Cr53j311  7.27957E-04         TEMP
-mix       SHIELD    Cr54j311  1.81204E-04         TEMP
-mix       SHIELD    Mn55j311  6.39840E-04         TEMP
-mix       SHIELD    Fe54j311  1.54425E-03         TEMP
-mix       SHIELD    Fe56j311  2.44205E-02         TEMP
-mix       SHIELD    Fe57j311  5.85750E-04         TEMP
-mix       SHIELD    Fe58j311  7.45500E-05         TEMP
-mix       SHIELD    Ni58j311  3.80428E-03         TEMP
-mix       SHIELD    Ni60j311  1.46539E-03         TEMP
-mix       SHIELD    Ni61j311  6.37055E-06         TEMP
-mix       SHIELD    Ni62j311  2.03075E-04         TEMP
-mix       SHIELD    Ni64j311  5.17467E-05         TEMP
-mix       SHIELD    Mo92j311  9.96832E-05         TEMP
-mix       SHIELD    Mo94j311  6.21341E-05         TEMP
-mix       SHIELD    Mo95j311  1.06938E-04         TEMP
-mix       SHIELD    Mo96j311  1.12043E-04         TEMP
-mix       SHIELD    Mo97j311  6.41493E-05         TEMP
-mix       SHIELD    Mo98j311  1.62086E-04         TEMP
-mix       SHIELD    Mo100j311 6.46866E-05         TEMP
-mix       SHIELD    Cu63j311  8.93000E-05         TEMP
-mix       SHIELD    Cu65j311  3.98000E-05         TEMP
-mix       SHIELD    Na23j311  1.09310E-02         TEMP
+* Shielding
+*****     id        isoid     numdens_180C        sigtemp
+mix       SHIELD    Si28j311  4.19744E-04         TEMP
+mix       SHIELD    Si29j311  2.12353E-05         TEMP
+mix       SHIELD    Si30j311  1.40907E-05         TEMP
+mix       SHIELD    Ti46j311  1.55791E-05         TEMP
+mix       SHIELD    Ti47j311  1.41899E-05         TEMP
+mix       SHIELD    Ti48j311  1.42891E-04         TEMP
+mix       SHIELD    Ti49j311  1.07169E-05         TEMP
+mix       SHIELD    Ti50j311  1.05184E-05         TEMP
+mix       SHIELD    Cr50j311  3.30347E-04         TEMP
+mix       SHIELD    Cr52j311  6.37041E-03         TEMP
+mix       SHIELD    Cr53j311  7.22353E-04         TEMP
+mix       SHIELD    Cr54j311  1.79809E-04         TEMP
+mix       SHIELD    Mn55j311  6.34914E-04         TEMP
+mix       SHIELD    Fe54j311  1.53236E-03         TEMP
+mix       SHIELD    Fe56j311  2.42325E-02         TEMP
+mix       SHIELD    Fe57j311  5.81241E-04         TEMP
+mix       SHIELD    Fe58j311  7.39761E-05         TEMP
+mix       SHIELD    Ni58j311  3.77499E-03         TEMP
+mix       SHIELD    Ni60j311  1.45411E-03         TEMP
+mix       SHIELD    Ni61j311  6.32151E-06         TEMP
+mix       SHIELD    Ni62j311  2.01512E-04         TEMP
+mix       SHIELD    Ni64j311  5.13483E-05         TEMP
+mix       SHIELD    Mo92j311  9.89158E-05         TEMP
+mix       SHIELD    Mo94j311  6.16558E-05         TEMP
+mix       SHIELD    Mo95j311  1.06115E-04         TEMP
+mix       SHIELD    Mo96j311  1.11180E-04         TEMP
+mix       SHIELD    Mo97j311  6.36555E-05         TEMP
+mix       SHIELD    Mo98j311  1.60838E-04         TEMP
+mix       SHIELD    Mo100j311 6.41886E-05         TEMP
+mix       SHIELD    Cu63j311  8.86126E-05         TEMP
+mix       SHIELD    Cu65j311  3.94936E-05         TEMP
+mix       SHIELD    Na23j311  1.08469E-02         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       DILUENT   Si28j311  6.22000E-04         TEMP
-mix       DILUENT   Si29j311  3.15000E-05         TEMP
-mix       DILUENT   Si30j311  2.09000E-05         TEMP
-mix       DILUENT   Ti46j311  2.30000E-05         TEMP
-mix       DILUENT   Ti47j311  2.10000E-05         TEMP
-mix       DILUENT   Ti48j311  2.12000E-04         TEMP
-mix       DILUENT   Ti49j311  1.58000E-05         TEMP
-mix       DILUENT   Ti50j311  1.55000E-05         TEMP
-mix       DILUENT   Cr50j311  2.19418E-04         TEMP
-mix       DILUENT   Cr52j311  4.23704E-03         TEMP
-mix       DILUENT   Cr53j311  4.80447E-04         TEMP
-mix       DILUENT   Cr54j311  1.19593E-04         TEMP
-mix       DILUENT   Mn55j311  9.40570E-04         TEMP
-mix       DILUENT   Fe54j311  1.01918E-03         TEMP
-mix       DILUENT   Fe56j311  1.61170E-02         TEMP
-mix       DILUENT   Fe57j311  3.86584E-04         TEMP
-mix       DILUENT   Fe58j311  4.92016E-05         TEMP
-mix       DILUENT   Ni58j311  2.51082E-03         TEMP
-mix       DILUENT   Ni60j311  9.64157E-04         TEMP
-mix       DILUENT   Ni61j311  4.20455E-06         TEMP
-mix       DILUENT   Ni62j311  1.34029E-04         TEMP
-mix       DILUENT   Ni64j311  3.41527E-05         TEMP
-mix       DILUENT   Mo92j311  6.57917E-05         TEMP
-mix       DILUENT   Mo94j311  4.10090E-05         TEMP
-mix       DILUENT   Mo95j311  7.05797E-05         TEMP
-mix       DILUENT   Mo96j311  7.39491E-05         TEMP
-mix       DILUENT   Mo97j311  4.23390E-05         TEMP
-mix       DILUENT   Mo98j311  1.06978E-04         TEMP
-mix       DILUENT   Mo100j311 4.26936E-05         TEMP
-mix       DILUENT   Cu63j311  1.31000E-04         TEMP
-mix       DILUENT   Cu65j311  5.85000E-05         TEMP
-mix       DILUENT   Na23j311  5.76350E-03         TEMP
+* Diluent
+*****     id        isoid     numdens_180C        sigtemp
+mix       DILUENT   Si28j311  6.17212E-04         TEMP
+mix       DILUENT   Si29j311  3.12575E-05         TEMP
+mix       DILUENT   Si30j311  2.07391E-05         TEMP
+mix       DILUENT   Ti46j311  2.28229E-05         TEMP
+mix       DILUENT   Ti47j311  2.08383E-05         TEMP
+mix       DILUENT   Ti48j311  2.10368E-04         TEMP
+mix       DILUENT   Ti49j311  1.56784E-05         TEMP
+mix       DILUENT   Ti50j311  1.53807E-05         TEMP
+mix       DILUENT   Cr50j311  2.17729E-04         TEMP
+mix       DILUENT   Cr52j311  4.20442E-03         TEMP
+mix       DILUENT   Cr53j311  4.76748E-04         TEMP
+mix       DILUENT   Cr54j311  1.18672E-04         TEMP
+mix       DILUENT   Mn55j311  9.33329E-04         TEMP
+mix       DILUENT   Fe54j311  1.01133E-03         TEMP
+mix       DILUENT   Fe56j311  1.59929E-02         TEMP
+mix       DILUENT   Fe57j311  3.83608E-04         TEMP
+mix       DILUENT   Fe58j311  4.88228E-05         TEMP
+mix       DILUENT   Ni58j311  2.49149E-03         TEMP
+mix       DILUENT   Ni60j311  9.56735E-04         TEMP
+mix       DILUENT   Ni61j311  4.17218E-06         TEMP
+mix       DILUENT   Ni62j311  1.32997E-04         TEMP
+mix       DILUENT   Ni64j311  3.38898E-05         TEMP
+mix       DILUENT   Mo92j311  6.52852E-05         TEMP
+mix       DILUENT   Mo94j311  4.06933E-05         TEMP
+mix       DILUENT   Mo95j311  7.00364E-05         TEMP
+mix       DILUENT   Mo96j311  7.33798E-05         TEMP
+mix       DILUENT   Mo97j311  4.20131E-05         TEMP
+mix       DILUENT   Mo98j311  1.06154E-04         TEMP
+mix       DILUENT   Mo100j311 4.23649E-05         TEMP
+mix       DILUENT   Cu63j311  1.29992E-04         TEMP
+mix       DILUENT   Cu65j311  5.80497E-05         TEMP
+mix       DILUENT   Na23j311  5.71913E-03         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       EMPTY     C0j311    1.88831E-05         TEMP
-mix       EMPTY     Si28j311  8.96345E-05         TEMP
-mix       EMPTY     Si29j311  4.39643E-06         TEMP
-mix       EMPTY     Si30j311  2.80500E-06         TEMP
-mix       EMPTY     P31j311   4.38947E-06         TEMP
-mix       EMPTY     Ti46j311  3.25452E-06         TEMP
-mix       EMPTY     Ti47j311  2.87253E-06         TEMP
-mix       EMPTY     Ti48j311  2.78715E-05         TEMP
-mix       EMPTY     Ti49j311  2.00358E-06         TEMP
-mix       EMPTY     Ti50j311  1.88012E-06         TEMP
-mix       EMPTY     Cr50j311  6.30802E-05         TEMP
-mix       EMPTY     Cr52j311  1.16973E-03         TEMP
-mix       EMPTY     Cr53j311  1.30132E-04         TEMP
-mix       EMPTY     Cr54j311  3.17932E-05         TEMP
-mix       EMPTY     Mn55j311  1.40236E-04         TEMP
-mix       EMPTY     Fe54j311  3.17833E-04         TEMP
-mix       EMPTY     Fe56j311  4.81133E-03         TEMP
-mix       EMPTY     Fe57j311  1.09162E-04         TEMP
-mix       EMPTY     Fe58j311  1.42772E-05         TEMP
-mix       EMPTY     Ni58j311  7.45537E-04         TEMP
-mix       EMPTY     Ni60j311  2.77616E-04         TEMP
-mix       EMPTY     Ni61j311  1.18697E-05         TEMP
-mix       EMPTY     Ni62j311  3.72374E-05         TEMP
-mix       EMPTY     Ni64j311  9.18540E-06         TEMP
-mix       EMPTY     Mo92j311  1.79119E-05         TEMP
-mix       EMPTY     Mo94j311  1.10397E-05         TEMP
-mix       EMPTY     Mo95j311  1.89097E-05         TEMP
-mix       EMPTY     Mo96j311  1.96933E-05         TEMP
-mix       EMPTY     Mo97j311  1.12239E-05         TEMP
-mix       EMPTY     Mo98j311  2.82247E-05         TEMP
-mix       EMPTY     Mo100j311 1.11362E-05         TEMP
-mix       EMPTY     Na23j311  2.15216E-02         TEMP
+* Empty assembly
+*****     id        isoid     numdens_180C        sigtemp
+mix       EMPTY     C0j311    1.87379E-05         TEMP
+mix       EMPTY     Si28j311  8.89455E-05         TEMP
+mix       EMPTY     Si29j311  4.36264E-06         TEMP
+mix       EMPTY     Si30j311  2.78344E-06         TEMP
+mix       EMPTY     P31j311   4.35573E-06         TEMP
+mix       EMPTY     Ti46j311  3.22951E-06         TEMP
+mix       EMPTY     Ti47j311  2.85046E-06         TEMP
+mix       EMPTY     Ti48j311  2.76573E-05         TEMP
+mix       EMPTY     Ti49j311  1.98818E-06         TEMP
+mix       EMPTY     Ti50j311  1.86567E-06         TEMP
+mix       EMPTY     Cr50j311  6.25953E-05         TEMP
+mix       EMPTY     Cr52j311  1.16074E-03         TEMP
+mix       EMPTY     Cr53j311  1.29132E-04         TEMP
+mix       EMPTY     Cr54j311  3.15488E-05         TEMP
+mix       EMPTY     Mn55j311  1.39158E-04         TEMP
+mix       EMPTY     Fe54j311  3.15390E-04         TEMP
+mix       EMPTY     Fe56j311  4.77435E-03         TEMP
+mix       EMPTY     Fe57j311  1.08322E-04         TEMP
+mix       EMPTY     Fe58j311  1.41674E-05         TEMP
+mix       EMPTY     Ni58j311  7.39806E-04         TEMP
+mix       EMPTY     Ni60j311  2.75482E-04         TEMP
+mix       EMPTY     Ni61j311  1.17784E-05         TEMP
+mix       EMPTY     Ni62j311  3.69512E-05         TEMP
+mix       EMPTY     Ni64j311  9.11479E-06         TEMP
+mix       EMPTY     Mo92j311  1.77743E-05         TEMP
+mix       EMPTY     Mo94j311  1.09549E-05         TEMP
+mix       EMPTY     Mo95j311  1.87644E-05         TEMP
+mix       EMPTY     Mo96j311  1.95420E-05         TEMP
+mix       EMPTY     Mo97j311  1.11377E-05         TEMP
+mix       EMPTY     Mo98j311  2.80077E-05         TEMP
+mix       EMPTY     Mo100j311 1.10506E-05         TEMP
+mix       EMPTY     Na23j311  2.15211E-02         TEMP
 *
-* Fuel pin plug in fissile assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       PLUG1     C0j311    1.29435E-04         TEMP
-mix       PLUG1     Si28j311  6.14405E-04         TEMP
-mix       PLUG1     Si29j311  3.01355E-05         TEMP
-mix       PLUG1     Si30j311  1.92270E-05         TEMP
-mix       PLUG1     P31j311   3.00879E-05         TEMP
-mix       PLUG1     Ti46j311  2.23083E-05         TEMP
-mix       PLUG1     Ti47j311  1.96899E-05         TEMP
-mix       PLUG1     Ti48j311  1.91047E-04         TEMP
-mix       PLUG1     Ti49j311  1.37337E-05         TEMP
-mix       PLUG1     Ti50j311  1.28874E-05         TEMP
-mix       PLUG1     Cr50j311  4.32387E-04         TEMP
-mix       PLUG1     Cr52j311  8.01799E-03         TEMP
-mix       PLUG1     Cr53j311  8.91996E-04         TEMP
-mix       PLUG1     Cr54j311  2.17928E-04         TEMP
-mix       PLUG1     Mn55j311  9.61255E-04         TEMP
-mix       PLUG1     Fe54j311  2.17861E-03         TEMP
-mix       PLUG1     Fe56j311  3.29795E-02         TEMP
-mix       PLUG1     Fe57j311  7.48256E-04         TEMP
-mix       PLUG1     Fe58j311  9.78638E-05         TEMP
-mix       PLUG1     Ni58j311  5.11033E-03         TEMP
-mix       PLUG1     Ni60j311  1.90293E-03         TEMP
-mix       PLUG1     Ni61j311  8.13615E-05         TEMP
-mix       PLUG1     Ni62j311  2.55246E-04         TEMP
-mix       PLUG1     Ni64j311  6.29618E-05         TEMP
-mix       PLUG1     Mo92j311  1.22778E-04         TEMP
-mix       PLUG1     Mo94j311  7.56724E-05         TEMP
-mix       PLUG1     Mo95j311  1.29618E-04         TEMP
-mix       PLUG1     Mo96j311  1.34989E-04         TEMP
-mix       PLUG1     Mo97j311  7.69350E-05         TEMP
-mix       PLUG1     Mo98j311  1.93468E-04         TEMP
-mix       PLUG1     Mo100j311 7.63336E-05         TEMP
-mix       PLUG1     Na23j311  8.34742E-03         TEMP
+* Fuel pin plug in fissile SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       PLUG1     C0j311    1.30623E-04         TEMP
+mix       PLUG1     Si28j311  6.20043E-04         TEMP
+mix       PLUG1     Si29j311  3.04121E-05         TEMP
+mix       PLUG1     Si30j311  1.94035E-05         TEMP
+mix       PLUG1     P31j311   3.03640E-05         TEMP
+mix       PLUG1     Ti46j311  2.25130E-05         TEMP
+mix       PLUG1     Ti47j311  1.98706E-05         TEMP
+mix       PLUG1     Ti48j311  1.92800E-04         TEMP
+mix       PLUG1     Ti49j311  1.38597E-05         TEMP
+mix       PLUG1     Ti50j311  1.30056E-05         TEMP
+mix       PLUG1     Cr50j311  4.36354E-04         TEMP
+mix       PLUG1     Cr52j311  8.09154E-03         TEMP
+mix       PLUG1     Cr53j311  9.00182E-04         TEMP
+mix       PLUG1     Cr54j311  2.19928E-04         TEMP
+mix       PLUG1     Mn55j311  9.70076E-04         TEMP
+mix       PLUG1     Fe54j311  2.19859E-03         TEMP
+mix       PLUG1     Fe56j311  3.32822E-02         TEMP
+mix       PLUG1     Fe57j311  7.55120E-04         TEMP
+mix       PLUG1     Fe58j311  9.87618E-05         TEMP
+mix       PLUG1     Ni58j311  5.15722E-03         TEMP
+mix       PLUG1     Ni60j311  1.92040E-03         TEMP
+mix       PLUG1     Ni61j311  8.21080E-05         TEMP
+mix       PLUG1     Ni62j311  2.57588E-04         TEMP
+mix       PLUG1     Ni64j311  6.35396E-05         TEMP
+mix       PLUG1     Mo92j311  1.23905E-04         TEMP
+mix       PLUG1     Mo94j311  7.63667E-05         TEMP
+mix       PLUG1     Mo95j311  1.30808E-04         TEMP
+mix       PLUG1     Mo96j311  1.36228E-04         TEMP
+mix       PLUG1     Mo97j311  7.76412E-05         TEMP
+mix       PLUG1     Mo98j311  1.95243E-04         TEMP
+mix       PLUG1     Mo100j311 7.70340E-05         TEMP
+mix       PLUG1     Na23j311  8.08239E-03         TEMP
 *
-* Fuel pin plug in blanket assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       PLUG2     C0j311    1.47150E-04         TEMP
-mix       PLUG2     Si28j311  6.98494E-04         TEMP
-mix       PLUG2     Si29j311  3.42600E-05         TEMP
-mix       PLUG2     Si30j311  2.18585E-05         TEMP
-mix       PLUG2     P31j311   3.42058E-05         TEMP
-mix       PLUG2     Ti46j311  2.53615E-05         TEMP
-mix       PLUG2     Ti47j311  2.23848E-05         TEMP
-mix       PLUG2     Ti48j311  2.17194E-04         TEMP
-mix       PLUG2     Ti49j311  1.56133E-05         TEMP
-mix       PLUG2     Ti50j311  1.46512E-05         TEMP
-mix       PLUG2     Cr50j311  4.91565E-04         TEMP
-mix       PLUG2     Cr52j311  9.11537E-03         TEMP
-mix       PLUG2     Cr53j311  1.01408E-03         TEMP
-mix       PLUG2     Cr54j311  2.47755E-04         TEMP
-mix       PLUG2     Mn55j311  1.09282E-03         TEMP
-mix       PLUG2     Fe54j311  2.47678E-03         TEMP
-mix       PLUG2     Fe56j311  3.74932E-02         TEMP
-mix       PLUG2     Fe57j311  8.50666E-04         TEMP
-mix       PLUG2     Fe58j311  1.11258E-04         TEMP
-mix       PLUG2     Ni58j311  5.80975E-03         TEMP
-mix       PLUG2     Ni60j311  2.16338E-03         TEMP
-mix       PLUG2     Ni61j311  9.24970E-05         TEMP
-mix       PLUG2     Ni62j311  2.90180E-04         TEMP
-mix       PLUG2     Ni64j311  7.15790E-05         TEMP
-mix       PLUG2     Mo92j311  1.39582E-04         TEMP
-mix       PLUG2     Mo94j311  8.60292E-05         TEMP
-mix       PLUG2     Mo95j311  1.47358E-04         TEMP
-mix       PLUG2     Mo96j311  1.53464E-04         TEMP
-mix       PLUG2     Mo97j311  8.74647E-05         TEMP
-mix       PLUG2     Mo98j311  2.19946E-04         TEMP
-mix       PLUG2     Mo100j311 8.67809E-05         TEMP
-mix       PLUG2     Na23j311  6.23637E-03         TEMP
+* Fuel pin plug in blanket SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       PLUG2     C0j311    1.46581E-04         TEMP
+mix       PLUG2     Si28j311  6.95793E-04         TEMP
+mix       PLUG2     Si29j311  3.41275E-05         TEMP
+mix       PLUG2     Si30j311  2.17740E-05         TEMP
+mix       PLUG2     P31j311   3.40735E-05         TEMP
+mix       PLUG2     Ti46j311  2.52634E-05         TEMP
+mix       PLUG2     Ti47j311  2.22982E-05         TEMP
+mix       PLUG2     Ti48j311  2.16354E-04         TEMP
+mix       PLUG2     Ti49j311  1.55529E-05         TEMP
+mix       PLUG2     Ti50j311  1.45945E-05         TEMP
+mix       PLUG2     Cr50j311  4.89663E-04         TEMP
+mix       PLUG2     Cr52j311  9.08008E-03         TEMP
+mix       PLUG2     Cr53j311  1.01016E-03         TEMP
+mix       PLUG2     Cr54j311  2.46796E-04         TEMP
+mix       PLUG2     Mn55j311  1.08859E-03         TEMP
+mix       PLUG2     Fe54j311  2.46719E-03         TEMP
+mix       PLUG2     Fe56j311  3.73482E-02         TEMP
+mix       PLUG2     Fe57j311  8.47372E-04         TEMP
+mix       PLUG2     Fe58j311  1.10827E-04         TEMP
+mix       PLUG2     Ni58j311  5.78727E-03         TEMP
+mix       PLUG2     Ni60j311  2.15501E-03         TEMP
+mix       PLUG2     Ni61j311  9.21391E-05         TEMP
+mix       PLUG2     Ni62j311  2.89058E-04         TEMP
+mix       PLUG2     Ni64j311  7.13022E-05         TEMP
+mix       PLUG2     Mo92j311  1.39043E-04         TEMP
+mix       PLUG2     Mo94j311  8.56964E-05         TEMP
+mix       PLUG2     Mo95j311  1.46788E-04         TEMP
+mix       PLUG2     Mo96j311  1.52871E-04         TEMP
+mix       PLUG2     Mo97j311  8.71265E-05         TEMP
+mix       PLUG2     Mo98j311  2.19095E-04         TEMP
+mix       PLUG2     Mo100j311 8.64451E-05         TEMP
+mix       PLUG2     Na23j311  6.16563E-03         TEMP
 *
-* Fuel pellet support in fissile assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       SUPPOR1   C0j311    9.11817E-05         TEMP
-mix       SUPPOR1   Si28j311  4.32823E-04         TEMP
-mix       SUPPOR1   Si29j311  2.12293E-05         TEMP
-mix       SUPPOR1   Si30j311  1.35447E-05         TEMP
-mix       SUPPOR1   P31j311   2.11957E-05         TEMP
-mix       SUPPOR1   Ti46j311  1.57153E-05         TEMP
-mix       SUPPOR1   Ti47j311  1.38708E-05         TEMP
-mix       SUPPOR1   Ti48j311  1.34585E-04         TEMP
-mix       SUPPOR1   Ti49j311  9.67481E-06         TEMP
-mix       SUPPOR1   Ti50j311  9.07863E-06         TEMP
-mix       SUPPOR1   Cr50j311  3.04599E-04         TEMP
-mix       SUPPOR1   Cr52j311  5.64835E-03         TEMP
-mix       SUPPOR1   Cr53j311  6.28375E-04         TEMP
-mix       SUPPOR1   Cr54j311  1.53521E-04         TEMP
-mix       SUPPOR1   Mn55j311  6.77165E-04         TEMP
-mix       SUPPOR1   Fe54j311  1.53474E-03         TEMP
-mix       SUPPOR1   Fe56j311  2.32327E-02         TEMP
-mix       SUPPOR1   Fe57j311  5.27116E-04         TEMP
-mix       SUPPOR1   Fe58j311  6.89411E-05         TEMP
-mix       SUPPOR1   Ni58j311  3.60002E-03         TEMP
-mix       SUPPOR1   Ni60j311  1.34054E-03         TEMP
-mix       SUPPOR1   Ni61j311  5.73159E-05         TEMP
-mix       SUPPOR1   Ni62j311  1.79811E-04         TEMP
-mix       SUPPOR1   Ni64j311  4.43541E-05         TEMP
-mix       SUPPOR1   Mo92j311  8.64924E-05         TEMP
-mix       SUPPOR1   Mo94j311  5.33081E-05         TEMP
-mix       SUPPOR1   Mo95j311  9.13106E-05         TEMP
-mix       SUPPOR1   Mo96j311  9.50944E-05         TEMP
-mix       SUPPOR1   Mo97j311  5.41976E-05         TEMP
-mix       SUPPOR1   Mo98j311  1.36290E-04         TEMP
-mix       SUPPOR1   Mo100j311 5.37739E-05         TEMP
-mix       SUPPOR1   Na23j311  8.34742E-03         TEMP
-mix       SUPPOR1   He4j311   1.91762E-06         TEMP
+* Pellet support in fissile SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       SUPPOR1   C0j311    9.28648E-05         TEMP
+mix       SUPPOR1   Si28j311  4.40813E-04         TEMP
+mix       SUPPOR1   Si29j311  2.16212E-05         TEMP
+mix       SUPPOR1   Si30j311  1.37947E-05         TEMP
+mix       SUPPOR1   P31j311   2.15870E-05         TEMP
+mix       SUPPOR1   Ti46j311  1.60054E-05         TEMP
+mix       SUPPOR1   Ti47j311  1.41268E-05         TEMP
+mix       SUPPOR1   Ti48j311  1.37069E-04         TEMP
+mix       SUPPOR1   Ti49j311  9.85340E-06         TEMP
+mix       SUPPOR1   Ti50j311  9.24623E-06         TEMP
+mix       SUPPOR1   Cr50j311  3.10221E-04         TEMP
+mix       SUPPOR1   Cr52j311  5.75260E-03         TEMP
+mix       SUPPOR1   Cr53j311  6.39975E-04         TEMP
+mix       SUPPOR1   Cr54j311  1.56356E-04         TEMP
+mix       SUPPOR1   Mn55j311  6.89665E-04         TEMP
+mix       SUPPOR1   Fe54j311  1.56307E-03         TEMP
+mix       SUPPOR1   Fe56j311  2.36616E-02         TEMP
+mix       SUPPOR1   Fe57j311  5.36845E-04         TEMP
+mix       SUPPOR1   Fe58j311  7.02137E-05         TEMP
+mix       SUPPOR1   Ni58j311  3.66647E-03         TEMP
+mix       SUPPOR1   Ni60j311  1.36529E-03         TEMP
+mix       SUPPOR1   Ni61j311  5.83739E-05         TEMP
+mix       SUPPOR1   Ni62j311  1.83130E-04         TEMP
+mix       SUPPOR1   Ni64j311  4.51728E-05         TEMP
+mix       SUPPOR1   Mo92j311  8.80891E-05         TEMP
+mix       SUPPOR1   Mo94j311  5.42921E-05         TEMP
+mix       SUPPOR1   Mo95j311  9.29962E-05         TEMP
+mix       SUPPOR1   Mo96j311  9.68499E-05         TEMP
+mix       SUPPOR1   Mo97j311  5.51982E-05         TEMP
+mix       SUPPOR1   Mo98j311  1.38806E-04         TEMP
+mix       SUPPOR1   Mo100j311 5.47665E-05         TEMP
+mix       SUPPOR1   Na23j311  8.08239E-03         TEMP
+mix       SUPPOR1   He4j311   1.90780E-06         TEMP
 *
-* Fuel pellet support in blanket assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       SUPPOR2   C0j311    1.34305E-04         TEMP
-mix       SUPPOR2   Si28j311  6.37521E-04         TEMP
-mix       SUPPOR2   Si29j311  3.12694E-05         TEMP
-mix       SUPPOR2   Si30j311  1.99504E-05         TEMP
-mix       SUPPOR2   P31j311   3.12199E-05         TEMP
-mix       SUPPOR2   Ti46j311  2.31476E-05         TEMP
-mix       SUPPOR2   Ti47j311  2.04307E-05         TEMP
-mix       SUPPOR2   Ti48j311  1.98235E-04         TEMP
-mix       SUPPOR2   Ti49j311  1.42504E-05         TEMP
-mix       SUPPOR2   Ti50j311  1.33722E-05         TEMP
-mix       SUPPOR2   Cr50j311  4.48655E-04         TEMP
-mix       SUPPOR2   Cr52j311  8.31966E-03         TEMP
-mix       SUPPOR2   Cr53j311  9.25557E-04         TEMP
-mix       SUPPOR2   Cr54j311  2.26127E-04         TEMP
-mix       SUPPOR2   Mn55j311  9.97421E-04         TEMP
-mix       SUPPOR2   Fe54j311  2.26057E-03         TEMP
-mix       SUPPOR2   Fe56j311  3.42203E-02         TEMP
-mix       SUPPOR2   Fe57j311  7.76408E-04         TEMP
-mix       SUPPOR2   Fe58j311  1.01546E-04         TEMP
-mix       SUPPOR2   Ni58j311  5.30260E-03         TEMP
-mix       SUPPOR2   Ni60j311  1.97453E-03         TEMP
-mix       SUPPOR2   Ni61j311  8.44226E-05         TEMP
-mix       SUPPOR2   Ni62j311  2.64849E-04         TEMP
-mix       SUPPOR2   Ni64j311  6.53307E-05         TEMP
-mix       SUPPOR2   Mo92j311  1.27398E-04         TEMP
-mix       SUPPOR2   Mo94j311  7.85194E-05         TEMP
-mix       SUPPOR2   Mo95j311  1.34495E-04         TEMP
-mix       SUPPOR2   Mo96j311  1.40068E-04         TEMP
-mix       SUPPOR2   Mo97j311  7.98296E-05         TEMP
-mix       SUPPOR2   Mo98j311  2.00747E-04         TEMP
-mix       SUPPOR2   Mo100j311 7.92055E-05         TEMP
-mix       SUPPOR2   Na23j311  6.23637E-03         TEMP
-mix       SUPPOR1   He4j311   6.43924E-07         TEMP
+* Pellet support in blanket SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       SUPPOR2   C0j311    1.33902E-04         TEMP
+mix       SUPPOR2   Si28j311  6.35609E-04         TEMP
+mix       SUPPOR2   Si29j311  3.11756E-05         TEMP
+mix       SUPPOR2   Si30j311  1.98906E-05         TEMP
+mix       SUPPOR2   P31j311   3.11263E-05         TEMP
+mix       SUPPOR2   Ti46j311  2.30782E-05         TEMP
+mix       SUPPOR2   Ti47j311  2.03695E-05         TEMP
+mix       SUPPOR2   Ti48j311  1.97640E-04         TEMP
+mix       SUPPOR2   Ti49j311  1.42076E-05         TEMP
+mix       SUPPOR2   Ti50j311  1.33321E-05         TEMP
+mix       SUPPOR2   Cr50j311  4.47309E-04         TEMP
+mix       SUPPOR2   Cr52j311  8.29468E-03         TEMP
+mix       SUPPOR2   Cr53j311  9.22780E-04         TEMP
+mix       SUPPOR2   Cr54j311  2.25449E-04         TEMP
+mix       SUPPOR2   Mn55j311  9.94429E-04         TEMP
+mix       SUPPOR2   Fe54j311  2.25379E-03         TEMP
+mix       SUPPOR2   Fe56j311  3.41177E-02         TEMP
+mix       SUPPOR2   Fe57j311  7.74077E-04         TEMP
+mix       SUPPOR2   Fe58j311  1.01241E-04         TEMP
+mix       SUPPOR2   Ni58j311  5.28669E-03         TEMP
+mix       SUPPOR2   Ni60j311  1.96861E-03         TEMP
+mix       SUPPOR2   Ni61j311  8.41693E-05         TEMP
+mix       SUPPOR2   Ni62j311  2.64055E-04         TEMP
+mix       SUPPOR2   Ni64j311  6.51347E-05         TEMP
+mix       SUPPOR2   Mo92j311  1.27016E-04         TEMP
+mix       SUPPOR2   Mo94j311  7.82839E-05         TEMP
+mix       SUPPOR2   Mo95j311  1.34091E-04         TEMP
+mix       SUPPOR2   Mo96j311  1.39648E-04         TEMP
+mix       SUPPOR2   Mo97j311  7.95903E-05         TEMP
+mix       SUPPOR2   Mo98j311  2.00144E-04         TEMP
+mix       SUPPOR2   Mo100j311 7.89679E-05         TEMP
+mix       SUPPOR2   Na23j311  6.16563E-03         TEMP
+mix       SUPPOR1   He4j311   6.40627E-07         TEMP
 *
-* Gas plenum in fissile assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       GASPLE1   C0j311    4.63230E-05         TEMP
-mix       GASPLE1   Si28j311  2.19887E-04         TEMP
-mix       GASPLE1   Si29j311  1.07851E-05         TEMP
-mix       GASPLE1   Si30j311  6.88110E-06         TEMP
-mix       GASPLE1   P31j311   1.07680E-05         TEMP
-mix       GASPLE1   Ti46j311  7.98385E-06         TEMP
-mix       GASPLE1   Ti47j311  7.04676E-06         TEMP
-mix       GASPLE1   Ti48j311  6.83730E-05         TEMP
-mix       GASPLE1   Ti49j311  4.91510E-06         TEMP
-mix       GASPLE1   Ti50j311  4.61222E-06         TEMP
-mix       GASPLE1   Cr50j311  1.54745E-04         TEMP
-mix       GASPLE1   Cr52j311  2.86953E-03         TEMP
-mix       GASPLE1   Cr53j311  3.19234E-04         TEMP
-mix       GASPLE1   Cr54j311  7.79935E-05         TEMP
-mix       GASPLE1   Mn55j311  3.44020E-04         TEMP
-mix       GASPLE1   Fe54j311  7.79694E-04         TEMP
-mix       GASPLE1   Fe56j311  1.18029E-02         TEMP
-mix       GASPLE1   Fe57j311  2.67791E-04         TEMP
-mix       GASPLE1   Fe58j311  3.50241E-05         TEMP
-mix       GASPLE1   Ni58j311  1.82892E-03         TEMP
-mix       GASPLE1   Ni60j311  6.81034E-04         TEMP
-mix       GASPLE1   Ni61j311  2.91182E-05         TEMP
-mix       GASPLE1   Ni62j311  9.13491E-05         TEMP
-mix       GASPLE1   Ni64j311  2.25332E-05         TEMP
-mix       GASPLE1   Mo92j311  4.39407E-05         TEMP
-mix       GASPLE1   Mo94j311  2.70821E-05         TEMP
-mix       GASPLE1   Mo95j311  4.63885E-05         TEMP
-mix       GASPLE1   Mo96j311  4.83108E-05         TEMP
-mix       GASPLE1   Mo97j311  2.75340E-05         TEMP
-mix       GASPLE1   Mo98j311  6.92394E-05         TEMP
-mix       GASPLE1   Mo100j311 2.73188E-05         TEMP
-mix       GASPLE1   Na23j311  8.34742E-03         TEMP
-mix       GASPLE1   He4j311   4.16637E-06         TEMP
+* Gas plenum in fissile SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       GASPLE1   C0j311    4.81636E-05         TEMP
+mix       GASPLE1   Si28j311  2.28624E-04         TEMP
+mix       GASPLE1   Si29j311  1.12136E-05         TEMP
+mix       GASPLE1   Si30j311  7.15451E-06         TEMP
+mix       GASPLE1   P31j311   1.11959E-05         TEMP
+mix       GASPLE1   Ti46j311  8.30106E-06         TEMP
+mix       GASPLE1   Ti47j311  7.32676E-06         TEMP
+mix       GASPLE1   Ti48j311  7.10898E-05         TEMP
+mix       GASPLE1   Ti49j311  5.11038E-06         TEMP
+mix       GASPLE1   Ti50j311  4.79548E-06         TEMP
+mix       GASPLE1   Cr50j311  1.60894E-04         TEMP
+mix       GASPLE1   Cr52j311  2.98354E-03         TEMP
+mix       GASPLE1   Cr53j311  3.31917E-04         TEMP
+mix       GASPLE1   Cr54j311  8.10925E-05         TEMP
+mix       GASPLE1   Mn55j311  3.57689E-04         TEMP
+mix       GASPLE1   Fe54j311  8.10672E-04         TEMP
+mix       GASPLE1   Fe56j311  1.22719E-02         TEMP
+mix       GASPLE1   Fe57j311  2.78430E-04         TEMP
+mix       GASPLE1   Fe58j311  3.64157E-05         TEMP
+mix       GASPLE1   Ni58j311  1.90158E-03         TEMP
+mix       GASPLE1   Ni60j311  7.08094E-04         TEMP
+mix       GASPLE1   Ni61j311  3.02751E-05         TEMP
+mix       GASPLE1   Ni62j311  9.49787E-05         TEMP
+mix       GASPLE1   Ni64j311  2.34285E-05         TEMP
+mix       GASPLE1   Mo92j311  4.56867E-05         TEMP
+mix       GASPLE1   Mo94j311  2.81581E-05         TEMP
+mix       GASPLE1   Mo95j311  4.82317E-05         TEMP
+mix       GASPLE1   Mo96j311  5.02304E-05         TEMP
+mix       GASPLE1   Mo97j311  2.86281E-05         TEMP
+mix       GASPLE1   Mo98j311  7.19904E-05         TEMP
+mix       GASPLE1   Mo100j311 2.84042E-05         TEMP
+mix       GASPLE1   Na23j311  8.08239E-03         TEMP
+mix       GASPLE1   He4j311   4.16643E-06         TEMP
 *
-* Gas plenum in blanket assembly
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       GASPLE2   C0j311    4.63230E-05         TEMP
-mix       GASPLE2   Si28j311  2.19887E-04         TEMP
-mix       GASPLE2   Si29j311  1.07851E-05         TEMP
-mix       GASPLE2   Si30j311  6.88110E-06         TEMP
-mix       GASPLE2   P31j311   1.07680E-05         TEMP
-mix       GASPLE2   Ti46j311  7.98385E-06         TEMP
-mix       GASPLE2   Ti47j311  7.04676E-06         TEMP
-mix       GASPLE2   Ti48j311  6.83730E-05         TEMP
-mix       GASPLE2   Ti49j311  4.91510E-06         TEMP
-mix       GASPLE2   Ti50j311  4.61222E-06         TEMP
-mix       GASPLE2   Cr50j311  1.54745E-04         TEMP
-mix       GASPLE2   Cr52j311  2.86953E-03         TEMP
-mix       GASPLE2   Cr53j311  3.19234E-04         TEMP
-mix       GASPLE2   Cr54j311  7.79935E-05         TEMP
-mix       GASPLE2   Mn55j311  3.44020E-04         TEMP
-mix       GASPLE2   Fe54j311  7.79694E-04         TEMP
-mix       GASPLE2   Fe56j311  1.18029E-02         TEMP
-mix       GASPLE2   Fe57j311  2.67791E-04         TEMP
-mix       GASPLE2   Fe58j311  3.50241E-05         TEMP
-mix       GASPLE2   Ni58j311  1.82892E-03         TEMP
-mix       GASPLE2   Ni60j311  6.81034E-04         TEMP
-mix       GASPLE2   Ni61j311  2.91182E-05         TEMP
-mix       GASPLE2   Ni62j311  9.13491E-05         TEMP
-mix       GASPLE2   Ni64j311  2.25332E-05         TEMP
-mix       GASPLE2   Mo92j311  4.39407E-05         TEMP
-mix       GASPLE2   Mo94j311  2.70821E-05         TEMP
-mix       GASPLE2   Mo95j311  4.63885E-05         TEMP
-mix       GASPLE2   Mo96j311  4.83108E-05         TEMP
-mix       GASPLE2   Mo97j311  2.75340E-05         TEMP
-mix       GASPLE2   Mo98j311  6.92394E-05         TEMP
-mix       GASPLE2   Mo100j311 2.73188E-05         TEMP
-mix       GASPLE2   Na23j311  8.34742E-03         TEMP
-mix       GASPLE2   He4j311   5.53557E-06         TEMP
+* Gas plenum in blanket SA
+*****     id        isoid     numdens_180C        sigtemp
+mix       GASPLE2   C0j311    3.70048E-05         TEMP
+mix       GASPLE2   Si28j311  1.75655E-04         TEMP
+mix       GASPLE2   Si29j311  8.61562E-06         TEMP
+mix       GASPLE2   Si30j311  5.49692E-06         TEMP
+mix       GASPLE2   P31j311   8.60199E-06         TEMP
+mix       GASPLE2   Ti46j311  6.37784E-06         TEMP
+mix       GASPLE2   Ti47j311  5.62927E-06         TEMP
+mix       GASPLE2   Ti48j311  5.46194E-05         TEMP
+mix       GASPLE2   Ti49j311  3.92639E-06         TEMP
+mix       GASPLE2   Ti50j311  3.68444E-06         TEMP
+mix       GASPLE2   Cr50j311  1.23617E-04         TEMP
+mix       GASPLE2   Cr52j311  2.29230E-03         TEMP
+mix       GASPLE2   Cr53j311  2.55017E-04         TEMP
+mix       GASPLE2   Cr54j311  6.23047E-05         TEMP
+mix       GASPLE2   Mn55j311  2.74818E-04         TEMP
+mix       GASPLE2   Fe54j311  6.22852E-04         TEMP
+mix       GASPLE2   Fe56j311  9.42870E-03         TEMP
+mix       GASPLE2   Fe57j311  2.13922E-04         TEMP
+mix       GASPLE2   Fe58j311  2.79788E-05         TEMP
+mix       GASPLE2   Ni58j311  1.46102E-03         TEMP
+mix       GASPLE2   Ni60j311  5.44040E-04         TEMP
+mix       GASPLE2   Ni61j311  2.32608E-05         TEMP
+mix       GASPLE2   Ni62j311  7.29737E-05         TEMP
+mix       GASPLE2   Ni64j311  1.80005E-05         TEMP
+mix       GASPLE2   Mo92j311  3.51018E-05         TEMP
+mix       GASPLE2   Mo94j311  2.16343E-05         TEMP
+mix       GASPLE2   Mo95j311  3.70572E-05         TEMP
+mix       GASPLE2   Mo96j311  3.85928E-05         TEMP
+mix       GASPLE2   Mo97j311  2.19954E-05         TEMP
+mix       GASPLE2   Mo98j311  5.53114E-05         TEMP
+mix       GASPLE2   Mo100j311 2.18234E-05         TEMP
+mix       GASPLE2   Na23j311  6.16563E-03         TEMP
+mix       GASPLE2   He4j311   5.53657E-06         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       OUTLET    C0j311    1.58667E-04         TEMP
-mix       OUTLET    Si28j311  7.53166E-04         TEMP
-mix       OUTLET    Si29j311  3.69416E-05         TEMP
-mix       OUTLET    Si30j311  2.35694E-05         TEMP
-mix       OUTLET    P31j311   3.68831E-05         TEMP
-mix       OUTLET    Ti46j311  2.73466E-05         TEMP
-mix       OUTLET    Ti47j311  2.41368E-05         TEMP
-mix       OUTLET    Ti48j311  2.34194E-04         TEMP
-mix       OUTLET    Ti49j311  1.68354E-05         TEMP
-mix       OUTLET    Ti50j311  1.57979E-05         TEMP
-mix       OUTLET    Cr50j311  5.30040E-04         TEMP
-mix       OUTLET    Cr52j311  9.82883E-03         TEMP
-mix       OUTLET    Cr53j311  1.09345E-03         TEMP
-mix       OUTLET    Cr54j311  2.67146E-04         TEMP
-mix       OUTLET    Mn55j311  1.17835E-03         TEMP
-mix       OUTLET    Fe54j311  2.67064E-03         TEMP
-mix       OUTLET    Fe56j311  4.04278E-02         TEMP
-mix       OUTLET    Fe57j311  9.17247E-04         TEMP
-mix       OUTLET    Fe58j311  1.19966E-04         TEMP
-mix       OUTLET    Ni58j311  6.26448E-03         TEMP
-mix       OUTLET    Ni60j311  2.33271E-03         TEMP
-mix       OUTLET    Ni61j311  9.97367E-05         TEMP
-mix       OUTLET    Ni62j311  3.12893E-04         TEMP
-mix       OUTLET    Ni64j311  7.71815E-05         TEMP
-mix       OUTLET    Mo92j311  1.50507E-04         TEMP
-mix       OUTLET    Mo94j311  9.27627E-05         TEMP
-mix       OUTLET    Mo95j311  1.58892E-04         TEMP
-mix       OUTLET    Mo96j311  1.65476E-04         TEMP
-mix       OUTLET    Mo97j311  9.43106E-05         TEMP
-mix       OUTLET    Mo98j311  2.37162E-04         TEMP
-mix       OUTLET    Mo100j311 9.35732E-05         TEMP
-mix       OUTLET    Na23j311  4.86387E-03         TEMP
+* Outlet section
+*****     id        isoid     numdens_180C        sigtemp
+mix       OUTLET    C0j311    1.57448E-04         TEMP
+mix       OUTLET    Si28j311  7.47375E-04         TEMP
+mix       OUTLET    Si29j311  3.66576E-05         TEMP
+mix       OUTLET    Si30j311  2.33882E-05         TEMP
+mix       OUTLET    P31j311   3.65996E-05         TEMP
+mix       OUTLET    Ti46j311  2.71363E-05         TEMP
+mix       OUTLET    Ti47j311  2.39513E-05         TEMP
+mix       OUTLET    Ti48j311  2.32394E-04         TEMP
+mix       OUTLET    Ti49j311  1.67059E-05         TEMP
+mix       OUTLET    Ti50j311  1.56765E-05         TEMP
+mix       OUTLET    Cr50j311  5.25964E-04         TEMP
+mix       OUTLET    Cr52j311  9.75323E-03         TEMP
+mix       OUTLET    Cr53j311  1.08504E-03         TEMP
+mix       OUTLET    Cr54j311  2.65093E-04         TEMP
+mix       OUTLET    Mn55j311  1.16929E-03         TEMP
+mix       OUTLET    Fe54j311  2.65010E-03         TEMP
+mix       OUTLET    Fe56j311  4.01170E-02         TEMP
+mix       OUTLET    Fe57j311  9.10192E-04         TEMP
+mix       OUTLET    Fe58j311  1.19044E-04         TEMP
+mix       OUTLET    Ni58j311  6.21631E-03         TEMP
+mix       OUTLET    Ni60j311  2.31477E-03         TEMP
+mix       OUTLET    Ni61j311  9.89698E-05         TEMP
+mix       OUTLET    Ni62j311  3.10487E-04         TEMP
+mix       OUTLET    Ni64j311  7.65881E-05         TEMP
+mix       OUTLET    Mo92j311  1.49351E-04         TEMP
+mix       OUTLET    Mo94j311  9.20494E-05         TEMP
+mix       OUTLET    Mo95j311  1.57670E-04         TEMP
+mix       OUTLET    Mo96j311  1.64204E-04         TEMP
+mix       OUTLET    Mo97j311  9.35856E-05         TEMP
+mix       OUTLET    Mo98j311  2.35338E-04         TEMP
+mix       OUTLET    Mo100j311 9.28537E-05         TEMP
+mix       OUTLET    Na23j311  4.86041E-03         TEMP
 *
-*****     id        isoid     numdens             sigtemp   sigdens
-mix       ABSORBER  B10j311   2.25204E-02         TEMP
-mix       ABSORBER  B11j311   2.50227E-03         TEMP
-mix       ABSORBER  C0j311    6.28768E-03         TEMP
-mix       ABSORBER  Si28j311  1.51895E-04         TEMP
-mix       ABSORBER  Si29j311  7.45019E-06         TEMP
-mix       ABSORBER  Si30j311  4.75336E-06         TEMP
-mix       ABSORBER  P31j311   7.43840E-06         TEMP
-mix       ABSORBER  Ti46j311  5.51512E-06         TEMP
-mix       ABSORBER  Ti47j311  4.86780E-06         TEMP
-mix       ABSORBER  Ti48j311  4.72311E-05         TEMP
-mix       ABSORBER  Ti49j311  3.39527E-06         TEMP
-mix       ABSORBER  Ti50j311  3.18605E-06         TEMP
-mix       ABSORBER  Cr50j311  1.06896E-04         TEMP
-mix       ABSORBER  Cr52j311  1.98223E-03         TEMP
-mix       ABSORBER  Cr53j311  2.20522E-04         TEMP
-mix       ABSORBER  Cr54j311  5.38768E-05         TEMP
-mix       ABSORBER  Mn55j311  2.37644E-04         TEMP
-mix       ABSORBER  Fe54j311  5.38601E-04         TEMP
-mix       ABSORBER  Fe56j311  8.15329E-03         TEMP
-mix       ABSORBER  Fe57j311  1.84986E-04         TEMP
-mix       ABSORBER  Fe58j311  2.41941E-05         TEMP
-mix       ABSORBER  Ni58j311  1.26339E-03         TEMP
-mix       ABSORBER  Ni60j311  4.70448E-04         TEMP
-mix       ABSORBER  Ni61j311  2.01144E-05         TEMP
-mix       ABSORBER  Ni62j311  6.31026E-05         TEMP
-mix       ABSORBER  Ni64j311  1.55656E-05         TEMP
-mix       ABSORBER  Mo92j311  3.03536E-05         TEMP
-mix       ABSORBER  Mo94j311  1.87079E-05         TEMP
-mix       ABSORBER  Mo95j311  3.20445E-05         TEMP
-mix       ABSORBER  Mo96j311  3.33724E-05         TEMP
-mix       ABSORBER  Mo97j311  1.90201E-05         TEMP
-mix       ABSORBER  Mo98j311  4.78296E-05         TEMP
-mix       ABSORBER  Mo100j311 1.88714E-05         TEMP
-mix       ABSORBER  Na23j311  1.32005E-02         TEMP
-mix       ABSORBER  He4j311   3.07102E-07         TEMP
+* Absorber region
+*****     id        isoid     numdens_180C        sigtemp
+mix       ABSORBER  B10j311   2.23872E-02         TEMP
+mix       ABSORBER  B11j311   2.48747E-03         TEMP
+mix       ABSORBER  C0j311    6.25043E-03         TEMP
+mix       ABSORBER  Si28j311  1.50701E-04         TEMP
+mix       ABSORBER  Si29j311  7.39164E-06         TEMP
+mix       ABSORBER  Si30j311  4.71600E-06         TEMP
+mix       ABSORBER  P31j311   7.37994E-06         TEMP
+mix       ABSORBER  Ti46j311  5.47177E-06         TEMP
+mix       ABSORBER  Ti47j311  4.82954E-06         TEMP
+mix       ABSORBER  Ti48j311  4.68599E-05         TEMP
+mix       ABSORBER  Ti49j311  3.36858E-06         TEMP
+mix       ABSORBER  Ti50j311  3.16101E-06         TEMP
+mix       ABSORBER  Cr50j311  1.06056E-04         TEMP
+mix       ABSORBER  Cr52j311  1.96664E-03         TEMP
+mix       ABSORBER  Cr53j311  2.18788E-04         TEMP
+mix       ABSORBER  Cr54j311  5.34533E-05         TEMP
+mix       ABSORBER  Mn55j311  2.35776E-04         TEMP
+mix       ABSORBER  Fe54j311  5.34366E-04         TEMP
+mix       ABSORBER  Fe56j311  8.08921E-03         TEMP
+mix       ABSORBER  Fe57j311  1.83531E-04         TEMP
+mix       ABSORBER  Fe58j311  2.40040E-05         TEMP
+mix       ABSORBER  Ni58j311  1.25346E-03         TEMP
+mix       ABSORBER  Ni60j311  4.66751E-04         TEMP
+mix       ABSORBER  Ni61j311  1.99563E-05         TEMP
+mix       ABSORBER  Ni62j311  6.26066E-05         TEMP
+mix       ABSORBER  Ni64j311  1.54432E-05         TEMP
+mix       ABSORBER  Mo92j311  3.01151E-05         TEMP
+mix       ABSORBER  Mo94j311  1.85609E-05         TEMP
+mix       ABSORBER  Mo95j311  3.17927E-05         TEMP
+mix       ABSORBER  Mo96j311  3.31101E-05         TEMP
+mix       ABSORBER  Mo97j311  1.88706E-05         TEMP
+mix       ABSORBER  Mo98j311  4.74536E-05         TEMP
+mix       ABSORBER  Mo100j311 1.87230E-05         TEMP
+mix       ABSORBER  Na23j311  1.31991E-02         TEMP
+mix       ABSORBER  He4j311   3.20634E-07         TEMP
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * stack OF MIXES
@@ -990,26 +997,26 @@ stack     CSD       EMPTY     UP06      3         * 15
 stack     CSD       EMPTY     UP06      4         * 16
 stack     CSD       EMPTY     UP06      5         * 17
 stack     CSD       EMPTY     UP06      6         * 18
-stack     CSD       EMPTY     UP07      1         * 19
-stack     CSD       EMPTY     UP07      2         * 20
-stack     CSD       EMPTY     UP07      3         * 21
-stack     CSD       EMPTY     UP07      4         * 22
-stack     CSD       EMPTY     UP07      5         * 23
-stack     CSD       EMPTY     UP07      6         * 24
-stack     CSD       EMPTY     UP07      7         * 25
-stack     CSD       EMPTY     UP07      8         * 26
-stack     CSD       EMPTY     UP07      9         * 27
-stack     CSD       EMPTY     UP07      10        * 28
-stack     CSD       EMPTY     UP07      11        * 29
-stack     CSD       EMPTY     UP07      12        * 30
-stack     CSD       EMPTY     UP07      13        * 31
-stack     CSD       EMPTY     UP07      14        * 32
-stack     CSD       EMPTY     UP07      15        * 33
-stack     CSD       EMPTY     UP07      16        * 34
-stack     CSD       EMPTY     UP07      17        * 35
-stack     CSD       EMPTY     UP07      18        * 36
-stack     CSD       EMPTY     UP07      19        * 37
-stack     CSD       EMPTY     UP07      20        * 38
+stack     CSD       ABSORBER  UP07      1         * 19
+stack     CSD       ABSORBER  UP07      2         * 20
+stack     CSD       ABSORBER  UP07      3         * 21
+stack     CSD       ABSORBER  UP07      4         * 22
+stack     CSD       ABSORBER  UP07      5         * 23
+stack     CSD       ABSORBER  UP07      6         * 24
+stack     CSD       ABSORBER  UP07      7         * 25
+stack     CSD       ABSORBER  UP07      8         * 26
+stack     CSD       ABSORBER  UP07      9         * 27
+stack     CSD       ABSORBER  UP07      10        * 28
+stack     CSD       ABSORBER  UP07      11        * 29
+stack     CSD       ABSORBER  UP07      12        * 30
+stack     CSD       ABSORBER  UP07      13        * 31
+stack     CSD       ABSORBER  UP07      14        * 32
+stack     CSD       ABSORBER  UP07      15        * 33
+stack     CSD       ABSORBER  UP07      16        * 34
+stack     CSD       ABSORBER  UP07      17        * 35
+stack     CSD       ABSORBER  UP07      18        * 36
+stack     CSD       ABSORBER  UP07      19        * 37
+stack     CSD       ABSORBER  UP07      20        * 38
 stack     CSD       ABSORBER  UP08      1         * 39
 stack     CSD       ABSORBER  UP08      2         * 40
 stack     CSD       ABSORBER  UP08      3         * 41
@@ -1163,7 +1170,7 @@ stack     SHI       OUTLET    UP12      10        * 60
 * CORE GEOMETRY
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     geometry  pitch(m)  botBC     topBC
-coregeom  hex       0.179     0         0
+coregeom  hex       0.17946   0         0
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * CORE MAP
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
