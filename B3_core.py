@@ -75,6 +75,7 @@ class Core:
                 self.mix[i].calculate_chi(self)
                 self.mix[i].calculate_sigs(self, reactor)
                 self.mix[i].calculate_sign2n(self, reactor)
+                self.mix[i].calculate_kerma(self, reactor)
                 self.mix[i].update_xs = False
                 self.mix[i].print_xs = True
 
@@ -207,6 +208,37 @@ class Core:
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
+            # power distribution
+            self.pow = numpy.zeros(shape=(self.nz, self.ny, self.nx), order='F')
+            if self.geom == 'square':
+                az = self.pitch**2
+            elif self.geom == 'hex':
+                az = numpy.sqrt(3.)/2.*self.pitch**2
+            # power normalization factor
+            factor = 0.
+            for iz in range(self.nz):
+                for iy in range(self.ny):
+                    for ix in range(self.nx):
+                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][iy][ix]
+                        if imix >= 0 and len(self.mix[imix].kerma) > 0:
+                            vol = az*self.map['dz'][iz-1]
+                            self.pow[iz][iy][ix] = 0.
+                            for ig in range(self.ng):
+                                self.pow[iz][iy][ix] += self.mix[imix].kerma[ig]*self.flux[iz][iy][ix][ig]*vol
+                            factor += self.pow[iz][iy][ix]
+            factor = reactor.control.input['power0'] / factor
+            # normalize flux and power to power0
+            for iz in range(self.nz):
+                for iy in range(self.ny):
+                    for ix in range(self.nx):
+                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][iy][ix]
+                        if imix >= 0:
+                            if len(self.mix[imix].kerma) > 0:
+                                self.pow[iz][iy][ix] *= factor
+                            for ig in range(self.ng):
+                                self.flux[iz][iy][ix][ig] *= factor
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
@@ -234,6 +266,7 @@ class Core:
                     self.mix[i].calculate_chi(self)
                     self.mix[i].calculate_sigs(self, reactor)
                     self.mix[i].calculate_sign2n(self, reactor)
+                    self.mix[i].calculate_kerma(self, reactor)
                     self.mix[i].update_xs = False
                     self.mix[i].print_xs = True
 

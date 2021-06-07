@@ -270,6 +270,10 @@ class Control:
                 elif key == 'pipe-t':
                      inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
                 #--------------------------------------------------------------------------------------
+                # initial reactor power
+                elif key == 'power0':
+                     inp['power0'] = float(word[1])
+                #--------------------------------------------------------------------------------------
                 # signal variable
                 elif key == 'signal':
                      signal = {}
@@ -438,6 +442,8 @@ class Control:
             fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
             fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'flux'.ljust(13) + '\n')
+            fid.append(open(path4results + os.sep + 'core-pow.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'pow'.ljust(13) + '\n')
         return fid
 
     #----------------------------------------------------------------------------------------------
@@ -586,6 +592,16 @@ class Control:
                             if imix >= 0:
                                 for ig in range(reactor.core.ng):
                                     fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig).ljust(13) + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.flux[iz][iy][ix][ig]) + '\n')
+            indx += 1
+            # power
+            if flag == 0 : 
+                for iz in range(reactor.core.nz):
+                    for iy in range(reactor.core.ny):
+                        for ix in range(reactor.core.nx):
+                            imix = reactor.core.map['imix'][iz][iy][ix]
+                            # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref')
+                            if imix >= 0 and reactor.core.pow[iz][iy][ix] > 0:
+                                fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.pow[iz][iy][ix]) + '\n')
             indx += 1
 
     #----------------------------------------------------------------------------------------------

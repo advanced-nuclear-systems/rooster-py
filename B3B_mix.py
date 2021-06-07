@@ -255,3 +255,21 @@ class Mix:
                 else:
                     self.sign2n.append([f_t, self.numdens[i]*value])
 
+
+    #----------------------------------------------------------------------------------------------
+    # calculates kerma factors for the mix
+    def calculate_kerma(self, core, reactor):
+        # a special case: no dependence on temperature but dependence on sig0
+        sig_tmp1 = []
+        for i in range(self.niso):
+            if core.iso[i].xs['kerma'] != []:
+                nsig0 = len(core.iso[i].sig0)
+                sig_tmp1.append([[0]*nsig0 for j in range(self.ng)])
+                for ig in range(self.ng):
+                    sig_tmp1[i][ig] = core.iso[i].xs['kerma'][ig]
+        # perform sig0 interpolations for all isotopes and all groups
+        sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
+        self.kerma = [0]*self.ng
+        for ig in range(self.ng):
+            for i in range(self.niso):
+                self.kerma[ig] += self.numdens[i]*sig_tmp2[ig][i]

@@ -64,7 +64,8 @@ class Isotope:
 
         # dictionary of cross sections
         self.xs = {'chi':[0]*ng, 'ela':[], 'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], \
-                   'ine':[], 'inv':[0]*ng, 'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], \
+                   'ine':[], 'inv':[0]*ng, 'kerma':[[0]*nsig0 for j in range(ng)], \
+                   'n2n':[], 'nub':[[0]*ntemp for i in range(ng)], \
                    'tot':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], \
                    'tra':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)]}
 
@@ -76,6 +77,9 @@ class Isotope:
         if inv != []:
             for ig in range(ng):
                 self.xs['inv'][ig] = inv[ig][0]
+        # kerma factors (mf = 3, mt = 301)
+        kerma = extract_mf_mt(3, 301, 0, 0, cards)
+        if kerma != [] : self.xs['kerma'] = kerma
         for itemp in range(ntemp):
             nlgndr = 0
             # total xs (mf = 3, mt = 1)

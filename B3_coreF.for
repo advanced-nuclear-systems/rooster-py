@@ -13,7 +13,7 @@
        
       implicit none
 
-      ! geometry flad ('squ' and 'hex')
+      ! geometry flag ('squ' and 'hex')
       character*3 geom
       ! number of nodes in z, y and x dimensions
       integer nz, ny, nx, ng
@@ -51,7 +51,7 @@
       real*8 dz(:)
 
       ! convergence flags
-      logical converge_qf, converge_k, converge_flux
+      logical converge_k, converge_flux
       ! from and to indices for scattering matrix
       integer f, t
       ! for do loop
@@ -90,8 +90,10 @@
       real*8 mlt
       ! fission source
       real*8 qf(nz,ny,nx)
-      ! fission source for evaluating the difference from the previous iteration
-      real*8 qfnew
+      ! total fission source
+      real*8 tfs
+      ! fission source
+      real*8 qfis
       ! n2n source
       real*8 qn2n
       ! scattering source
@@ -109,10 +111,12 @@
       atol = 1.0e-6
       
       ! initialize fission source
+      tfs = 0.
       do iz = 1, nz
          do iy = 1, ny
             do ix = 1, nx
                qf(iz,iy,ix) = 1.
+               tfs = tfs + qf(iz,iy,ix)
             end do
          end do
       end do
@@ -128,11 +132,10 @@
       keff = 1.
 
       ! convergence flags
-      converge_qf = .false.
       converge_k = .false.
       ! outer iteration counter
       nitero = 0
-      do while(.not. converge_qf .and. .not. converge_k .and. 
+      do while(.not. converge_k .and. 
      +         nitero < 1000)
          nitero = nitero + 1
          ! initialize flux convergence flag
@@ -388,10 +391,10 @@
                               mlt = mlt + sigr
          
                               ! fission source
-                              qfnew = chi(imix,ig)*qf(iz,iy,ix)/keff
+                              qfis = chi(imix,ig)*qf(iz,iy,ix)/keff
          
                               ! neutron flux
-                              fluxnew = (dif + qs + qn2n + qfnew)/mlt
+                              fluxnew = (dif + qs + qn2n + qfis)/mlt
                               if(converge_flux)then
                                  converge_flux = 
      +                            abs(fluxnew - flux(iz,iy,ix,ig)) 
@@ -411,46 +414,29 @@
             end do
          end do
 
-         converge_qf = .true.
+         ! calculate node-wise fission source qf and total fission source tfs
+         tfs = 0.
          do iz = 1, nz
             do iy = 1, ny
                do ix = 1, nx
                   ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                   imix = imap(iz,iy,ix)+1
                   if(imix > 0)then
-                     qfnew = 0.
+                     qf(iz,iy,ix) = 0.
                      do ig = 1, ng
-                        qfnew = qfnew + sigp(imix,ig)*flux(iz,iy,ix,ig)
+                        qf(iz,iy,ix) = qf(iz,iy,ix) + 
+     +                                 sigp(imix,ig)*flux(iz,iy,ix,ig)
                      end do
-                     if(converge_qf)then
-                        converge_qf = abs(qfnew - qf(iz,iy,ix)) < 
-     +                                rtol*abs(qfnew) + atol
-                     end if
-                     qf(iz,iy,ix) = qfnew
+                     tfs = tfs + qf(iz,iy,ix)
                   end if
                end do
             end do
          end do
 
-         converge_k = .true.
-         knew = 0
-         do iz = 1, nz
-            do iy = 1, ny
-               do ix = 1, nx
-                  ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-                  imix = imap(iz,iy,ix)+1
-                  if(imix > 0)then
-                     do ig = 1, ng
-                        knew = knew + qf(iz,iy,ix)
-                     end do
-                  end if
-               end do
-            end do
-         end do
-         if(converge_k)then
-            converge_k = abs(knew - keff) < 
-     +                   rtol*abs(knew) + atol
-         end if
+         ! new k-effective is the ratio of total fission sources at the current (tfs) and previous (1.0) iterations
+         knew = tfs
+         converge_k = abs(knew - keff) < 
+     +                rtol*abs(knew) + atol
          keff = knew
 
          write(*,*)'k-effective: ', keff, 'nitero = ', nitero
