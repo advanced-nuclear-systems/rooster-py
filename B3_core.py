@@ -41,6 +41,7 @@ class Core:
             self.nz += 2
             self.ny = len(reactor.control.input['coremap'])
             self.nx = len(reactor.control.input['coremap'][0])
+            self.nt = 1
             for i in range(self.nx):
                 if len(reactor.control.input['coremap'][i]) != self.nx:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
@@ -50,7 +51,7 @@ class Core:
                 sys.exit()
 
             # initialize flux
-            self.flux = numpy.ones(shape=(self.nz, self.ny, self.nx, self.ng), order='F')
+            self.flux = numpy.ones(shape=(self.nz, self.ny, self.nx, self.nt, self.ng), order='F')
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -158,6 +159,8 @@ class Core:
                 self.aside_over_v = 1/self.pitch
             elif self.geom == 'hex':
                 self.aside_over_v = 2/(3*self.pitch)
+            elif self.geom == 'tri6':
+                self.aside_over_v = 2/(3*self.pitch)/6
 
             # initialize multiplication factor
             self.k = numpy.array([1.])
@@ -207,7 +210,7 @@ class Core:
             sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
             # call the Fortran eigenvalue problem solver
-            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.ng, \
+            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
@@ -218,6 +221,8 @@ class Core:
                 az = self.pitch**2
             elif self.geom == 'hex':
                 az = numpy.sqrt(3.)/2.*self.pitch**2
+            elif self.geom == 'tri6':
+                az = numpy.sqrt(3.)/2.*self.pitch**2/6
             # power normalization factor
             factor = 0.
             for iz in range(self.nz):
@@ -227,19 +232,21 @@ class Core:
                         imix = self.map['imix'][iz][iy][ix]
                         if imix >= 0:
                             vol = az*self.map['dz'][iz-1]
-                            for ig in range(self.ng):
-                                self.pow[iz][iy][ix] += self.mix[imix].kerma[ig]*self.flux[iz][iy][ix][ig]*vol
-                                #self.pow[iz][iy][ix] += self.mix[imix].sigf[ig]*self.flux[iz][iy][ix][ig]*vol * 200. * 1.6022e-19
-                            self.powxy[iy][ix] += self.pow[iz][iy][ix]
-                            factor += self.pow[iz][iy][ix]
+                            for it in range(self.nt):
+                                for ig in range(self.ng):
+                                    self.pow[iz][iy][ix] += self.mix[imix].kerma[ig]*self.flux[iz][iy][ix][it][ig]*vol
+                                    #self.pow[iz][iy][ix] += self.mix[imix].sigf[ig]*self.flux[iz][iy][ix][it][ig]*vol * 200. * 1.6022e-19
+                                self.powxy[iy][ix] += self.pow[iz][iy][ix]
+                                factor += self.pow[iz][iy][ix]
             factor = reactor.control.input['power0'] / factor
             # normalize flux and power to power0
             for iz in range(self.nz):
                 for iy in range(self.ny):
                     for ix in range(self.nx):
                         self.pow[iz][iy][ix] *= factor
-                        for ig in range(self.ng):
-                            self.flux[iz][iy][ix][ig] *= factor
+                        for it in range(self.nt):
+                            for ig in range(self.ng):
+                                self.flux[iz][iy][ix][it][ig] *= factor
             for iy in range(self.ny):
                 for ix in range(self.nx):
                     self.powxy[iy][ix] *= factor
