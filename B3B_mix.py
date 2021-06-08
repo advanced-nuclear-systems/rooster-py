@@ -120,8 +120,8 @@ class Mix:
         return sig
 
     #----------------------------------------------------------------------------------------------
-    # given microscopic XSs without temperature dimension sig1 (total) perform sig0 interpolation for energy group ig
-    # for all isotopes of the mix and return sig2: microscopic XSs without sig0 dimension
+    # given microscopic XSs without temperature dimension sig1[iso][ig][isig0] perform sig0 interpolation for energy group ig
+    # for all isotopes of the mix and return sig2[iso][ig]: microscopic XSs without sig0 dimension
     def interpolate_sig0(self, ig, core, sig1):
         sig2 = [0]*self.niso
         for i in range(self.niso):
@@ -160,8 +160,9 @@ class Mix:
             for i in range(self.niso):
                 self.sigtra[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
+
     #----------------------------------------------------------------------------------------------
-    # calculates production macroscopic cross sections for the mix
+    # calculates production and fission macroscopic cross sections for the mix
     def calculate_sigp(self, core, reactor):
         # perform temperature and sig0 interpolations for fission xs for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'fis')
@@ -169,9 +170,11 @@ class Mix:
         # perform temperature interpolations for nubar for all isotopes and all groups
         nubar = self.interpolate_temp(core, reactor, 'nub')
         self.sigp = [0]*self.ng
+        self.sigf = [0]*self.ng
         for ig in range(self.ng):
             for i in range(self.niso):
                 self.sigp[ig] += self.numdens[i]*nubar[i][ig]*sig_tmp2[ig][i]
+                self.sigf[ig] += self.numdens[i]*sig_tmp2[ig][i]
 
     #----------------------------------------------------------------------------------------------
     # calculates fission spectrum for the mix
@@ -262,11 +265,13 @@ class Mix:
         # a special case: no dependence on temperature but dependence on sig0
         sig_tmp1 = []
         for i in range(self.niso):
-            if core.iso[i].xs['kerma'] != []:
-                nsig0 = len(core.iso[i].sig0)
-                sig_tmp1.append([[0]*nsig0 for j in range(self.ng)])
-                for ig in range(self.ng):
-                    sig_tmp1[i][ig] = core.iso[i].xs['kerma'][ig]
+            # index of the isotope i in the global list of isotopes core.iso
+            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+            nsig0 = len(core.iso[isoindx].sig0)
+            sig_tmp1.append([[0]*nsig0 for j in range(self.ng)])
+            for ig in range(self.ng):
+                for isig0 in range(nsig0):
+                    sig_tmp1[i][ig][isig0] = core.iso[isoindx].xs['kerma'][ig][isig0]
         # perform sig0 interpolations for all isotopes and all groups
         sig_tmp2 = [self.interpolate_sig0(ig, core, sig_tmp1) for ig in range(self.ng)]
         self.kerma = [0]*self.ng

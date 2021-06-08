@@ -444,6 +444,8 @@ class Control:
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'flux'.ljust(13) + '\n')
             fid.append(open(path4results + os.sep + 'core-pow.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'iz'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'pow'.ljust(13) + '\n')
+            fid.append(open(path4results + os.sep + 'core-powxy.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'iy'.ljust(13) + 'ix'.ljust(13) + 'pow'.ljust(13) + '\n')
         return fid
 
     #----------------------------------------------------------------------------------------------
@@ -508,33 +510,42 @@ class Control:
                         fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                         for ig in range(reactor.core.ng):
                             fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['tot'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
-                    for itemp in range(ntemp):
-                        fid[indx].write('fission XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
-                        fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
+                    if sum(reactor.core.iso[i].xs['chi']) > 0:
+                        for itemp in range(ntemp):
+                            fid[indx].write('fission XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                            fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
+                            for ig in range(reactor.core.ng):
+                                fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['fis'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
+                        for itemp in range(ntemp):
+                            fid[indx].write('nubar @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                            fid[indx].write(' ' + 'igroup'.ljust(12) + '\n')
+                            for ig in range(reactor.core.ng):
+                                fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['nub'][ig][itemp]) + '\n')
+                        fid[indx].write('fission spectrum\n')
+                        fid[indx].write(' ' + 'igroup'.ljust(12) + 'chi'.ljust(12) + '\n')
                         for ig in range(reactor.core.ng):
-                            fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['fis'][ig][itemp][isig0]) for isig0 in range(nsig0)]) + '\n')
-                    for itemp in range(ntemp):
-                        fid[indx].write('nubar @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
-                        fid[indx].write(' ' + 'igroup'.ljust(12) + '\n')
-                        for ig in range(reactor.core.ng):
-                            fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['nub'][ig][itemp]) + '\n')
-                    fid[indx].write('fission spectrum\n')
-                    fid[indx].write(' ' + 'igroup'.ljust(12) + 'chi'.ljust(12) + '\n')
+                            fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['chi'][ig]) + '\n')
+
+                    fid[indx].write('kerma-factors\n')
+                    fid[indx].write(' ' + 'igroup/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                     for ig in range(reactor.core.ng):
-                        fid[indx].write(' ' + str(ig+1).ljust(12) + '{0:12.5e} '.format(reactor.core.iso[i].xs['chi'][ig]) + '\n')
+                        fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].xs['kerma'][ig][isig0]) for isig0 in range(nsig0)]) + '\n')
+
                     for itemp in range(ntemp):
-                        fid[indx].write('elastic scatteringXS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
+                        fid[indx].write('elastic scattering XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
                         fid[indx].write(' ' + 'from'.ljust(13) + 'to/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
                         for s in reactor.core.iso[i].xs['ela']:
                             fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + ''.join(['{0:12.5e} '.format(s[1][isig0]) for isig0 in range(nsig0)]) + '\n')
-                    fid[indx].write('inelastic scattering\n')
+
+                    fid[indx].write('inelastic scattering XS\n')
                     fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sigi'.ljust(12) + '\n')
                     for s in reactor.core.iso[i].xs['ine']:
                         fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + '{0:12.5e} '.format(s[1]) + '\n')
-                    fid[indx].write('n2n scattering\n')
-                    fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(12) + '\n')
-                    for s in reactor.core.iso[i].xs['n2n']:
-                        fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + '{0:12.5e} '.format(s[1]) + '\n')
+                    if len(reactor.core.iso[i].xs['n2n']) > 0:
+                        fid[indx].write('n2n scattering\n')
+                        fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(12) + '\n')
+                        for s in reactor.core.iso[i].xs['n2n']:
+                            fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + '{0:12.5e} '.format(s[1]) + '\n')
                     indx += 1
                     reactor.core.iso[i].print_xs = False
             for i in range(reactor.core.nmix):
@@ -544,8 +555,8 @@ class Control:
                     fid[indx].write(' ' + 'igroup'.ljust(13) + ''.join([str(reactor.core.mix[i].isoid[j]).ljust(13) for j in range(reactor.core.mix[i].niso)]) + '\n')
                     for ig in range(reactor.core.ng):
                         fid[indx].write(' ' + str(ig+1).ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.mix[i].sig0[ig][j]) for j in range(reactor.core.mix[i].niso)]) + '\n')
-                    fid[indx].write('total XS, production XS, fission spectrum, in-group scattering XS, out-group scattering XS, n2n XS\n')
-                    fid[indx].write(' ' + 'igroup'.ljust(13) + 'sigt'.ljust(13) + 'nu*sigf'.ljust(13) + 'chi'.ljust(13) + 'sigsi'.ljust(13) + 'sigso'.ljust(13) + 'sign2n'.ljust(13) + '\n')
+                    fid[indx].write('total XS, production XS, fission spectrum, in-group scattering XS, out-group scattering XS, n2n XS, kerma-factors\n')
+                    fid[indx].write(' ' + 'igroup'.ljust(13) + 'sigt'.ljust(13) + 'nu*sigf'.ljust(13) + 'chi'.ljust(13) + 'sigsi'.ljust(13) + 'sigso'.ljust(13) + 'sign2n'.ljust(13) + 'kerma'.ljust(13) + '\n')
                     for ig in range(reactor.core.ng):
                         sigso = 0
                         sigsi = 0
@@ -559,7 +570,7 @@ class Control:
                             f = reactor.core.mix[i].sign2n[j][0][0]
                             t = reactor.core.mix[i].sign2n[j][0][1]
                             if f == ig and t != ig : sign2n = sign2n + reactor.core.mix[i].sign2n[j][1]
-                        fid[indx].write(' ' + str(ig+1).ljust(12) + str('{0:12.5e} '.format(reactor.core.mix[i].sigt[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].sigp[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].chi[ig])) + str('{0:12.5e} '.format(sigsi)) + str('{0:12.5e} '.format(sigso)) + str('{0:12.5e} '.format(sign2n)) + '\n')
+                        fid[indx].write(' ' + str(ig+1).ljust(12) + str('{0:12.5e} '.format(reactor.core.mix[i].sigt[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].sigp[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].chi[ig])) + str('{0:12.5e} '.format(sigsi)) + str('{0:12.5e} '.format(sigso)) + str('{0:12.5e} '.format(sign2n)) + str('{0:12.5e} '.format(reactor.core.mix[i].kerma[ig])) + '\n')
                     fid[indx].write('scattering XS\n')
                     fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
                     for j in range(len(reactor.core.mix[i].sigs)):
@@ -602,6 +613,12 @@ class Control:
                             # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref')
                             if imix >= 0 and reactor.core.pow[iz][iy][ix] > 0:
                                 fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.pow[iz][iy][ix]) + '\n')
+            indx += 1
+            if flag == 0 : 
+                for iy in range(reactor.core.ny):
+                    for ix in range(reactor.core.nx):
+                        if reactor.core.powxy[iy][ix] > 0:
+                            fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(reactor.core.powxy[iy][ix]) + '\n')
             indx += 1
 
     #----------------------------------------------------------------------------------------------

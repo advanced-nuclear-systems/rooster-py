@@ -10,7 +10,7 @@ t_dt      100.      1
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     value
-power0    3000.e6
+power0    2990.e6
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        value
@@ -22,8 +22,6 @@ signal    PI        3.14159
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 *****     id        value
-signal    TEMPF     1500.
-signal    TEMPB     900.
 signal    TEMP      600.
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
@@ -112,13 +110,13 @@ pipe      UP04      NA        0.01      0.06040   1         1.1       1
 jun       UP04      UP05
 pipe      UP05      NA        0.01      0.02013   1         1.1       1
 jun       UP05      UP06
-pipe      UP06      NA        0.01      0.30182   1         1.1       6
+pipe      UP06      NA        0.01      0.30112   1         1.1       6
 jun       UP06      UP07
-pipe      UP07      NA        0.01      1.01306   1         1.1       20
+pipe      UP07      NA        0.01      1.00375   1         1.1       20
 jun       UP07      UP08
-pipe      UP08      NA        0.01      0.30182   1         1.1       6
+pipe      UP08      NA        0.01      0.30112   1         1.1       6
 jun       UP08      UP09
-pipe      UP09      NA        0.01      0.15718   1         1.1       2
+pipe      UP09      NA        0.01      0.16788   1         1.1       2
 jun       UP09      UP10
 pipe      UP10      NA        0.01      0.02819   1         1.1       1
 jun       UP10      UP11
@@ -169,16 +167,16 @@ nddir     DATA025
 * MIXES
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * Fuel in inner zone
-*****     id        isoid     numdens_HFP         sigtemp
-mix       INNER     U235j311  3.55540E-05         TEMPF
-mix       INNER     U238j311  6.98592E-03         TEMPF
-mix       INNER     Pu238j311 6.26075E-06         TEMPF
-mix       INNER     Pu239j311 8.63543E-04         TEMPF
-mix       INNER     Pu240j311 2.57470E-04         TEMPF
-mix       INNER     Pu241j311 6.92215E-05         TEMPF
-mix       INNER     Pu242j311 2.40247E-05         TEMPF
-mix       INNER     Am241j311 1.69420E-05         TEMPF
-mix       INNER     O16j311   1.63526E-02         TEMPF
+*****     id        isoid     numdens_HZP         sigtemp
+mix       INNER     U235j311  3.58838E-05         TEMP
+mix       INNER     U238j311  7.05072E-03         TEMP
+mix       INNER     Pu238j311 6.31883E-06         TEMP
+mix       INNER     Pu239j311 8.71553E-04         TEMP
+mix       INNER     Pu240j311 2.59858E-04         TEMP
+mix       INNER     Pu241j311 6.98635E-05         TEMP
+mix       INNER     Pu242j311 2.42475E-05         TEMP
+mix       INNER     Am241j311 1.70991E-05         TEMP
+mix       INNER     O16j311   1.65043E-02         TEMP
 mix       INNER     C0j311    4.75629E-05         TEMP
 mix       INNER     Si28j311  2.25772E-04         TEMP
 mix       INNER     Si29j311  1.10737E-05         TEMP
@@ -212,18 +210,18 @@ mix       INNER     Mo98j311  7.10924E-05         TEMP
 mix       INNER     Mo100j311 2.80498E-05         TEMP
 mix       INNER     Na23j311  7.63797E-03         TEMP
 mix       INNER     He4j311   6.11441E-07         TEMP
-*
-* Fuel in outer zone
-*****     id        isoid     numdens_HFP         sigtemp
-mix       OUTER     U235j311  3.43358E-05         TEMPF
-mix       OUTER     U238j311  6.74653E-03         TEMPF
-mix       OUTER     Pu238j311 7.82604E-06         TEMPF
-mix       OUTER     Pu239j311 1.07943E-03         TEMPF
-mix       OUTER     Pu240j311 3.21840E-04         TEMPF
-mix       OUTER     Pu241j311 8.65275E-05         TEMPF
-mix       OUTER     Pu242j311 3.00311E-05         TEMPF
-mix       OUTER     Am241j311 2.11776E-05         TEMPF
-mix       OUTER     O16j311   1.64888E-02         TEMPF
+*                                        
+* Fuel in outer zone                     
+*****     id        isoid     numdens_HZP         sigtemp
+mix       OUTER     U235j311  3.44150E-05         TEMP
+mix       OUTER     U238j311  6.76207E-03         TEMP
+mix       OUTER     Pu238j311 7.84407E-06         TEMP
+mix       OUTER     Pu239j311 1.08192E-03         TEMP
+mix       OUTER     Pu240j311 3.22582E-04         TEMP
+mix       OUTER     Pu241j311 8.67270E-05         TEMP
+mix       OUTER     Pu242j311 3.01003E-05         TEMP
+mix       OUTER     Am241j311 2.12265E-05         TEMP
+mix       OUTER     O16j311   1.65268E-02         TEMP
 mix       OUTER     C0j311    4.75629E-05         TEMP
 mix       OUTER     Si28j311  2.25772E-04         TEMP
 mix       OUTER     Si29j311  1.10737E-05         TEMP
@@ -257,12 +255,12 @@ mix       OUTER     Mo98j311  7.10924E-05         TEMP
 mix       OUTER     Mo100j311 2.80498E-05         TEMP
 mix       OUTER     Na23j311  7.63797E-03         TEMP
 mix       OUTER     He4j311   6.11441E-07         TEMP
-*
-* Axial blanket in fissile SA
-*****     id        isoid     numdens_HFP         sigtemp
-mix       AXBLA     U235j311  2.22759E-05         TEMPB
-mix       AXBLA     U238j311  8.77580E-03         TEMPB
-mix       AXBLA     O16j311   1.74202E-02         TEMPB
+*                                        
+* Axial blanket in fissile SA            
+*****     id        isoid     numdens_HZP         sigtemp
+mix       AXBLA     U235j311  2.23273E-05         TEMP
+mix       AXBLA     U238j311  8.79605E-03         TEMP
+mix       AXBLA     O16j311   1.74604E-02         TEMP
 mix       AXBLA     C0j311    4.75629E-05         TEMP
 mix       AXBLA     Si28j311  2.25772E-04         TEMP
 mix       AXBLA     Si29j311  1.10737E-05         TEMP
@@ -296,12 +294,12 @@ mix       AXBLA     Mo98j311  7.10924E-05         TEMP
 mix       AXBLA     Mo100j311 2.80498E-05         TEMP
 mix       AXBLA     Na23j311  7.63797E-03         TEMP
 mix       AXBLA     He4j311   3.83930E-07         TEMP
-*
-* Fertile in radial blanket SA
-*****     id        isoid     numdens_HFP         sigtemp
-mix       RADBLA    U235j311  3.08587E-05         TEMPB
-mix       RADBLA    U238j311  1.21571E-02         TEMPB
-mix       RADBLA    O16j311   2.41321E-02         TEMPB
+*                                        
+* Fertile in radial blanket SA           
+*****     id        isoid     numdens_HZP         sigtemp
+mix       RADBLA    U235j311  3.09298E-05         TEMP
+mix       RADBLA    U238j311  1.21851E-02         TEMP
+mix       RADBLA    O16j311   2.41878E-02         TEMP
 mix       RADBLA    C0j311    3.65628E-05         TEMP
 mix       RADBLA    Si28j311  1.73557E-04         TEMP
 mix       RADBLA    Si29j311  8.51267E-06         TEMP
@@ -335,9 +333,9 @@ mix       RADBLA    Mo98j311  5.46505E-05         TEMP
 mix       RADBLA    Mo100j311 2.15626E-05         TEMP
 mix       RADBLA    Na23j311  5.82526E-03         TEMP
 mix       RADBLA    He4j311   2.95350E-07         TEMP
-*
-* Shielding
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Shielding                              
+*****     id        isoid     numdens_HZP         sigtemp
 mix       SHIELD    Si28j311  4.14715E-04         TEMP
 mix       SHIELD    Si29j311  2.09809E-05         TEMP
 mix       SHIELD    Si30j311  1.39219E-05         TEMP
@@ -370,9 +368,9 @@ mix       SHIELD    Mo100j311 6.34196E-05         TEMP
 mix       SHIELD    Cu63j311  8.75510E-05         TEMP
 mix       SHIELD    Cu65j311  3.90205E-05         TEMP
 mix       SHIELD    Na23j311  1.07169E-02         TEMP
-*
-* Diluent
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Diluent                                
+*****     id        isoid     numdens_HZP         sigtemp
 mix       DILUENT   Si28j311  6.09818E-04         TEMP
 mix       DILUENT   Si29j311  3.08830E-05         TEMP
 mix       DILUENT   Si30j311  2.04907E-05         TEMP
@@ -405,9 +403,9 @@ mix       DILUENT   Mo100j311 4.18574E-05         TEMP
 mix       DILUENT   Cu63j311  1.28434E-04         TEMP
 mix       DILUENT   Cu65j311  5.73542E-05         TEMP
 mix       DILUENT   Na23j311  5.65062E-03         TEMP
-*
-* Empty assembly
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Empty assembly                         
+*****     id        isoid     numdens_HZP         sigtemp
 mix       EMPTY     C0j311    1.85118E-05         TEMP
 mix       EMPTY     Si28j311  8.78720E-05         TEMP
 mix       EMPTY     Si29j311  4.30998E-06         TEMP
@@ -440,9 +438,9 @@ mix       EMPTY     Mo97j311  1.10032E-05         TEMP
 mix       EMPTY     Mo98j311  2.76697E-05         TEMP
 mix       EMPTY     Mo100j311 1.09172E-05         TEMP
 mix       EMPTY     Na23j311  2.03417E-02         TEMP
-*
-* Fuel pin plug in fissile SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Fuel pin plug in fissile SA            
+*****     id        isoid     numdens_HZP         sigtemp
 mix       PLUG1     C0j311    1.29052E-04         TEMP
 mix       PLUG1     Si28j311  6.12584E-04         TEMP
 mix       PLUG1     Si29j311  3.00463E-05         TEMP
@@ -475,9 +473,9 @@ mix       PLUG1     Mo97j311  7.67071E-05         TEMP
 mix       PLUG1     Mo98j311  1.92894E-04         TEMP
 mix       PLUG1     Mo100j311 7.61071E-05         TEMP
 mix       PLUG1     Na23j311  7.63797E-03         TEMP
-*
-* Fuel pin plug in blanket SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Fuel pin plug in blanket SA            
+*****     id        isoid     numdens_HZP         sigtemp
 mix       PLUG2     C0j311    1.44825E-04         TEMP
 mix       PLUG2     Si28j311  6.87457E-04         TEMP
 mix       PLUG2     Si29j311  3.37186E-05         TEMP
@@ -510,9 +508,9 @@ mix       PLUG2     Mo97j311  8.60826E-05         TEMP
 mix       PLUG2     Mo98j311  2.16470E-04         TEMP
 mix       PLUG2     Mo100j311 8.54092E-05         TEMP
 mix       PLUG2     Na23j311  5.82526E-03         TEMP
-*
-* Pellet support in fissile SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Pellet support in fissile SA           
+*****     id        isoid     numdens_HZP         sigtemp
 mix       SUPPOR1   C0j311    9.20493E-05         TEMP
 mix       SUPPOR1   Si28j311  4.36941E-04         TEMP
 mix       SUPPOR1   Si29j311  2.14312E-05         TEMP
@@ -546,9 +544,9 @@ mix       SUPPOR1   Mo98j311  1.37586E-04         TEMP
 mix       SUPPOR1   Mo100j311 5.42853E-05         TEMP
 mix       SUPPOR1   Na23j311  7.63797E-03         TEMP
 mix       SUPPOR1   He4j311   1.89258E-06         TEMP
-*
-* Pellet support in blanket SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Pellet support in blanket SA           
+*****     id        isoid     numdens_HZP         sigtemp
 mix       SUPPOR2   C0j311    1.32400E-04         TEMP
 mix       SUPPOR2   Si28j311  6.28477E-04         TEMP
 mix       SUPPOR2   Si29j311  3.08258E-05         TEMP
@@ -582,9 +580,9 @@ mix       SUPPOR2   Mo98j311  1.97898E-04         TEMP
 mix       SUPPOR2   Mo100j311 7.80816E-05         TEMP
 mix       SUPPOR2   Na23j311  5.82526E-03         TEMP
 mix       SUPPOR1   He4j311   6.35517E-07         TEMP
-*
-* Gas plenum in fissile SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Gas plenum in fissile SA               
+*****     id        isoid     numdens_HZP         sigtemp
 mix       GASPLE1   C0j311    4.75629E-05         TEMP
 mix       GASPLE1   Si28j311  2.25772E-04         TEMP
 mix       GASPLE1   Si29j311  1.10737E-05         TEMP
@@ -618,9 +616,9 @@ mix       GASPLE1   Mo98j311  7.10924E-05         TEMP
 mix       GASPLE1   Mo100j311 2.80498E-05         TEMP
 mix       GASPLE1   Na23j311  7.63797E-03         TEMP
 mix       GASPLE1   He4j311   4.16796E-06         TEMP
-*
-* Gas plenum in blanket SA
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Gas plenum in blanket SA               
+*****     id        isoid     numdens_HZP         sigtemp
 mix       GASPLE2   C0j311    3.65628E-05         TEMP
 mix       GASPLE2   Si28j311  1.73557E-04         TEMP
 mix       GASPLE2   Si29j311  8.51267E-06         TEMP
@@ -654,9 +652,9 @@ mix       GASPLE2   Mo98j311  5.46505E-05         TEMP
 mix       GASPLE2   Mo100j311 2.15626E-05         TEMP
 mix       GASPLE2   Na23j311  5.82526E-03         TEMP
 mix       GASPLE2   He4j311   5.53734E-06         TEMP
-*
-* Outlet section
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Outlet section                         
+*****     id        isoid     numdens_HZP         sigtemp
 mix       OUTLET    C0j311    1.55564E-04         TEMP
 mix       OUTLET    Si28j311  7.38431E-04         TEMP
 mix       OUTLET    Si29j311  3.62188E-05         TEMP
@@ -689,9 +687,9 @@ mix       OUTLET    Mo97j311  9.24655E-05         TEMP
 mix       OUTLET    Mo98j311  2.32521E-04         TEMP
 mix       OUTLET    Mo100j311 9.17422E-05         TEMP
 mix       OUTLET    Na23j311  4.59114E-03         TEMP
-*
-* Absorber region
-*****     id        isoid     numdens_HFP         sigtemp
+*                                        
+* Absorber region                        
+*****     id        isoid     numdens_HZP         sigtemp
 mix       ABSORBER  B10j311   2.21843E-02         TEMP
 mix       ABSORBER  B11j311   2.46492E-03         TEMP
 mix       ABSORBER  C0j311    6.19368E-03         TEMP
@@ -726,7 +724,7 @@ mix       ABSORBER  Mo97j311  1.86474E-05         TEMP
 mix       ABSORBER  Mo98j311  4.68924E-05         TEMP
 mix       ABSORBER  Mo100j311 1.85016E-05         TEMP
 mix       ABSORBER  Na23j311  1.24743E-02         TEMP
-mix       ABSORBER  He4j311   3.40942E-07         TEMP
+mix       ABSORBER  He4j311   3.40942E-07         TEMP*
 *
 *---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 * stack OF MIXES
@@ -1015,14 +1013,14 @@ stack     CSD       EMPTY     UP07      9         * 27
 stack     CSD       EMPTY     UP07      10        * 28
 stack     CSD       EMPTY     UP07      11        * 29
 stack     CSD       EMPTY     UP07      12        * 30
-stack     CSD       EMPTY     UP07      13        * 31
-stack     CSD       EMPTY     UP07      14        * 32
-stack     CSD       EMPTY     UP07      15        * 33
-stack     CSD       EMPTY     UP07      16        * 34
-stack     CSD       EMPTY     UP07      17        * 35
-stack     CSD       EMPTY     UP07      18        * 36
-stack     CSD       EMPTY     UP07      19        * 37
-stack     CSD       EMPTY     UP07      20        * 38
+stack     CSD       ABSORBER  UP07      13        * 31
+stack     CSD       ABSORBER  UP07      14        * 32
+stack     CSD       ABSORBER  UP07      15        * 33
+stack     CSD       ABSORBER  UP07      16        * 34
+stack     CSD       ABSORBER  UP07      17        * 35
+stack     CSD       ABSORBER  UP07      18        * 36
+stack     CSD       ABSORBER  UP07      19        * 37
+stack     CSD       ABSORBER  UP07      20        * 38
 stack     CSD       ABSORBER  UP08      1         * 39
 stack     CSD       ABSORBER  UP08      2         * 40
 stack     CSD       ABSORBER  UP08      3         * 41
