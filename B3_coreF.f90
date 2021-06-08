@@ -53,8 +53,6 @@ integer f, t
 integer ix, iy, iz, it, ig, indx
 ! index of mix in the node
 integer imix
-! index of mix in the neighbouring node
-integer imix_n
 ! counter of inner (flux) iterations
 integer niteri
 ! counter of outer (fission source) iterations
@@ -67,12 +65,6 @@ real*8 az_over_v
 real*8 aside_over_v
 ! sum of contributions from diffusion terms from neighbouring nodes
 real*8 dif
-! diffusion coefficient
-real*8 D
-! distance between nodes in z or xy direction
-real*8 db
-! working variable for flux
-real*8 flx
 ! flux for evaluating the difference from the previous iteration
 real*8 fluxnew
 ! multiplication factor: keff
@@ -145,305 +137,76 @@ do while(.not. converge_k .and. nitero < 1000)
                   mlt = 0.
                   dif = 0.
                
-                  ! diffusion term: bottom
-                  imix_n = imap(iz-1,iy,ix)
-                  if(imix_n == 0)then
-                     ! neighbour is vacuum
-                     db = 0.5*dz(iz-1) + 0.71/sigtra(imix, ig)
-                     D = 1./(3.*sigtra(imix, ig))
-                     flx = 0.
-                  else if(imix_n .eq. -1)then
-                     ! neighbour is reflective
-                     db = 1.
-                     D = 0.
-                     flx = 0.
-                  else
-                     ! neighbour is normal node (neither vacuum nor reflective)
-                     db = 0.5*(dz(iz-2) + dz(iz-1))
-                     D = 2.*db/(3.*sigtra(imix, ig)*dz(iz-1) + 3.*sigtra(imix_n, ig)*dz(iz-2))
-                     flx = flux(iz-1,iy,ix,it,ig)
-                  end if
-                  mlt = mlt + D * az_over_v / db
-                  dif = dif + D * flx * az_over_v / db
-               
-                  ! diffusion term: top
-                  imix_n = imap(iz+1,iy,ix)
-                  if(imix_n == 0)then
-                     ! neighbour is vacuum
-                     db = 0.5*dz(iz) + 0.71/sigtra(imix, ig)
-                     D = 1./(3.*sigtra(imix, ig))
-                     flx = 0.
-                  else if(imix_n .eq. -1)then
-                     ! neighbour is reflective
-                     db = 1.
-                     D = 0.
-                     flx = 0.
-                  else
-                     ! neighbour is normal node (neither vacuum nor reflective)
-                     db = 0.5*(dz(iz-1) + dz(iz))
-                     D = 2.*db/(3.*sigtra(imix, ig)*dz(iz-1) + 3.*sigtra(imix_n, ig)*dz(iz))
-                     flx = flux(iz+1,iy,ix,it,ig)
-                  end if
-                  mlt = mlt + D * az_over_v / db
-                  dif = dif + D * flx * az_over_v / db
-               
-                  if(geom == 'squ' .or. geom == 'hex')then
-                     ! diffusion term: west
-                     call difxy(mlt,dif,iz,iy,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                     !imix_n = imap(iz,iy,ix-1)
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   flx = flux(iz,iy,ix-1,it,ig)
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-                     
-                     ! diffusion term: east
-                     call difxy(mlt,dif,iz,iy,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                     !imix_n = imap(iz,iy,ix+1)
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   flx = flux(iz,iy,ix+1,it,ig)
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-                  end if
-               
+                  ! diffusion terms in z direction for all geometries: mlt and dif
+                  call difz(mlt,dif,iz,iz-1,iy,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,dz,sigtra,flux,az_over_v)
+                  call difz(mlt,dif,iz,iz+1,iy,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,dz,sigtra,flux,az_over_v)
+
+                  ! square geometry
                   if(geom == 'squ')then
-                     ! diffusion term: north (square geometry)
+                     ! diffusion terms in xy direction: mlt and dif
+                     call difxy(mlt,dif,iz,iy,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                     call difxy(mlt,dif,iz,iy,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                      call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                     !imix_n = imap(iz,iy-1,ix)
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   flx = flux(iz,iy-1,ix,it,ig)
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-               
-                     ! diffusion term: south
                      call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                     !imix_n = imap(iz,iy+1,ix)
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   flx = flux(iz,iy+1,ix,it,ig)
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-               
+
+                  ! hexagonal geometry
                   else if(geom == 'hex')then
-               
-                     ! diffusion term: north-west (hexagonal geometry)
+                     ! diffusion terms in xy direction: mlt and dif
                      if(mod(iy,2) == 0)then ! even
-                     call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy-1,ix)
+                        call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy-1,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy+1,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                      else ! odd
-                     call difxy(mlt,dif,iz,iy-1,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy-1,ix-1)
+                        call difxy(mlt,dif,iz,iy-1,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy+1,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                      end if
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   if(mod(iy,2) == 0)then ! even
-                     !      flx = flux(iz,iy-1,ix,it,ig)
-                     !   else ! odd
-                     !      flx = flux(iz,iy-1,ix-1,it,ig)
-                     !   end if
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-               
-                     ! diffusion term: north-east (hexagonal geometry)
-                     if(mod(iy,2) == 0)then ! even
-                     call difxy(mlt,dif,iz,iy-1,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy-1,ix+1)
-                     else ! odd
-                     call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy-1,ix)
-                     end if
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   if(mod(iy,2) == 0)then ! even
-                     !      flx = flux(iz,iy-1,ix+1,it,ig)
-                     !   else ! odd
-                     !      flx = flux(iz,iy-1,ix,it,ig)
-                     !   end if
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-               
-                     ! diffusion term: south-west (hexagonal geometry)
-                     if(mod(iy,2) == 0)then ! even
-                     call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy+1,ix)
-                     else ! odd
-                     call difxy(mlt,dif,iz,iy+1,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy+1,ix-1)
-                     end if
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) +3.*sigtra(imix_n, ig))
-                     !   if(mod(iy,2) == 0)then ! even
-                     !      flx = flux(iz,iy+1,ix,it,ig)
-                     !   else ! odd
-                     !      flx = flux(iz,iy+1,ix-1,it,ig)
-                     !   end if
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-               
-                     ! diffusion term: to south-east (hexagonal geometry)
-                     if(mod(iy,2) == 0)then ! even
-                     call difxy(mlt,dif,iz,iy+1,ix+1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy+1,ix+1)
-                     else ! odd
-                     call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
-                        !imix_n = imap(iz,iy+1,ix)
-                     end if
-                     !if(imix_n == 0)then
-                     !   ! neighbour is vacuum
-                     !   db = 0.5*pitch + 0.71/sigtra(imix, ig)
-                     !   D = 1./(3.*sigtra(imix, ig))
-                     !   flx = 0.
-                     !else if(imix_n .eq. -1)then
-                     !   ! neighbour is reflective
-                     !   db = 1.
-                     !   D = 0.
-                     !   flx = 0.
-                     !else
-                     !   ! neighbour is normal node (neither vacuum nor reflective)
-                     !   db = pitch
-                     !   D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
-                     !   if(mod(iy,2) == 0)then ! even
-                     !      flx = flux(iz,iy+1,ix+1,it,ig)
-                     !   else ! odd
-                     !      flx = flux(iz,iy+1,ix,it,ig)
-                     !   end if
-                     !end if
-                     !mlt = mlt + D * aside_over_v / db
-                     !dif = dif + D * flx * aside_over_v / db
-                        
-                     ! removal xs
-                     sigr = sigt(imix,ig)
-                     ! scattering source
-                     qs = 0.
-                     do indx = 1, nsigs(imix)
-                        f = fsigs(imix,indx)+1
-                        t = tsigs(imix,indx)+1
-                        if(f .ne. ig .and. t == ig)then
-                           qs = qs + sigs(imix,indx) * flux(iz,iy,ix,it,f)
-                        end if
-                        if(f == ig .and. t == ig)then
-                           sigr = sigr - sigs(imix,indx)
-                        end if
-                     end do
-                     ! n2n source
-                     qn2n = 0.
-                     do indx = 1, nsign2n(imix)
-                        f = fsign2n(imix,indx)+1
-                        t = tsign2n(imix,indx)+1
-                        if(f .ne. ig .and. t == ig)then
-                           qn2n = qn2n + 2.*sign2n(imix,indx)*flux(iz,iy,ix,it,f)
-                        end if
-                     end do
-                        
-                     mlt = mlt + sigr
-               
-                     ! fission source
-                     qfis = chi(imix,ig)*qf(iz,iy,ix,it)/keff
-               
-                     ! neutron flux
-                     fluxnew = (dif + qs + qn2n + qfis)/mlt
-                     if(converge_flux)then
-                        converge_flux = abs(fluxnew - flux(iz,iy,ix,it,ig)) < rtol*abs(fluxnew) + atol
-                     end if
-                     flux(iz,iy,ix,it,ig) = fluxnew
-               
                   else
                      write(*,*)'***ERROR: unknown core geometry in B3_coreF: ', geom
                      stop
                   end if
+                  
+                  ! removal xs
+                  sigr = sigt(imix,ig)
+                  ! scattering source
+                  qs = 0.
+                  do indx = 1, nsigs(imix)
+                     f = fsigs(imix,indx)+1
+                     t = tsigs(imix,indx)+1
+                     if(f .ne. ig .and. t == ig)then
+                        qs = qs + sigs(imix,indx) * flux(iz,iy,ix,it,f)
+                     end if
+                     if(f == ig .and. t == ig)then
+                        sigr = sigr - sigs(imix,indx)
+                     end if
+                  end do
+                  ! n2n source
+                  qn2n = 0.
+                  do indx = 1, nsign2n(imix)
+                     f = fsign2n(imix,indx)+1
+                     t = tsign2n(imix,indx)+1
+                     if(f .ne. ig .and. t == ig)then
+                        qn2n = qn2n + 2.*sign2n(imix,indx)*flux(iz,iy,ix,it,f)
+                     end if
+                  end do
+                     
+                  mlt = mlt + sigr
+               
+                  ! fission source
+                  qfis = chi(imix,ig)*qf(iz,iy,ix,it)/keff
+               
+                  ! neutron flux
+                  fluxnew = (dif + qs + qn2n + qfis)/mlt
+                  if(converge_flux)then
+                     converge_flux = abs(fluxnew - flux(iz,iy,ix,it,ig)) < rtol*abs(fluxnew) + atol
+                  end if
+                  flux(iz,iy,ix,it,ig) = fluxnew
                end do
             end do
          end if
@@ -488,12 +251,14 @@ imap = imap - 1
 end subroutine
 
 !--------------------------------------------------------------------------------------------------
-subroutine difxy(mlt, dif, jz, jy, jx, jt, ig, imix, imap, nz, ny, nx, nt, ng, nmix, pitch, sigtra, flux, aside_over_v)
+! Diffusion terms (mlt and dif) in xy directions
+!
+subroutine difxy(mlt, dif, jz, jy, jx, jt, ig, imix, imap, nz, ny, nx, nt, ng, nmix, pitch, sigtra, flux, a_over_v)
 
 implicit none
 
 integer jz, jy, jx, jt, ig, imix, nz, ny, nx, nt, ng, nmix, imap(nz,ny,nx)
-real*8 mlt, dif, pitch, sigtra(nmix,ng), flux(nz,ny,nx,nt,ng), aside_over_v
+real*8 mlt, dif, pitch, sigtra(nmix,ng), flux(nz,ny,nx,nt,ng), a_over_v
 
 integer imix_n
 real*8 db, D, flx
@@ -515,7 +280,43 @@ else
    D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
    flx = flux(jz,jy,jx,jt,ig)
 end if
-mlt = mlt + D * aside_over_v / db
-dif = dif + D * flx * aside_over_v / db
+mlt = mlt + D * a_over_v / db
+dif = dif + D * flx * a_over_v / db
+
+end subroutine
+
+!--------------------------------------------------------------------------------------------------
+! Diffusion terms (mlt and dif) in z directions
+!
+subroutine difz(mlt, dif, iz, jz, jy, jx, jt, ig, imix, imap, nz, ny, nx, nt, ng, nmix, dz, sigtra, flux, a_over_v)
+
+implicit none
+
+integer iz, jz, jy, jx, jt, ig, imix, nz, ny, nx, nt, ng, nmix, imap(nz,ny,nx)
+real*8 mlt, dif, dz(nz-2), sigtra(nmix,ng), flux(nz,ny,nx,nt,ng), a_over_v
+
+! index of mix in the neighbouring node
+integer imix_n
+real*8 db, D, flx
+
+imix_n = imap(jz,jy,jx)
+if(imix_n == 0)then
+   ! neighbour is vacuum
+   db = 0.5*dz(iz-1) + 0.71/sigtra(imix, ig)
+   D = 1./(3.*sigtra(imix, ig))
+   flx = 0.
+else if(imix_n .eq. -1)then
+   ! neighbour is reflective
+   db = 1.
+   D = 0.
+   flx = 0.
+else
+   ! neighbour is normal node (neither vacuum nor reflective)
+   db = 0.5*(dz(iz-1) + dz(jz-1))
+   D = 2.*db/(3.*sigtra(imix, ig)*dz(iz-1) + 3.*sigtra(imix_n, ig)*dz(jz-1))
+   flx = flux(jz,jy,jx,jt,ig)
+end if
+mlt = mlt + D * a_over_v / db
+dif = dif + D * flx * a_over_v / db
 
 end subroutine
