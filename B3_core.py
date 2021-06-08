@@ -210,7 +210,7 @@ class Core:
             sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
             # call the Fortran eigenvalue problem solver
-            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, \
+            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
