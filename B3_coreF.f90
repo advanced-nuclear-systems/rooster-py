@@ -130,16 +130,17 @@ do while(.not. converge_k .and. nitero < 1000)
    do while(.not. converge_flux .and. niteri < 10)
       niteri = niteri + 1
       converge_flux = .true.
-      forall(iz = 1:nz)
-      forall(iy = 1:ny)
-      forall(ix = 1:nx)
+      !!$omp parallel workshare default(shared) private(imix,az_over_v,mlt,dif,db,sigr,qs,f,t,qfis,fluxnew)
+      do iz = 1,nz
+      do iy = 1,ny
+      do ix = 1,nx
          ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
          imix = imap(iz,iy,ix)
          if(imix > 0)then
             ! node axial area-to-volume ratio
             az_over_v = 1./dz(iz-1)
-            forall(it = 1:nt)
-               forall(ig = 1:ng)
+            do it = 1,nt
+               do ig = 1,ng
                   mlt = 0.
                   dif = 0.
                
@@ -234,7 +235,7 @@ do while(.not. converge_k .and. nitero < 1000)
                   sigr = sigt(imix,ig)
                   ! scattering source
                   qs = 0.
-                  forall(indx = 1:nsigs(imix))
+                  do indx = 1,nsigs(imix)
                      f = fsigs(imix,indx)+1
                      t = tsigs(imix,indx)+1
                      if(f .ne. ig .and. t == ig)then
@@ -243,16 +244,16 @@ do while(.not. converge_k .and. nitero < 1000)
                      if(f == ig .and. t == ig)then
                         sigr = sigr - sigs(imix,indx)
                      end if
-                  end forall
+                  end do
                   ! n2n source
                   qn2n = 0.
-                  forall(indx = 1:nsign2n(imix))
+                  do indx = 1,nsign2n(imix)
                      f = fsign2n(imix,indx)+1
                      t = tsign2n(imix,indx)+1
                      if(f .ne. ig .and. t == ig)then
                         qn2n = qn2n + 2.*sign2n(imix,indx)*flux(iz,iy,ix,it,f)
                      end if
-                  end forall
+                  end do
                      
                   mlt = mlt + sigr
                
@@ -265,35 +266,36 @@ do while(.not. converge_k .and. nitero < 1000)
                      converge_flux = abs(fluxnew - flux(iz,iy,ix,it,ig)) < rtol*abs(fluxnew) + atol
                   end if
                   flux(iz,iy,ix,it,ig) = fluxnew
-               end forall
-            end forall
+               end do
+            end do
          end if
-      end forall
-      end forall
-      end forall
+      end do
+      end do
+      end do
+      !!$omp end parallel workshare
    end do
 
    ! calculate node-wise fission source qf and total fission source tfs
    tfs = 0.
-   !$omp parallel workshare shared(nz,ny,nx,imap,nt,qf,ng,sigp,flux,tfs) private(imix)
-   forall(iz = 1:nz)
-      forall(iy = 1:ny)
-         forall(ix = 1:nx)
+   !!$omp parallel workshare shared(nz,ny,nx,imap,nt,qf,ng,sigp,flux,tfs) private(imix)
+   do iz = 1,nz
+      do iy = 1,ny
+         do ix = 1,nx
             ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
             imix = imap(iz,iy,ix)
             if(imix > 0)then
-               forall(it = 1:nt)
+               do it = 1,nt
                   qf(iz,iy,ix,it) = 0.
-                  forall(ig = 1:ng)
+                  do ig = 1,ng
                      qf(iz,iy,ix,it) = qf(iz,iy,ix,it) + sigp(imix,ig)*flux(iz,iy,ix,it,ig)
-                  end forall
+                  end do
                   tfs = tfs + qf(iz,iy,ix,it)
-               end forall
+               end do
             end if
-         end forall
-      end forall
-   end forall
-   !$omp end parallel workshare
+         end do
+      end do
+   end do
+   !!$omp end parallel workshare
 
    ! new k-effective is the ratio of total fission sources at the current (tfs) and previous (1.0) iterations
    knew = tfs
