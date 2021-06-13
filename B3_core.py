@@ -1,9 +1,7 @@
 from B3A_isotope import Isotope
 from B3B_mix import Mix
-from multiprocessing import Pool
 
 import B3_coreF
-import multiprocessing as mp
 import numpy
 import sys
 import time
@@ -28,6 +26,9 @@ class Core:
 
         if 'spatialkinetics' in reactor.solve:
 
+            # core geometry flag
+            self.geom = reactor.control.input['coregeom']['geom']
+
             # number of energy groups
             self.ng = reactor.control.input['ng']
 
@@ -41,7 +42,10 @@ class Core:
             self.nz += 2
             self.ny = len(reactor.control.input['coremap'])
             self.nx = len(reactor.control.input['coremap'][0])
-            self.nt = 1
+            if self.geom == 'tri6':
+                self.nt = 6
+            else:
+                self.nt = 1
             for i in range(self.nx):
                 if len(reactor.control.input['coremap'][i]) != self.nx:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
@@ -88,7 +92,6 @@ class Core:
                 reactor.tic = tac
 
             # initialize map
-            self.geom = reactor.control.input['coregeom']['geom']
             self.map = {'dz':[], 'imix':[], 'ipipe':[]}
             mixid_list = [self.mix[i].mixid for i in range(self.nmix)]
             self.nstack = len(reactor.control.input['stack'])
@@ -154,13 +157,6 @@ class Core:
                                     self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
             # core assembly pitch
             self.pitch = 100*reactor.control.input['coregeom']['pitch']
-            # side area to volume ratio of control volume 
-            if self.geom == 'square':
-                self.aside_over_v = 1/self.pitch
-            elif self.geom == 'hex':
-                self.aside_over_v = 2/(3*self.pitch)
-            elif self.geom == 'tri6':
-                self.aside_over_v = 2/(3*self.pitch)/6
 
             # initialize multiplication factor
             self.k = numpy.array([1.])

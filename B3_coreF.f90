@@ -6,9 +6,11 @@ subroutine solve_eigenvalue_problem(geom, nz, ny, nx, nt, ng, nmix, flux, imap, 
                                   & nsign2n, fsign2n, tsign2n, sign2n, &
                                   & chi, pitch, dz)
 
+use omp_lib
+ 
 implicit none
 
-! geometry flag ('squ' and 'hex')
+! geometry flag ('squ', 'hex' or 'tri')
 character*3 geom
 ! number of nodes in z, y, x dimensions and number of triangles per hexagon, number of groups and number of mixes
 integer nz, ny, nx, nt, ng, nmix
@@ -63,6 +65,8 @@ real*8 atol
 real*8 az_over_v
 ! node side area-to-volume ratio
 real*8 aside_over_v
+! distance between nodes in xy plane
+real*8 db
 ! sum of contributions from diffusion terms from neighbouring nodes
 real*8 dif
 ! flux for evaluating the difference from the previous iteration
@@ -88,6 +92,7 @@ real*8 rtol
 ! removal cross section
 real*8 sigr
 
+
 ! relative tolerance
 rtol = 1.0e-6
 ! absolute tolerance
@@ -95,7 +100,6 @@ atol = 1.0e-6
 
 ! initialize fission source and total fission source
 qf = 1.
-tfs = sum(qf)
 
 ! change from python style to fortran style
 imap = imap + 1
@@ -103,8 +107,10 @@ imap = imap + 1
 ! side area to volume ratio of control volume 
 if(geom == 'squ')then
    aside_over_v = 1./pitch
-else ! geom == 'hex'
+else if(geom == 'hex')then
    aside_over_v = 2./(3.*pitch)
+else ! geom == 'tri'
+   aside_over_v = 6.*2./(3.*pitch)
 end if
 
 ! eigenvalue keff equal to ratio of total fission source at two iterations. 
@@ -124,16 +130,16 @@ do while(.not. converge_k .and. nitero < 1000)
    do while(.not. converge_flux .and. niteri < 10)
       niteri = niteri + 1
       converge_flux = .true.
-      do iz = 1, nz
-      do iy = 1, ny
-      do ix = 1, nx
+      forall(iz = 1:nz)
+      forall(iy = 1:ny)
+      forall(ix = 1:nx)
          ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
          imix = imap(iz,iy,ix)
          if(imix > 0)then
             ! node axial area-to-volume ratio
             az_over_v = 1./dz(iz-1)
-            do it = 1, nt
-               do ig = 1, ng
+            forall(it = 1:nt)
+               forall(ig = 1:ng)
                   mlt = 0.
                   dif = 0.
                
@@ -149,7 +155,7 @@ do while(.not. converge_k .and. nitero < 1000)
                      call difxy(mlt,dif,iz,iy-1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                      call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
 
-                  ! hexagonal geometry
+                  ! hexagonal geometry with 1 node per hexagon
                   else if(geom == 'hex')then
                      ! diffusion terms in xy direction: mlt and dif
                      if(mod(iy,2) == 0)then ! even
@@ -167,6 +173,58 @@ do while(.not. converge_k .and. nitero < 1000)
                         call difxy(mlt,dif,iz,iy+1,ix-1,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                         call difxy(mlt,dif,iz,iy+1,ix,it,ig,imix,imap,nz,ny,nx,nt,ng,nmix,pitch,sigtra,flux,aside_over_v)
                      end if
+
+                  ! hexagonal geometry with 6 nodes per hexagon
+                  else if(geom == 'tri')then
+                     db = pitch/3.
+                     ! diffusion terms in xy direction: mlt and dif
+                     if(it == 1)then
+                        ! north-east
+                        call difxy(mlt,dif,iz,iy,ix,6,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        if(mod(iy,2) == 0)then ! even
+                           call difxy(mlt,dif,iz,iy-1,ix+1,4,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        else ! odd
+                           call difxy(mlt,dif,iz,iy-1,ix,4,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        end if
+                        call difxy(mlt,dif,iz,iy,ix,2,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     else if(it == 2)then
+                        ! east
+                        call difxy(mlt,dif,iz,iy,ix,1,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix+1,5,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix,3,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     else if(it == 3)then
+                        ! south-east
+                        call difxy(mlt,dif,iz,iy,ix,2,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        if(mod(iy,2) == 0)then ! even
+                           call difxy(mlt,dif,iz,iy+1,ix+1,6,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        else ! odd
+                           call difxy(mlt,dif,iz,iy+1,ix,6,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        end if
+                        call difxy(mlt,dif,iz,iy,ix,4,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     else if(it == 4)then
+                        ! south-west
+                        call difxy(mlt,dif,iz,iy,ix,3,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        if(mod(iy,2) == 0)then ! even
+                           call difxy(mlt,dif,iz,iy+1,ix,1,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        else ! odd
+                           call difxy(mlt,dif,iz,iy+1,ix-1,1,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        end if
+                        call difxy(mlt,dif,iz,iy,ix,5,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     else if(it == 5)then
+                        ! west
+                        call difxy(mlt,dif,iz,iy,ix,4,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix-1,2,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        call difxy(mlt,dif,iz,iy,ix,6,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     else if(it == 6)then
+                        ! north-west
+                        call difxy(mlt,dif,iz,iy,ix,5,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        if(mod(iy,2) == 0)then ! even
+                           call difxy(mlt,dif,iz,iy-1,ix,3,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        else ! odd
+                           call difxy(mlt,dif,iz,iy-1,ix-1,3,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                        end if
+                        call difxy(mlt,dif,iz,iy,ix,1,ig,imix,imap,nz,ny,nx,nt,ng,nmix,db,sigtra,flux,aside_over_v)
+                     end if
                   else
                      write(*,*)'***ERROR: unknown core geometry in B3_coreF: ', geom
                      stop
@@ -176,7 +234,7 @@ do while(.not. converge_k .and. nitero < 1000)
                   sigr = sigt(imix,ig)
                   ! scattering source
                   qs = 0.
-                  do indx = 1, nsigs(imix)
+                  forall(indx = 1:nsigs(imix))
                      f = fsigs(imix,indx)+1
                      t = tsigs(imix,indx)+1
                      if(f .ne. ig .and. t == ig)then
@@ -185,16 +243,16 @@ do while(.not. converge_k .and. nitero < 1000)
                      if(f == ig .and. t == ig)then
                         sigr = sigr - sigs(imix,indx)
                      end if
-                  end do
+                  end forall
                   ! n2n source
                   qn2n = 0.
-                  do indx = 1, nsign2n(imix)
+                  forall(indx = 1:nsign2n(imix))
                      f = fsign2n(imix,indx)+1
                      t = tsign2n(imix,indx)+1
                      if(f .ne. ig .and. t == ig)then
                         qn2n = qn2n + 2.*sign2n(imix,indx)*flux(iz,iy,ix,it,f)
                      end if
-                  end do
+                  end forall
                      
                   mlt = mlt + sigr
                
@@ -207,33 +265,35 @@ do while(.not. converge_k .and. nitero < 1000)
                      converge_flux = abs(fluxnew - flux(iz,iy,ix,it,ig)) < rtol*abs(fluxnew) + atol
                   end if
                   flux(iz,iy,ix,it,ig) = fluxnew
-               end do
-            end do
+               end forall
+            end forall
          end if
-      end do
-      end do
-      end do
+      end forall
+      end forall
+      end forall
    end do
 
    ! calculate node-wise fission source qf and total fission source tfs
    tfs = 0.
-   do iz = 1, nz
-   do iy = 1, ny
-   do ix = 1, nx
-      ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-      imix = imap(iz,iy,ix)
-      if(imix > 0)then
-         do it = 1, nt
-            qf(iz,iy,ix,it) = 0.
-            do ig = 1, ng
-               qf(iz,iy,ix,it) = qf(iz,iy,ix,it) + sigp(imix,ig)*flux(iz,iy,ix,it,ig)
-            end do
-            tfs = tfs + qf(iz,iy,ix,it)
-         end do
-      end if
-   end do
-   end do
-   end do
+   !$omp parallel workshare shared(nz,ny,nx,imap,nt,qf,ng,sigp,flux,tfs) private(imix)
+   forall(iz = 1:nz)
+      forall(iy = 1:ny)
+         forall(ix = 1:nx)
+            ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+            imix = imap(iz,iy,ix)
+            if(imix > 0)then
+               forall(it = 1:nt)
+                  qf(iz,iy,ix,it) = 0.
+                  forall(ig = 1:ng)
+                     qf(iz,iy,ix,it) = qf(iz,iy,ix,it) + sigp(imix,ig)*flux(iz,iy,ix,it,ig)
+                  end forall
+                  tfs = tfs + qf(iz,iy,ix,it)
+               end forall
+            end if
+         end forall
+      end forall
+   end forall
+   !$omp end parallel workshare
 
    ! new k-effective is the ratio of total fission sources at the current (tfs) and previous (1.0) iterations
    knew = tfs
@@ -241,12 +301,13 @@ do while(.not. converge_k .and. nitero < 1000)
    keff = knew
 
    write(*,*)'k-effective: ', keff, 'nitero = ', nitero
-   !if(isnan(keff)) stop
+   if(isnan(keff)) stop
 
 end do
-
+  
 ! change from fortran style to python style
 imap = imap - 1
+
 
 end subroutine
 
