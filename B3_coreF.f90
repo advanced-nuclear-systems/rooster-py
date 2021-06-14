@@ -130,7 +130,8 @@ do while(.not. converge_k .and. nitero < 1000)
    do while(.not. converge_flux .and. niteri < 10)
       niteri = niteri + 1
       converge_flux = .true.
-      !!$omp parallel workshare default(shared) private(imix,az_over_v,mlt,dif,db,sigr,qs,f,t,qfis,fluxnew)
+      !$omp parallel do default(shared) &
+      !$omp private(imix,az_over_v,mlt,dif,db,sigr,qs,f,t,qfis,fluxnew)
       do iz = 1,nz
       do iy = 1,ny
       do ix = 1,nx
@@ -272,12 +273,11 @@ do while(.not. converge_k .and. nitero < 1000)
       end do
       end do
       end do
-      !!$omp end parallel workshare
+      !$omp end parallel do
    end do
 
    ! calculate node-wise fission source qf and total fission source tfs
-   tfs = 0.
-   !!$omp parallel workshare shared(nz,ny,nx,imap,nt,qf,ng,sigp,flux,tfs) private(imix)
+   !$omp parallel do default(shared) private(imix)
    do iz = 1,nz
       do iy = 1,ny
          do ix = 1,nx
@@ -289,13 +289,28 @@ do while(.not. converge_k .and. nitero < 1000)
                   do ig = 1,ng
                      qf(iz,iy,ix,it) = qf(iz,iy,ix,it) + sigp(imix,ig)*flux(iz,iy,ix,it,ig)
                   end do
+               end do
+            end if
+         end do
+      end do
+   end do
+   !$omp end parallel do
+
+   ! calculate total fission source tfs
+   tfs = 0.
+   do iz = 1,nz
+      do iy = 1,ny
+         do ix = 1,nx
+            ! if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+            imix = imap(iz,iy,ix)
+            if(imix > 0)then
+               do it = 1,nt
                   tfs = tfs + qf(iz,iy,ix,it)
                end do
             end if
          end do
       end do
    end do
-   !!$omp end parallel workshare
 
    ! new k-effective is the ratio of total fission sources at the current (tfs) and previous (1.0) iterations
    knew = tfs
@@ -309,7 +324,6 @@ end do
   
 ! change from fortran style to python style
 imap = imap - 1
-
 
 end subroutine
 
