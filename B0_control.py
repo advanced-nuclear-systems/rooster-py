@@ -91,12 +91,12 @@ class Control:
         #split in lines
         lines = s.strip().split('\n')
     
-        #remove comment-lines (*)
-        lines = [x for x in lines if not x.startswith('*')]
-        #remove comments inside lines (*)
+        #remove comment-lines (#)
+        lines = [x for x in lines if not x.startswith('#')]
+        #remove comments inside lines (#)
         for i in range(len(lines)):
-            if '*' in lines[i]:
-                lines[i] = lines[i].split('*')[0]
+            if '#' in lines[i]:
+                lines[i] = lines[i].split('#')[0]
     
         def convert_to_float(w): 
             try:
