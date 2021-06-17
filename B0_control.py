@@ -128,9 +128,9 @@ class Control:
                 # core geometry
                 elif key == 'coregeom':
                     if len(word)-1 < 4:
-                        print('****ERROR: coregeom card should have four values after the keyword: geometry flag (hex, tri6, square), pitch (distance between node centres), bottom boundary conditions (0: vacuum, -1: reflective), top boundary conditions (0: vacuum, -1: reflective).')
+                        print('****ERROR: coregeom card should have four values after the keyword: geometry flag (hex01, hex06, hex24, square), pitch (distance between node centres), bottom boundary conditions (0: vacuum, -1: reflective), top boundary conditions (0: vacuum, -1: reflective).')
                         sys.exit()
-                    list_of_geometries = ['square','hex', 'tri6']
+                    list_of_geometries = ['square','hex01', 'hex06', 'hex24']
                     if not word[1] in list_of_geometries:
                         print('****ERROR: geometry flag of coregeom card (word 2) is wrong: ', word[1], '\nCorrect values are: ')
                         for v in list_of_geometries:

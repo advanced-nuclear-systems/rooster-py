@@ -42,7 +42,9 @@ class Core:
             self.nz += 2
             self.ny = len(reactor.control.input['coremap'])
             self.nx = len(reactor.control.input['coremap'][0])
-            if self.geom == 'tri6':
+            if self.geom == 'hex24':
+                self.nt = 24
+            elif self.geom == 'hex06':
                 self.nt = 6
             else:
                 self.nt = 1
@@ -215,10 +217,12 @@ class Core:
             self.powxy = numpy.zeros(shape=(self.ny, self.nx), order='F')
             if self.geom == 'square':
                 az = self.pitch**2
-            elif self.geom == 'hex':
+            elif self.geom == 'hex01':
                 az = numpy.sqrt(3.)/2.*self.pitch**2
-            elif self.geom == 'tri6':
+            elif self.geom == 'hex06':
                 az = numpy.sqrt(3.)/2.*self.pitch**2/6
+            elif self.geom == 'hex24':
+                az = numpy.sqrt(3.)/2.*self.pitch**2/24
             # power normalization factor
             factor = 0.
             for iz in range(self.nz):

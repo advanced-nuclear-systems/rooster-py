@@ -9,7 +9,7 @@
     }
   ],
   "coregeom": {
-    "geom": "hex",
+    "geom": "hex06",
     "pitch": 0.18018,
     "botBC": 0,
     "topBC": 0
@@ -3582,7 +3582,7 @@
     },
     {
       "id": "TEMP",
-      "value": 300.0
+      "value": 600.0
     }
   ],
   "signalid": [

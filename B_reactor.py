@@ -54,6 +54,9 @@ class Reactor:
         # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
 
+        tac = time.time()
+        print('Wall time: ','{0:.3f}'.format(tac - self.tic0), ' s')
+
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
         def construct_rhs(t, y):
