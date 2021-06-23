@@ -1,4 +1,4 @@
-from B1A_structure import Structure
+from B1A_heatstructure import HeatStructure
 from B1B_fuelrod import FuelRod
 
 #--------------------------------------------------------------------------------------------------
@@ -18,8 +18,12 @@ class Solid:
                 self.fuelrod.append(FuelRod(i, reactor))
 
         if 'structure' in reactor.solve:
-            # create structure object
-            self.structure = Structure(reactor)
+            # number of heat structures specified in input
+            self.nhtstr = len([x['id'] for x in reactor.control.input['htstr']])
+            # create an object for every heat structure
+            self.htstr = []
+            for i in range(self.nhtstr):
+                self.htstr.append(HeatStructure(i, reactor))
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'solid' object created in B

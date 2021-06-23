@@ -72,8 +72,10 @@ class Control:
         inp['signalid'] = []
         inp['solve'] = []
         inp['stack'] = []
+        inp['htstr'] = []
         inp['t0'] = 0
         inp['t_dt'] = []
+        inp['thermbc'] = []
     
         #read input file as a whole
         f = open('input', 'r')
@@ -184,6 +186,10 @@ class Control:
                     else:
                         inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenode':[int(word[8])]})
                 #--------------------------------------------------------------------------------------
+                # heat structure card
+                elif key == 'htstr':
+                    inp['htstr'].append({'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5]), 'bcleft':word[6], 'bcright':word[7]})
+                #--------------------------------------------------------------------------------------
                 # inner gas
                 elif key == 'innergas':
                      inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
@@ -256,39 +262,39 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # nuclear data directory
                 elif key == 'nddir':
-                     inp['nddir'] = word[1]
+                    inp['nddir'] = word[1]
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic pipe without free level
                 elif key == 'pipe':
-                     inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':''} )
+                    inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':''} )
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic pipe with free level
                 elif key == 'pipe-f':
-                     inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':1, 'signaltemp':''} )
+                    inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':1, 'signaltemp':''} )
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic pipe without free level with temperature defined by signal
                 elif key == 'pipe-t':
-                     inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
+                    inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
                 #--------------------------------------------------------------------------------------
                 # initial reactor power
                 elif key == 'power0':
-                     inp['power0'] = float(word[1])
+                    inp['power0'] = float(word[1])
                 #--------------------------------------------------------------------------------------
                 # signal variable
                 elif key == 'signal':
-                     signal = {}
-                     signal['id'] = word[1]
-                     if len(word[2:]) == 1:
-                         signal['value'] = word[2]
-                     else:
-                         signal['symexp'] = word[2:]
-                     inp['signal'].append(signal)
+                    signal = {}
+                    signal['id'] = word[1]
+                    if len(word[2:]) == 1:
+                        signal['value'] = word[2]
+                    else:
+                        signal['symexp'] = word[2:]
+                    inp['signal'].append(signal)
                 #--------------------------------------------------------------------------------------
                 # models to be solved
                 elif key == 'solve':
                     inp['solve'].append(word[1])
                     # verify that solve card has correct value
-                    correct_values = {'fluid','fuelgrain','fuelrod','pointkinetics','spatialkinetics'}
+                    correct_values = {'fluid','fuelgrain','fuelrod','htstr','pointkinetics','spatialkinetics'}
                     value = set([word[1]])
                     diff = value.difference(correct_values)
                     if diff != set():
@@ -334,6 +340,40 @@ class Control:
                 # end of time interval and output time step for this interval
                 elif key == 't_dt':
                     inp['t_dt'].append([word[1], word[2]])
+                #--------------------------------------------------------------------------------------
+                # thermal boundary conditions]
+                elif key == 'thermbc':
+                    if len(word)-1 < 3:
+                        print('****ERROR: thermbc card should have at least three values after the keyword.')
+                        sys.exit()
+                    dict = {}
+                    dict['id'] = word[1]
+                    try:
+                        dict['type'] = int(word[2])
+                    except:
+                        print('****ERROR: boundary condition type of thermbc card (word 3) is wrong: ', word[2], '. Correct values are: 0 (heat flux), 1 (heat exchange coefficient and temperature) or 2 (pipe id and pipenodeid).')
+                        sys.exit()
+                    if dict['type'] == 0:
+                        if len(word)-1 < 3:
+                            print('****ERROR: thermbc card with type == 0 should have three values after the keyword: id, type and qf.')
+                            sys.exit()
+                        dict['qf'] = word[3]
+                    elif dict['type'] == 1:
+                        if len(word)-1 < 4:
+                            print('****ERROR: thermbc card with type == 1 should have four values after the keyword: id, type, alfa and temp.')
+                            sys.exit()
+                        dict['alfa'] = word[3]
+                        dict['temp'] = word[4]
+                    elif dict['type'] == 2:
+                        if len(word)-1 < 4:
+                            print('****ERROR: thermbc card with type == 2 should have four values after the keyword: id, type, pipeid and pipenode.')
+                            sys.exit()
+                        dict['pipeid'] = word[3]
+                        dict['pipenode'] = word[4]
+                    else:
+                        print('****ERROR: boundary condition type of thermbc card (word 3) is wrong: ', word[2], '. Correct values are: 0 (heat flux), 1 (heat exchange coefficient and temperature) or 2 (pipe id and pipenodeid).')
+                        sys.exit()
+                    inp['thermbc'].append(dict)
                 #--------------------------------------------------------------------------------------
                 # prompt neutron lifetime
                 elif key == 'tlife':

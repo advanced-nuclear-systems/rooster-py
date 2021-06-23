@@ -3595,8 +3595,7 @@
     "TEMP_VS_T"
   ],
   "solve": [
-    "fluid",
-    "spatialkinetics"
+    "fluid"
   ],
   "stack": [
     {
@@ -4923,12 +4922,36 @@
       ]
     }
   ],
+  "htstr": [
+    {
+      "id": "S01",
+      "matid": "SS1",
+      "ri": 0.0041,
+      "ro": 0.0045,
+      "nr": 3,
+      "bcleft": "ADIAB",
+      "bcright": "COOL1"
+    }
+  ],
   "t0": 0.0,
   "t_dt": [
     [
       100.0,
       1.0
     ]
+  ],
+  "thermbc": [
+    {
+      "id": "ADIAB",
+      "type": 0,
+      "qf": 0.0
+    },
+    {
+      "id": "COOL1",
+      "type": 2,
+      "pipeid": "UP1",
+      "pipenode": 1.0
+    }
   ],
   "power0": 2990000000.0,
   "tlife": 0.0005,
@@ -4948,7 +4971,6 @@
     0.00096,
     0.000195
   ],
-  "ng": 25,
   "dgrain": 1e-05,
   "nrgrain": 20,
   "frate": 1,
