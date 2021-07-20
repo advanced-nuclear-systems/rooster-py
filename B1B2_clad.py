@@ -61,15 +61,16 @@ class Clad:
 
         # CLAD PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
-        if self.type == 'ss316':
-            for j in range(self.nr):
-                t = self.temp[j]
-                # density (kg/m3): @300K equation from Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.117
-                self.prop['rho'].append(7954)
-                # specific heat (J/kg-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.100. Note that 1 mol of SS316 = 10.165 kg (https://www.webqc.org/molecular-weight-of-SS316.html) and 1 cal = 4.184 J
-                self.prop['cp'].append((6.181 + 1.788e-3*t)*10.165*4.184)
-                # thermal conductivity (W/m-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.104.
-                self.prop['k'].append(9.248 + 1.571e-2*t)
+        for j in range(self.nr):
+            t = self.temp[j]
+            # call material property function
+            pro = reactor.data.matpro( {'type':self.type, 't':self.temp[j]} )
+            # density (kg/m3)
+            self.prop['rho'].append(pro['rho'])
+            # specific heat (J/kg-K)
+            self.prop['cp'].append(pro['cp'])
+            # thermal conductivity (W/m-K)
+            self.prop['k'].append(pro['k'])
 
         # TIME DERIVATIVE OF CLAD TEMPERATURE:
         # fuel object

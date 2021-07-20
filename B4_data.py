@@ -8,9 +8,10 @@ class Data:
 
     #----------------------------------------------------------------------------------------------
     # material properties: self is a 'data' object created in B
-    def matpro(self, type, t):
+    def matpro(self, inp):
         # stainless steel type of 316
-        if type == 'ss316':
+        if inp['type'] == 'ss316':
+            t = inp['t']
             # @300K equation from Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.117
             rho = 7954.
             # Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.100. Note that 1 mol of SS316 = 10.165 kg (https://www.webqc.org/molecular-weight-of-SS316.html) and 1 cal = 4.184 J
