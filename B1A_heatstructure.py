@@ -68,17 +68,17 @@ class HeatStructure:
 
         # HEAT STRUCTURE PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
-        if self.type == 'ss316':
-            for j in range(self.nr):
-                t = self.temp[j]
-                # call material property function
-                pro = reactor.data.matpro(self.type, t)
-                # density (kg/m3)
-                self.prop['rho'].append(pro['rho'])
-                # specific heat (J/kg-K)
-                self.prop['cp'].append(pro['cp'])
-                # thermal conductivity (W/m-K)
-                self.prop['k'].append(pro['k'])
+        for j in range(self.nr):
+            t = self.temp[j]
+            # call material property function
+            pro = reactor.data.matpro(self.type, t)
+            # density (kg/m3)
+            self.prop['rho'].append(pro['rho'])
+            # specific heat (J/kg-K)
+            self.prop['cp'].append(pro['cp'])
+            # thermal conductivity (W/m-K)
+            self.prop['k'].append(pro['k'])
+            print(self.prop)
 
         # heat structure thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
