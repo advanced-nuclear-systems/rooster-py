@@ -13,8 +13,10 @@
 #         Core
 #             Mix
 #             Isotope
+#         Data
 #--------------------------------------------------------------------------------------------------
 from B0_control import Control
+from B4_data import Data
 from B1_solid import Solid
 from B2_fluid import Fluid
 from B3_core import Core
@@ -50,16 +52,15 @@ class Reactor:
         self.solid = Solid(self)
         # create object core
         self.core = Core(self)
+        # create object data
+        self.data = Data(self)
 
         # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
 
-        tac = time.time()
-        print('Wall time: ','{0:.3f}'.format(tac - self.tic0), ' s')
-
         #------------------------------------------------------------------------------------------
         # given t and y, function returns the list of the right-hand sides. called by the ODE solver
-        def construct_rhs(t, y):
+        def compose_rhs(t, y):
 
             # read list of unknowns from y to self
             self.control.read_from_y(self, y)
@@ -67,9 +68,9 @@ class Reactor:
             # evaluate signals            
             self.control.evaluate_signals(self, t)
 
-            # create right-hand side vector
+            # compose right-hand side vector
             rhs = []
-            rhs += self.solid.calculate_rhs(self, t)
+            rhs += self.solid.compose_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)
             rhs += self.core.calculate_rhs(self, t)
             return rhs
@@ -81,8 +82,7 @@ class Reactor:
         self.control.print_output_files(self, fid, t0, 0)
 
         # create ODE solver, initialize and set integrator
-        #solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
-        solver = ode(construct_rhs, jac = None).set_integrator('lsoda', method = 'adams')
+        solver = ode(compose_rhs, jac = None).set_integrator('lsoda', method = 'bdf')
         solver.set_initial_value(y0, t0)
         solver.set_integrator
 
@@ -101,3 +101,6 @@ class Reactor:
         # close all output files
         for f in fid:
             f.close()
+
+        tac = time.time()
+        print('Wall time: ','{0:.3f}'.format(tac - self.tic0), ' s')

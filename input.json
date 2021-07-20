@@ -3595,7 +3595,8 @@
     "TEMP_VS_T"
   ],
   "solve": [
-    "fluid"
+    "fluid",
+    "htstr"
   ],
   "stack": [
     {
@@ -4930,7 +4931,8 @@
       "ro": 0.0045,
       "nr": 3,
       "bcleft": "ADIAB",
-      "bcright": "COOL1"
+      "bcright": "COOL1",
+      "mltpl": 10.0
     }
   ],
   "t0": 0.0,
@@ -4950,7 +4952,7 @@
       "id": "COOL1",
       "type": 2,
       "pipeid": "UP1",
-      "pipenode": 1.0
+      "pipenode": 1
     }
   ],
   "power0": 2990000000.0,

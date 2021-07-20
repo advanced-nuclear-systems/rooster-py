@@ -188,7 +188,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # heat structure card
                 elif key == 'htstr':
-                    inp['htstr'].append({'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5]), 'bcleft':word[6], 'bcright':word[7]})
+                    inp['htstr'].append({'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5]), 'bcleft':word[6], 'bcright':word[7], 'mltpl':word[8]})
                 #--------------------------------------------------------------------------------------
                 # inner gas
                 elif key == 'innergas':
@@ -369,7 +369,7 @@ class Control:
                             print('****ERROR: thermbc card with type == 2 should have four values after the keyword: id, type, pipeid and pipenode.')
                             sys.exit()
                         dict['pipeid'] = word[3]
-                        dict['pipenode'] = word[4]
+                        dict['pipenode'] = int(word[4])
                     else:
                         print('****ERROR: boundary condition type of thermbc card (word 3) is wrong: ', word[2], '. Correct values are: 0 (heat flux), 1 (heat exchange coefficient and temperature) or 2 (pipe id and pipenodeid).')
                         sys.exit()

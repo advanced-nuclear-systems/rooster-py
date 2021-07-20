@@ -67,6 +67,7 @@ betaeff   0.000285  0.0015975 0.00141   0.0030525 0.00096   0.000195
 #solve     fuelrod
 solve     fluid
 #solve     fuelgrain
+solve     htstr
 #solve     pointkinetics
 #solve     spatialkinetics     25
 #
@@ -169,8 +170,8 @@ thermbc   COOL1     2         UP1       1
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # HEAT STRUCTURE
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-#####     id        matid     ri(m)     ro(m)     nr        bcleft    bcright
-htstr     S01       SS1       4.1e-3    4.5e-3    3         ADIAB     COOL1
+#####     id        matid     ri(m)     ro(m)     nr        bcleft    bcright   mltpl
+htstr     S01       SS1       4.1e-3    4.5e-3    3         ADIAB     COOL1     10
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # NUCLEAR DATA DIRECTORY

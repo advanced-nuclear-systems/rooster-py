@@ -26,9 +26,9 @@ class FuelRod:
             self.clad.append(Clad(i, indx, reactor))
 
     #----------------------------------------------------------------------------------------------
-    # create right-hand side list: self is a 'fuelrod' object created in B1,
+    # compose right-hand side list: self is a 'fuelrod' object created in B1,
     # indx is the fuel rod index
-    def calculate_rhs(self, indx, reactor, t):
+    def compose_rhs(self, indx, reactor, t):
 
         # construct right-hand side list
         rhs = []
