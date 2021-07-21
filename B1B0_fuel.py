@@ -79,16 +79,15 @@ class Fuel:
 
         # FUEL PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
-        if self.type == 'mox':
-            for j in range(self.nr):
-                # call material property function
-                pro = reactor.data.matpro( {'type':self.type, 't':self.temp[j], 'b':self.b[j], 'por':self.por[j], 'pu':self.pu[j], 'x':self.x[j]} )
-                # density (kg/m3)
-                self.prop['rho'].append(pro['rho'])
-                # specific heat (J/kg-K)
-                self.prop['cp'].append(pro['cp'])
-                # thermal conductivity (W/m-K)
-                self.prop['k'].append(pro['k'])
+        for j in range(self.nr):
+            # call material property function
+            pro = reactor.data.matpro( {'type':self.type, 't':self.temp[j], 'b':self.b[j], 'por':self.por[j], 'pu':self.pu[j], 'x':self.x[j]} )
+            # density (kg/m3)
+            self.prop['rho'].append(pro['rho'])
+            # specific heat (J/kg-K)
+            self.prop['cp'].append(pro['cp'])
+            # thermal conductivity (W/m-K)
+            self.prop['k'].append(pro['k'])
 
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
         # inner gas object

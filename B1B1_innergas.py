@@ -13,6 +13,7 @@ class InnerGas:
         # number of axial nodes
         nz = len(dictfuelrod['fuelid'])
         self.hgap0 = dictfuelrod['hgap']
+        self.hgap = self.hgap0
         indx = [x['fuelrodid'] for x in reactor.control.input['innergas']].index(dictfuelrod['id'])
         matid = [x['matid'] for x in reactor.control.input['innergas']][indx]
         # find the gas material id in the list of materials
@@ -31,7 +32,8 @@ class InnerGas:
         self.temp = [mat['temp0']]*nz
 
     #----------------------------------------------------------------------------------------------
-    # calculate gap conductance
+    # calculate gap conductance: self is an 'innergas' object created in B1B
+    # indxfuelrod is the fuel rod index
     def calculate_hgap(self, indxfuelrod, reactor, t):
 
         nz = reactor.solid.fuelrod[indxfuelrod].nz
@@ -50,7 +52,7 @@ class InnerGas:
                 # call material property function
                 pro = reactor.data.matpro( {'type':self.type, 't':tgap} )
                 # thermal conductivity (W/m-K): 
-                k = prop['k']
+                k = pro['k']
                 self.hgap[i] = k/dgap
             else:
                 self.hgap[i] = self.hgap0[i]

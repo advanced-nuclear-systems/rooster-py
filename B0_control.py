@@ -495,6 +495,7 @@ class Control:
         indx = 0
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
+                # gas gap conductance
                 fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].innergas.hgap[j]) for j in range(reactor.solid.fuelrod[i].nz)]) + '\n')
                 indx += 1
                 # fuel and clad temperatures
