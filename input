@@ -142,15 +142,29 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 # FUEL ROD AXIAL LEVELS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodeid
-fuelrod   FR01      F01       0         C01       1.1       10        UP1       2
-fuelrod   FR01      F01       0         C01       1.1       10        UP1       3
-fuelrod   FR01      F01       0         C01       1.1       10        UP1       4
-fuelrod   FR01      F01       0         C01       1.1       10        UP1       5
-#
-fuelrod   FR02      F01       0         C01       1.1       1         UP2       2
-fuelrod   FR02      F01       0         C01       1.1       1         UP2       3
-fuelrod   FR02      F01       0         C01       1.1       1         UP2       4
-fuelrod   FR02      F01       0         C01       1.1       1         UP2       5
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      01
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      02
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      03
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      04
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      05
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      06
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      07
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      08
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      09
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      10
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      11
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      12
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      13
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      14
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      15
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      16
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      17
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      18
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      19
+#fuelrod   FR01      F01       0         C01       1.1       10        UP07      20
+#####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodeid
+#fuelrod   FR02      F01       0         C01       1.1       10        UP07      01
+#fuelrod   FR02      F01       0         C01       1.1       10        UP07      02
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # INNER GAS
