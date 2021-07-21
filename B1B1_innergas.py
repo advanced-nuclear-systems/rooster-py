@@ -47,9 +47,10 @@ class InnerGas:
                 # gap width
                 dgap = reactor.solid.fuelrod[indxfuelrod].clad[i].r[0] - reactor.solid.fuelrod[indxfuelrod].fuel[i].r[-1]
                 # GAS PROPERTIES:
-                if self.type == 'he':
-                    # thermal conductivity (W/m-K): 
-                    k = 2.639e-3*tgap**0.7085
+                # call material property function
+                pro = reactor.data.matpro( {'type':self.type, 't':tgap} )
+                # thermal conductivity (W/m-K): 
+                k = prop['k']
                 self.hgap[i] = k/dgap
             else:
                 self.hgap[i] = self.hgap0[i]

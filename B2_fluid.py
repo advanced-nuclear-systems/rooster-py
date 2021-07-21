@@ -177,15 +177,13 @@ class Fluid:
         self.prop = []
         for i in range(self.npipe):
             dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
-            if self.type[i] == 'na':
-                for j in range(self.pipennodes[i]):
-                    t = self.temp[i][j]
-                    # J.K. Fink and L. Leibowitz "Thermodynamic and Transport Properties of Sodium Liquid and Vapor", ANL/RE-95/2, 1995, https://www.ne.anl.gov/eda/ANL-RE-95-2.pdf
-                    dict['rhol'].append(219.0 + 275.32*(1.0 - t/2503.7) + 511.58*(1.0 - t/2503.7)**0.5)
-                    dict['visl'].append(math.exp(-6.4406 - 0.3958*math.log(t) + 556.835/t)/dict['rhol'][j])
-                    dict['kl'].append(124.67 - 0.11381*t + 5.5226e-5*t**2 - 1.1842e-8*t**3)
-                    # Based on fit from J.K. Fink, etal."Properties for Reactor Safety Analysis", ANL-CEN-RSD-82-2, May 1982.
-                    dict['cpl'].append(1646.97 - 0.831587*t + 4.31182e-04*t**2)
+            for j in range(self.pipennodes[i]):
+                # call material property function
+                pro = reactor.data.matpro( {'type':self.type[i], 't':self.temp[i][j]} )
+                dict['rhol'].append(pro['rhol'])
+                dict['visl'].append(pro['visl'])
+                dict['kl'].append(pro['kl'])
+                dict['cpl'].append(pro['cpl'])
             self.prop.append(dict)
 
         # FLOWRATES IN DEPENDENT JUNCTIONS:

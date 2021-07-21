@@ -1,6 +1,5 @@
 from B1B0A_fuelgrain import FuelGrain
 
-import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -82,17 +81,14 @@ class Fuel:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
         if self.type == 'mox':
             for j in range(self.nr):
-                b = self.b[j]
-                por = self.por[j]
-                pu = self.pu[j]
-                t = self.temp[j]
-                x = self.x[j]
+                # call material property function
+                pro = reactor.data.matpro( {'type':self.type, 't':self.temp[j], 'b':self.b[j], 'por':self.por[j], 'pu':self.pu[j], 'x':self.x[j]} )
                 # density (kg/m3)
-                self.prop['rho'].append((11460*pu + 10960*(1 - pu)) * (1 - por))
-                # specific heat (J/kg-K), D.L. Hagrman, et al., "MATPRO-version 11", TREE-NUREG-1280, Rev 1, Idaho National Engineering Laboratory (1980).
-                self.prop['cp'].append(15.496*(19.53*539**2 * math.exp(539/t) / (t**2 * (math.exp(539/t) - 1)**2) + 2*9.25e-04*t + 6.02e06*4.01e4 / (1.987*t**2) * math.exp(-4.01e4/(1.987*t))))
-                # thermal conductivity (W/m-K), Y. Philipponneau, J. Nuclear Matter., 188 (1992) 194-197
-                self.prop['k'].append((1/( 1.528*math.sqrt(x+0.00931) - 0.1055 + 0.44*b + 2.855e-4*t ) + 76.38e-12*t**3) * (1-por)/(1+por)/0.864)
+                self.prop['rho'].append(pro['rho'])
+                # specific heat (J/kg-K)
+                self.prop['cp'].append(pro['cp'])
+                # thermal conductivity (W/m-K)
+                self.prop['k'].append(pro['k'])
 
         # TIME DERIVATIVE OF FUEL TEMPERATURE:
         # inner gas object
