@@ -50,3 +50,18 @@ class Data:
             # thermal conductivity (W/m-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.100.
             k = 9.248 + 1.571e-2*t
             return {'rho':rho, 'cp':cp, 'k':k}
+
+    #----------------------------------------------------------------------------------------------
+    # Nusselt number: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
+    def nu(self, inp):
+
+        pe = inp['pe']
+        if 'p2d' in inp:
+            # pin bundle
+            p2d = inp['p2d']
+            # forced convection in a pin bundle (Mikityuk, NED 2008)
+            return 0.047*(1.0-math.exp(-3.8*(p2d-1.0))) * ((pe)**0.77 + 250.0)
+            
+        else:
+            # round tube
+            return 4.8 + 0.025 * (pe)**0.8

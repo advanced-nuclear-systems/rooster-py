@@ -431,6 +431,22 @@ class Control:
         shutil.copyfile('input.json', path4results + os.sep + 'input.json')
         # open files for output
         fid = []
+        if 'fluid' in reactor.solve:
+            fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.input['junction']['from'][j] +'-' + self.input['junction']['to'][j]).ljust(13) for j in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
+            for i in range(reactor.fluid.npipe):
+                fid.append(open(path4results + os.sep + 'fluid-p-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-temp-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-vel-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-re-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pr-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                fid.append(open(path4results + os.sep + 'fluid-pe-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 fid.append(open(path4results + os.sep + 'fuelrod-hgap-' + [x['id'] for x in self.input['fuelrod']][i] + '.dat', 'w'))
@@ -452,22 +468,6 @@ class Control:
                             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_p-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
                             fid.append(open(path4results + os.sep + 'fuelrod-bi-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
                             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('bi-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
-        if 'fluid' in reactor.solve:
-            fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
-            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.input['junction']['from'][j] +'-' + self.input['junction']['to'][j]).ljust(13) for j in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
-            for i in range(reactor.fluid.npipe):
-                fid.append(open(path4results + os.sep + 'fluid-p-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                fid.append(open(path4results + os.sep + 'fluid-temp-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                fid.append(open(path4results + os.sep + 'fluid-vel-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                fid.append(open(path4results + os.sep + 'fluid-re-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                fid.append(open(path4results + os.sep + 'fluid-pr-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                fid.append(open(path4results + os.sep + 'fluid-pe-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
-                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
         if 'pointkinetics' in reactor.solve:
             fid.append(open(path4results + os.sep + 'core-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
@@ -493,6 +493,23 @@ class Control:
 
         # print output files
         indx = 0
+        if 'fluid' in reactor.solve:
+            # flowrate in dependent and independent junctions (no internal junctions)
+            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.mdot[i]) for i in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
+            indx += 1
+            for i in range(reactor.fluid.npipe):
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.p[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.temp[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.vel[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.re[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pr[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pe[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+                indx += 1
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 # gas gap conductance
@@ -516,23 +533,6 @@ class Control:
                             indx += 1
                             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
                             indx += 1
-        if 'fluid' in reactor.solve:
-            # flowrate in dependent and independent junctions (no internal junctions)
-            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.mdot[i]) for i in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
-            indx += 1
-            for i in range(reactor.fluid.npipe):
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.p[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.temp[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.vel[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.re[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pr[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
-                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pe[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
-                indx += 1
         if 'pointkinetics' in reactor.solve:
             # point kinetics power
             fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(reactor.core.power) + '\n')
@@ -668,6 +668,15 @@ class Control:
 
         # write list of unknowns to y
         y = []
+        if 'fluid' in reactor.solve:
+            for j in range(reactor.fluid.njun):
+                if reactor.fluid.juntype[j] == 'independent':
+                    # flowrate in independent junctions
+                    y.append(reactor.fluid.mdoti[j])
+            for i in range(reactor.fluid.npipe):
+                for j in range(reactor.fluid.pipennodes[i]):
+                    # temperature in pipe nodes
+                    y.append(reactor.fluid.temp[i][j])
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 for j in range(reactor.solid.fuelrod[i].nz):
@@ -697,15 +706,6 @@ class Control:
                     for k in range(reactor.solid.fuelrod[i].clad[j].nr):
                         # clad temperature
                         y.append(reactor.solid.fuelrod[i].clad[j].temp[k])
-        if 'fluid' in reactor.solve:
-            for j in range(reactor.fluid.njun):
-                if reactor.fluid.juntype[j] == 'independent':
-                    # flowrate in independent junctions
-                    y.append(reactor.fluid.mdoti[j])
-            for i in range(reactor.fluid.npipe):
-                for j in range(reactor.fluid.pipennodes[i]):
-                    # temperature in pipe nodes
-                    y.append(reactor.fluid.temp[i][j])
         if 'pointkinetics' in reactor.solve:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
@@ -717,6 +717,17 @@ class Control:
 
         # read list of unknowns from y
         indx = 0
+        if 'fluid' in reactor.solve:
+            for j in range(reactor.fluid.njun):
+                if reactor.fluid.juntype[j] == 'independent':
+                    # flowrate in independent junctions
+                    reactor.fluid.mdoti[j] = y[indx]
+                    indx += 1
+            for i in range(reactor.fluid.npipe):
+                for j in range(reactor.fluid.pipennodes[i]):
+                    # temperature in pipe nodes
+                    reactor.fluid.temp[i][j] = y[indx]
+                    indx += 1
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 for j in range(reactor.solid.fuelrod[i].nz):
@@ -754,17 +765,6 @@ class Control:
                         # clad temperature
                         reactor.solid.fuelrod[i].clad[j].temp[k] = y[indx]
                         indx += 1
-        if 'fluid' in reactor.solve:
-            for j in range(reactor.fluid.njun):
-                if reactor.fluid.juntype[j] == 'independent':
-                    # flowrate in independent junctions
-                    reactor.fluid.mdoti[j] = y[indx]
-                    indx += 1
-            for i in range(reactor.fluid.npipe):
-                for j in range(reactor.fluid.pipennodes[i]):
-                    # temperature in pipe nodes
-                    reactor.fluid.temp[i][j] = y[indx]
-                    indx += 1
         if 'pointkinetics' in reactor.solve:
             reactor.core.power = y[indx]
             indx += 1

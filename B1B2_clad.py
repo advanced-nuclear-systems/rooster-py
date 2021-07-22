@@ -96,18 +96,29 @@ class Clad:
 
         # clad thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
+        # heat flux (W/m**2) times heat transfer area per unit height divided by pi from fuel to clad 
         Q = [(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
-        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
-        Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [0]
-        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
-        dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]
+        # list of heat flux (W/m**2) times heat transfer area per unit height divided by pi at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
+        Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
 
         # dictionary of the fuel rod to which the clad belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # pipe node indexes
         jpipe = (reactor.fluid.pipeid.index(dictfuelrod['pipeid'][indx]), dictfuelrod['pipenode'][indx]-1)
-        dTdt[self.nr-1] -= 1e3*(self.temp[self.nr-1] - reactor.fluid.temp[jpipe[0]][jpipe[1]])
+        fluid = {}
+        fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
+        fluid['type'] = reactor.fluid.type[jpipe[0]]
+        # call material property function
+        pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t']} )
+        fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
+        fluid['nu'] = reactor.data.nu( {'pe':fluid['pe'], 'p2d':self.p2d} )
+        # heat exchange coefficient
+        fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
+        # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
+        Q += [2*self.ro * fluid['hex']*(self.temp[self.nr-1] - fluid['t'])]
+
+        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
+        dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]
         rhs = dTdt
 
         return rhs

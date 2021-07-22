@@ -212,7 +212,7 @@ class Fluid:
             rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
             self.vel[self.t[j][0]][self.t[j][1]] += self.mdot[j]/rho_t/self.areaz[self.t[j][0]]
         # Reynolds numbers
-        self.re = [[self.vel[i][j]*self.dhyd[i]/self.prop[i]['visl'][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
+        self.re = [[abs(self.vel[i][j])*self.dhyd[i]/self.prop[i]['visl'][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
         # Prandtl numbers
         self.pr = [[self.prop[i]['visl'][j]*self.prop[i]['rhol'][j]*self.prop[i]['cpl'][j]/self.prop[i]['kl'][j] for j in range(self.pipennodes[i])] for i in range(self.npipe)]
         # Peclet numbers
@@ -277,7 +277,10 @@ class Fluid:
                         mltpl = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].mltpl
                         ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
                         area_ht = 2 * math.pi * ro * mltpl
-                        dtempdt2d[i][j] += 1e3*(tclad - self.temp[i][j]) * area_ht
+                        p2d = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].p2d
+                        nu = reactor.data.nu( {'pe':self.pe[i][j], 'p2d':p2d} )
+                        hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
+                        dtempdt2d[i][j] += hex*(tclad - self.temp[i][j]) * area_ht
                     rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
                     dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
 

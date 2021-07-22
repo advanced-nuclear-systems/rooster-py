@@ -70,8 +70,8 @@ class Reactor:
 
             # compose right-hand side vector
             rhs = []
-            rhs += self.solid.compose_rhs(self, t)
             rhs += self.fluid.calculate_rhs(self, t)
+            rhs += self.solid.compose_rhs(self, t)
             rhs += self.core.calculate_rhs(self, t)
             return rhs
 

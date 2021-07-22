@@ -144,34 +144,30 @@ clad      C01       SS1       4.1e-3    4.5e-3    3
 #####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodeid
 fuelrod   FR01      F01       0         C01       1.1       10        UP07      01
 fuelrod   FR01      F01       0         C01       1.1       10        UP07      02
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      03
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      04
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      05
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      06
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      07
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      08
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      09
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      10
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      11
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      12
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      13
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      14
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      15
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      16
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      17
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      18
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      19
-#fuelrod   FR01      F01       0         C01       1.1       10        UP07      20
-#####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodeid
-#fuelrod   FR02      F01       0         C01       1.1       10        UP07      01
-#fuelrod   FR02      F01       0         C01       1.1       10        UP07      02
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      03
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      04
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      05
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      06
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      07
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      08
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      09
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      10
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      11
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      12
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      13
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      14
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      15
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      16
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      17
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      18
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      19
+fuelrod   FR01      F01       0         C01       1.1       10        UP07      20
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # INNER GAS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     fuelrodid matid     plenv(m3)
 innergas  FR01      HE1       53e-6
-innergas  FR02      HE1       53e-6
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # THERMAL BOUNDARY CONDITIONS
