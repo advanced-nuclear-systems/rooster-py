@@ -34,7 +34,7 @@ class Fluid:
         # list of user-specified pipe temperature signal
         self.signaltemp = [x['signaltemp'] for x in reactor.control.input['pipe']]
 
-        # lists for pressure, temperature, type, velocity, reynolds, prandtl and peclet
+        # lists for pressure, temperature, type, velocity, reynolds, prandtl, peclet and thermal boundary condition id
         self.p = []
         self.temp = []
         self.type = []
@@ -42,6 +42,7 @@ class Fluid:
         self.re = []
         self.pr = []
         self.pe = []
+        self.thermbc = []
         # process coolant names
         for i in range(self.npipe):
             cool = reactor.control.input['pipe'][i]['matid']
@@ -68,6 +69,8 @@ class Fluid:
             self.pr.append([0]*self.pipennodes[i])
             # list of initial peclet in pipe nodes
             self.pe.append([0]*self.pipennodes[i])
+            # list of initial thermal boundary conditions in pipe nodes
+            self.thermbc.append(['']*self.pipennodes[i])
         # assign index to every pipe node
         self.indx = []
         for i in range(self.npipe):
@@ -155,7 +158,7 @@ class Fluid:
         # initialize list of flowrate in all junctions
         self.mdot = [0]*self.njun
 
-        # prepare lists to map thermal-hydraulic and fuel rods nodes
+        # prepare lists to map thermal-hydraulic and fuel-rod nodes
         indx_i = [x['pipeid'] for x in reactor.control.input['fuelrod']]
         indx_j = [x['pipenode'] for x in reactor.control.input['fuelrod']]
         nfuelrods = len(indx_i)
@@ -165,6 +168,25 @@ class Fluid:
             for j in range(len(indx_i[i])):
                 self.map_th.append((indx_i[i][j], indx_j[i][j]))
                 self.map_fr.append((i,j))
+
+        # analyse thermal boundary conditions
+        for x in reactor.control.input['thermbc']:
+            # boundary with pipe
+            if x['type'] == 2:
+                # check if pipe exists
+                jpipe = (x['pipeid'], x['pipenode'])
+                if jpipe[0] not in self.pipeid:
+                    print('****ERROR: pipe id (' + jpipe[0] + ') in \'thermbc\' card (' + x['id'] + ') does not exist in input.')
+                    sys.exit()
+                else:
+                    # pipe index
+                    ipipe = self.pipeid.index(jpipe[0])
+                # check if pipenodeid exists
+                if jpipe[1] > self.pipennodes[ipipe]:
+                    print('****ERROR: pipe node index (' + str(jpipe[1]) + ') given in \'thermbc\' card (' + x['id'] + ') exceeds number of nodes (' + str(self.pipennodes[ipipe]) + ') of pipe ' + jpipe[0])
+                    sys.exit()
+                else:
+                    self.thermbc[ipipe][jpipe[1]-1] = x['id']
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
