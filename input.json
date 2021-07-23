@@ -3657,8 +3657,8 @@
     "TEMP_VS_T"
   ],
   "solve": [
-    "fuelrod",
-    "fluid"
+    "fluid",
+    "htstr"
   ],
   "stack": [
     {

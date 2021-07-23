@@ -83,25 +83,47 @@ class HeatStructure:
 
         # left boundary condition
         if self.bcleft['type'] == 0:
-            Qleft = self.bcleft['qf']*self.r[0]
+            Qleft = 2*self.r[0]*self.bcleft['qf']
         elif self.bcleft['type'] == 1:
-            Qleft = self.bcleft['alfa']*(self.bcleft['temp'] - self.temp[0])*self.r[0]
+            Qleft = 2*self.r[0]*self.bcleft['alfa']*(self.bcleft['temp'] - self.temp[0])
         else: #self.bcleft['type'] == 2
-            Qleft = 0.0 # to be corrected!
+            # pipe node indexes
+            jpipe = (reactor.fluid.pipeid.index(self.bcright['pipeid']), self.bcright['pipenode']-1)
+            fluid = {}
+            fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
+            fluid['type'] = reactor.fluid.type[jpipe[0]]
+            # call material property function
+            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t']} )
+            fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
+            fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
+            # heat exchange coefficient
+            fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
+            # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
+            Qleft = 2*self.r[self.nr-1]*fluid['hex']*(self.temp[0] - fluid['t'])
 
         # right boundary condition
         if self.bcright['type'] == 0:
-            Qright = self.bcright['qf']*self.r[self.nr-1]
+            Qright = 2*self.r[self.nr-1]*self.bcright['qf']
         elif self.bcright['type'] == 1:
-            Qright = self.bcright['alfa']*(self.bcright['temp'] - self.temp[self.nr-1])*self.r[self.nr-1]
+            Qright = 2*self.r[self.nr-1]*self.bcright['alfa']*(self.bcright['temp'] - self.temp[self.nr-1])
         else: #self.bcright['type'] == 2
-            Qright = 0.0 # to be corrected!
-        #print(Qleft, Qright)
-        # heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
-#        Q = [(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
-#        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
-#        Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [0]
-#        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
-#        dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]
-        rhs = []
+            # pipe node indexes
+            jpipe = (reactor.fluid.pipeid.index(self.bcright['pipeid']), self.bcright['pipenode']-1)
+            fluid = {}
+            fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
+            fluid['type'] = reactor.fluid.type[jpipe[0]]
+            # call material property function
+            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t']} )
+            fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
+            fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
+            # heat exchange coefficient
+            fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
+            # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
+            Qright = 2*self.r[self.nr-1]*fluid['hex']*(self.temp[self.nr-1] - fluid['t'])
+
+        # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
+        Q = [Qleft] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)] + [Qright]
+        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
+        dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]
+        rhs = dTdt
         return rhs

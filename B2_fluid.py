@@ -42,7 +42,6 @@ class Fluid:
         self.re = []
         self.pr = []
         self.pe = []
-        self.thermbc = []
         # process coolant names
         for i in range(self.npipe):
             cool = reactor.control.input['pipe'][i]['matid']
@@ -69,8 +68,6 @@ class Fluid:
             self.pr.append([0]*self.pipennodes[i])
             # list of initial peclet in pipe nodes
             self.pe.append([0]*self.pipennodes[i])
-            # list of initial thermal boundary conditions in pipe nodes
-            self.thermbc.append(['']*self.pipennodes[i])
         # assign index to every pipe node
         self.indx = []
         for i in range(self.npipe):
@@ -185,8 +182,6 @@ class Fluid:
                 if jpipe[1] > self.pipennodes[ipipe]:
                     print('****ERROR: pipe node index (' + str(jpipe[1]) + ') given in \'thermbc\' card (' + x['id'] + ') exceeds number of nodes (' + str(self.pipennodes[ipipe]) + ') of pipe ' + jpipe[0])
                     sys.exit()
-                else:
-                    self.thermbc[ipipe][jpipe[1]-1] = x['id']
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fluid' object created in B
     def calculate_rhs(self, reactor, t):
@@ -303,6 +298,23 @@ class Fluid:
                         nu = reactor.data.nu( {'pe':self.pe[i][j], 'p2d':p2d} )
                         hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                         dtempdt2d[i][j] += hex*(tclad - self.temp[i][j]) * area_ht
+
+                    # check if there is a heat structure cooled by the node
+                    if 'htstr' in reactor.solve :
+                        for k in range(reactor.solid.nhtstr):
+                            bcleft = reactor.solid.htstr[k].bcleft
+                            bcright = reactor.solid.htstr[k].bcright
+                            if bcleft['type'] == 2 and bcleft['pipeid'] == self.pipeid[i] and bcleft['pipenode']-1 == j:
+                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
+                                hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
+                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ri
+                                dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[0] - self.temp[i][j]) * area_ht
+                            if bcright['type'] == 2 and bcright['pipeid'] == self.pipeid[i] and bcright['pipenode']-1 == j:
+                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
+                                hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
+                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ro
+                                dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[-1] - self.temp[i][j]) * area_ht
+
                     rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
                     dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
 

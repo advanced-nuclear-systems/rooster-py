@@ -468,6 +468,10 @@ class Control:
                             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cv_p-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
                             fid.append(open(path4results + os.sep + 'fuelrod-bi-' + [x['id'] for x in self.input['fuelrod']][i] + '-' + str(j).zfill(3) + '-' + str(k).zfill(3) + '.dat', 'w'))
                             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('bi-' + str(l).zfill(3)).ljust(13) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
+        if 'htstr' in reactor.solve:
+            for i in range(reactor.solid.nhtstr):
+                fid.append(open(path4results + os.sep + 'htstr-temp-' + [x['id'] for x in self.input['htstr']][i] + '.dat', 'w'))
+                fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('temp-' + str(j).zfill(3)).ljust(13) for j in range(reactor.solid.htstr[i].nr)]) + '\n')
         if 'pointkinetics' in reactor.solve:
             fid.append(open(path4results + os.sep + 'core-power.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
@@ -533,6 +537,10 @@ class Control:
                             indx += 1
                             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].bi[l]) for l in range(reactor.solid.fuelrod[i].fuel[j].fuelgrain[k].NB)]) + '\n')
                             indx += 1
+        if 'htstr' in reactor.solve:
+            for i in range(reactor.solid.nhtstr):
+                fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.solid.htstr[i].temp[k]) for k in range(reactor.solid.htstr[i].nr)]) + '\n')
+                indx += 1
         if 'pointkinetics' in reactor.solve:
             # point kinetics power
             fid[indx].write('{0:12.5e} '.format(time) + '{0:12.5e} '.format(reactor.core.power) + '\n')
@@ -706,6 +714,11 @@ class Control:
                     for k in range(reactor.solid.fuelrod[i].clad[j].nr):
                         # clad temperature
                         y.append(reactor.solid.fuelrod[i].clad[j].temp[k])
+        if 'htstr' in reactor.solve:
+            for i in range(reactor.solid.nhtstr):
+                for k in range(reactor.solid.htstr[i].nr):
+                    # htstr temperature
+                    y.append(reactor.solid.htstr[i].temp[k])
         if 'pointkinetics' in reactor.solve:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
@@ -765,6 +778,12 @@ class Control:
                         # clad temperature
                         reactor.solid.fuelrod[i].clad[j].temp[k] = y[indx]
                         indx += 1
+        if 'htstr' in reactor.solve:
+            for i in range(reactor.solid.nhtstr):
+                for k in range(reactor.solid.htstr[i].nr):
+                    # htstr temperature
+                    reactor.solid.htstr[i].temp[k] = y[indx]
+                    indx += 1
         if 'pointkinetics' in reactor.solve:
             reactor.core.power = y[indx]
             indx += 1
