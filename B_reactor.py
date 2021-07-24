@@ -44,12 +44,12 @@ class Reactor:
 
         # create object fluid
         self.fluid = Fluid(self)
+        # create object solid
+        self.solid = Solid(self)
 
         # evaluate signals
         self.control.evaluate_signals(self, self.control.input['t0'])
 
-        # create object solid
-        self.solid = Solid(self)
         # create object core
         self.core = Core(self)
         # create object data

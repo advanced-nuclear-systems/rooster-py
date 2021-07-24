@@ -19,10 +19,67 @@ class Control:
         # evaluate signals
         self.signal = {}
         for s in self.input['signal']:
-            if type(s['value']) == int or type(s['value']) == float:
-                self.signal[s['id']] = s['value']
-            if s['value'] == 'time':
+            self.signal[s['id']] = 0.0
+            # constant
+            if type(s['value'][0]) == int or type(s['value'][0]) == float:
+                self.signal[s['id']] = s['value'][0]
+            if s['value'][0] == 'time':
                 self.signal[s['id']] = t
+            elif s['value'][0] == 'temp':
+                id = s['value'][1]
+                if 'fluid' in reactor.solve and id in reactor.fluid.pipeid:
+                    pass
+                elif 'htstr' in reactor.solve and id in [x.id for x in reactor.solid.htstr]:
+                    indx = [x.id for x in reactor.solid.htstr].index(id)
+                    if len(s['value']) == 2:
+                        # average temperature
+                        tavg = 0.0
+                        for i in range(reactor.solid.htstr[indx].nr):
+                            tavg += reactor.solid.htstr[indx].temp[i] * reactor.solid.htstr[indx].vol[i]
+                        tavg /= sum(reactor.solid.htstr[indx].vol)
+                        self.signal[s['id']] = tavg
+                    else:
+                        # node temperature
+                        if s['value'][2] > reactor.solid.htstr[indx].nr:
+                            print('****ERROR: \'signal\' card ' + s['id'] + ' refers to radial node (' + str(int(s['value'][2])) + ') that does not exist in htstr ' + id)
+                            sys.exit()
+                        self.signal[s['id']] = reactor.solid.htstr[indx].temp[int(s['value'][2])-1]
+            elif s['value'][0] == 'tempf':
+                id = s['value'][1]
+                if 'fuelrod' in reactor.solve and id in [x.id for x in reactor.solid.fuelrod]:
+                    indx = [x.id for x in reactor.solid.fuelrod].index(id)
+                    if len(s['value']) == 2:
+                        # r-z-average fuel temperature and volume
+                        tavg, vol = 0.0, 0.0
+                        for i in range(reactor.solid.fuelrod[indx].nz):
+                            for j in range(reactor.solid.fuelrod[indx].fuel[i].nr):
+                                tavg += reactor.solid.fuelrod[indx].fuel[i].temp[j] * reactor.solid.fuelrod[indx].fuel[i].vol[j]
+                                vol += reactor.solid.fuelrod[indx].fuel[i].vol[j]
+                        tavg /= vol
+                        self.signal[s['id']] = tavg
+                    elif len(s['value']) == 3:
+                        if s['value'][2] > reactor.solid.fuelrod[indx].nz:
+                            print('****ERROR: \'signal\' card ' + s['id'] + ' refers to axial layer (' + str(int(s['value'][2])) + ') that does not exist in fuelrod ' + id)
+                            sys.exit()
+                        i = int(s['value'][2])
+                        # r-average temperature and volume
+                        tavg, vol = 0.0, 0.0
+                        for j in range(reactor.solid.fuelrod[indx].fuel[i].nr):
+                            tavg += reactor.solid.fuelrod[indx].fuel[i].temp[j] * reactor.solid.fuelrod[indx].fuel[i].vol[j]
+                            vol += reactor.solid.fuelrod[indx].fuel[i].vol[j]
+                        tavg /= vol
+                        self.signal[s['id']] = tavg
+                    else:
+                        if s['value'][2] > reactor.solid.fuelrod[indx].nz:
+                            print('****ERROR: \'signal\' card ' + s['id'] + ' refers to axial layer (' + str(int(s['value'][2])) + ') that does not exist in fuelrod ' + id)
+                            sys.exit()
+                        i = int(s['value'][2])
+                        if s['value'][3] > reactor.solid.fuelrod[indx].fuel[i].nr:
+                            print('****ERROR: \'signal\' card ' + s['id'] + ' refers to radial (' + str(int(s['value'][3])) + ') that does not exist in fuel of fuelrod ' + id)
+                            sys.exit()
+                        j = int(s['value'][3])
+                        # node temperature
+                        self.signal[s['id']] = reactor.solid.fuelrod[indx].fuel[int(s['value'][2])-1].temp[int(s['value'][3])-1]
 
         #evaluate output signals of lookup tables
         lookup_table = self.input['lookup']
@@ -130,22 +187,22 @@ class Control:
                 # core geometry
                 elif key == 'coregeom':
                     if len(word)-1 < 4:
-                        print('****ERROR: coregeom card should have four values after the keyword: geometry flag (hex01, hex06, hex24, square), pitch (distance between node centres), bottom boundary conditions (0: vacuum, -1: reflective), top boundary conditions (0: vacuum, -1: reflective).')
+                        print('****ERROR: \'coregeom\' card should have four values after the keyword: geometry flag (hex01, hex06, hex24, square), pitch (distance between node centres), bottom boundary conditions (0: vacuum, -1: reflective), top boundary conditions (0: vacuum, -1: reflective).')
                         sys.exit()
                     list_of_geometries = ['square','hex01', 'hex06', 'hex24']
                     if not word[1] in list_of_geometries:
-                        print('****ERROR: geometry flag of coregeom card (word 2) is wrong: ', word[1], '\nCorrect values are: ')
+                        print('****ERROR: geometry flag of \'coregeom\' card (word 2) is wrong: ', word[1], '\nCorrect values are: ')
                         for v in list_of_geometries:
                             print(v)
                         sys.exit()
                     if not isinstance(word[2],int) and not isinstance(word[2],float):
-                        print('****ERROR: node pitch (m) of coregeom card (word 3) is not numeric: ', word[2])
+                        print('****ERROR: node pitch (m) of \'coregeom\' card (word 3) is not numeric: ', word[2])
                         sys.exit()
                     if word[3] != 0 and word[3] != 1:
-                        print('****ERROR: bottom boundary condition flag of coregeom card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
+                        print('****ERROR: bottom boundary condition flag of \'coregeom\' card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
                         sys.exit()
                     if word[4] != 0 and word[4] != 1:
-                        print('****ERROR: top boundary condition flag of coregeom card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
+                        print('****ERROR: top boundary condition flag of \'coregeom\' card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
                         sys.exit()
                     inp['coregeom'] = {'geom':word[1], 'pitch':word[2], 'botBC':int(word[3]), 'topBC':int(word[4])}
                 #--------------------------------------------------------------------------------------
@@ -282,13 +339,10 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # signal variable
                 elif key == 'signal':
-                    signal = {}
-                    signal['id'] = word[1]
-                    if len(word[2:]) == 1:
-                        signal['value'] = word[2]
-                    else:
-                        signal['symexp'] = word[2:]
-                    inp['signal'].append(signal)
+                    if len(word) == 2:
+                        print('****ERROR: \'signal\' card should have at least 3 words.')
+                        sys.exit()
+                    inp['signal'].append( {'id':word[1], 'value':word[2:]} )
                 #--------------------------------------------------------------------------------------
                 # models to be solved
                 elif key == 'solve':
@@ -298,7 +352,7 @@ class Control:
                     value = set([word[1]])
                     diff = value.difference(correct_values)
                     if diff != set():
-                        print('****ERROR: solve card contains wrong value: ', list(diff)[0], '\nCorrect values are: ')
+                        print('****ERROR: \'solve\' card contains wrong value: ', list(diff)[0], '\nCorrect values are: ')
                         sorted = list(correct_values)
                         sorted.sort()
                         for v in sorted:

@@ -3636,27 +3636,44 @@
   "signal": [
     {
       "id": "TIME",
-      "value": "time"
+      "value": [
+        "time"
+      ]
     },
     {
       "id": "PI",
-      "value": 3.14159
+      "value": [
+        3.14159
+      ]
     },
     {
       "id": "TEMP",
-      "value": 600.0
+      "value": [
+        600.0
+      ]
+    },
+    {
+      "id": "TEMPFR01",
+      "value": [
+        "tempf",
+        "FR01",
+        2.0,
+        1.0
+      ]
     }
   ],
   "signalid": [
     "TIME",
     "PI",
     "TEMP",
+    "TEMPFR01",
     "RHO_INS",
     "PMPHEAD_VS_T",
     "MDOT_VS_T",
     "TEMP_VS_T"
   ],
   "solve": [
+    "fuelrod",
     "fluid",
     "htstr"
   ],

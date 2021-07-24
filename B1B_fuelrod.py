@@ -10,6 +10,8 @@ class FuelRod:
     def __init__(self, indx, reactor):
 
         # INITIALIZATION
+        # fuel rod id
+        self.id = reactor.control.input['fuelrod'][indx]['id']
         # number of axial layers specified in input for fuel rod indx
         self.nz = len(reactor.control.input['fuelrod'][indx]['fuelid'])
         # create an object for every axial layer of fuel
