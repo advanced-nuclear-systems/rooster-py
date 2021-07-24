@@ -431,6 +431,9 @@ class Control:
         shutil.copyfile('input.json', path4results + os.sep + 'input.json')
         # open files for output
         fid = []
+        if 'signal' in self.input:
+            fid.append(open(path4results + os.sep + 'signal.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join( [(self.input['signal'][j]['id']).ljust(13) for j in range(len(self.input['signal']))] + [table['f(x)'][0].ljust(13) for table in self.input['lookup']] ) + '\n')
         if 'fluid' in reactor.solve:
             fid.append(open(path4results + os.sep + 'fluid-mdot.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([(self.input['junction']['from'][j] +'-' + self.input['junction']['to'][j]).ljust(13) for j in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
@@ -497,6 +500,10 @@ class Control:
 
         # print output files
         indx = 0
+        if 'signal' in self.input:
+            # signals
+            fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.control.signal[j]) for j in reactor.control.signal]) + '\n')
+            indx += 1
         if 'fluid' in reactor.solve:
             # flowrate in dependent and independent junctions (no internal junctions)
             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.mdot[i]) for i in range(reactor.fluid.njuni + reactor.fluid.njund)]) + '\n')
