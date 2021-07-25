@@ -3659,6 +3659,12 @@
         "FR01",
         2.0
       ]
+    },
+    {
+      "id": "TEST",
+      "value": [
+        "(TIME+2.2)*PI/((TEMP-300)*6)"
+      ]
     }
   ],
   "signalid": [
@@ -3666,13 +3672,13 @@
     "PI",
     "TEMP",
     "TEMPFR01",
+    "TEST",
     "RHO_INS",
     "PMPHEAD_VS_T",
     "MDOT_VS_T",
     "TEMP_VS_T"
   ],
   "solve": [
-    "fuelrod",
     "fluid",
     "htstr"
   ],
