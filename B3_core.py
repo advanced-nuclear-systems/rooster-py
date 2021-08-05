@@ -84,6 +84,7 @@ class Core:
                 self.mix[i].calculate_sigp(self, reactor)
                 self.mix[i].calculate_chi(self)
                 self.mix[i].calculate_sigs(self, reactor)
+                self.mix[i].calculate_sigs1(self, reactor)
                 self.mix[i].calculate_sign2n(self, reactor)
                 self.mix[i].calculate_kerma(self, reactor)
                 self.mix[i].update_xs = False
@@ -160,11 +161,23 @@ class Core:
             # core assembly pitch
             self.pitch = 100*reactor.control.input['coregeom']['pitch']
 
+            #f = open('tmp_map.txt', 'w')
+            #for iz in range(self.nz):
+            #    for iy in range(self.ny):
+            #        if iy % 2 == 0:
+            #            pass
+            #        else:
+            #            f.write(' ')
+            #        for ix in range(self.nx):
+            #            f.write(str(self.map['imix'][iz][iy][ix]+1) + ' ')
+            #        f.write('\n')
+            #    f.write('\niz = '+str(iz)+'\n')
+            #f.close()
+
             # initialize multiplication factor
             self.k = numpy.array([1.])
 
             # prepare arrays for Fortran solver of eigenvalue problem             
-            #print(B3_coreF.solve_eigenvalue_problem.__doc__)
             # total cross section
             sigt = numpy.array([[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # production cross section
@@ -187,6 +200,8 @@ class Core:
             tsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
             # fission source
             chi = numpy.array([[self.mix[imix].chi[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            # fission cross section
+            sigf = numpy.array([[self.mix[imix].sigf[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # axial nodalization (cm)
             dz = numpy.array(self.map['dz'], order='F')*100.
 
@@ -208,9 +223,9 @@ class Core:
             sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
             # call the Fortran eigenvalue problem solver
-            B3_coreF.solve_eigenvalue_problem(self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
+            B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
-                                              nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, \
+                                              nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, sigf, \
                                               self.pitch, dz)
             # power distribution
             self.pow = numpy.zeros(shape=(self.nz, self.ny, self.nx), order='F')
@@ -230,7 +245,7 @@ class Core:
                     for ix in range(self.nx):
                         # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                         imix = self.map['imix'][iz][iy][ix]
-                        if imix >= 0:
+                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
                             vol = az*self.map['dz'][iz-1]
                             for it in range(self.nt):
                                 for ig in range(self.ng):

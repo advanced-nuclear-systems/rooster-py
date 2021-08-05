@@ -818,7 +818,7 @@ class Control:
                             if imix >= 0:
                                 for ig in range(reactor.core.ng):
                                     flux = sum([reactor.core.flux[iz][iy][ix][it][ig] for it in range(reactor.core.nt)])
-                                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig).ljust(13) + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(flux) + '\n')
+                                    fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig+1).ljust(13) + str(iz).ljust(13) + str(iy).ljust(13) + str(ix).ljust(12) + '{0:12.5e} '.format(flux) + '\n')
             indx += 1
             # power
             if flag == 0 : 

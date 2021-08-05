@@ -93,7 +93,7 @@ class Reactor:
             # solve the whole system of ODEs
             while solver.successful() and solver.t < tend:
                 t = solver.t + dtout
-                print(t)
+                #print(t)
                 y = solver.integrate(t)
 
                 # print to output files

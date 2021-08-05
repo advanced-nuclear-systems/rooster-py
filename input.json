@@ -9,7 +9,7 @@
     }
   ],
   "coregeom": {
-    "geom": "hex06",
+    "geom": "hex01",
     "pitch": 0.18018,
     "botBC": 0,
     "topBC": 0
@@ -3680,7 +3680,7 @@
   ],
   "solve": [
     "fluid",
-    "htstr"
+    "spatialkinetics"
   ],
   "stack": [
     {
@@ -3850,10 +3850,10 @@
         20,
         1,
         2,
+        3,
         4,
         5,
         6,
-        3,
         1,
         2,
         1,
@@ -5057,6 +5057,7 @@
     0.00096,
     0.000195
   ],
+  "ng": 25,
   "dgrain": 1e-05,
   "nrgrain": 20,
   "frate": 1,
