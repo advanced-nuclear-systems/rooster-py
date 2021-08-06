@@ -190,6 +190,14 @@ class Core:
             fsigs = numpy.zeros(shape=(self.nmix, max(nsigs)), dtype=int, order='F')
             # 'to' index of scattering matrix elements
             tsigs = numpy.zeros(shape=(self.nmix, max(nsigs)), dtype=int, order='F')
+            # number of elements in first Legendre component scattering matrix
+            nsigs1 = numpy.array([len(self.mix[imix].sigs1) for imix in range(self.nmix)], order='F')
+            # first Legendre component scattering matrix
+            sigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), order='F')
+            # 'from' index of first Legendre component scattering matrix elements
+            fsigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), dtype=int, order='F')
+            # 'to' index of first Legendre component scattering matrix elements
+            tsigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), dtype=int, order='F')
             # number of elements in n2n matrix
             nsign2n = numpy.array([len(self.mix[imix].sign2n) for imix in range(self.nmix)], order='F')
             # n2n matrix )1D_
@@ -211,6 +219,10 @@ class Core:
                     fsigs[imix][indx] = self.mix[imix].sigs[indx][0][0]
                     tsigs[imix][indx] = self.mix[imix].sigs[indx][0][1]
                     sigs[imix][indx] = self.mix[imix].sigs[indx][1]
+                for indx in range(nsigs1[imix]):
+                    fsigs1[imix][indx] = self.mix[imix].sigs1[indx][0][0]
+                    tsigs1[imix][indx] = self.mix[imix].sigs1[indx][0][1]
+                    sigs1[imix][indx] = self.mix[imix].sigs1[indx][1]
 
             # fill out n2n arrays
             for imix in range(self.nmix):
@@ -225,7 +237,8 @@ class Core:
             # call the Fortran eigenvalue problem solver
             B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
-                                              nsigs, fsigs, tsigs, sigs, nsign2n, fsign2n, tsign2n, sign2n, chi, sigf, \
+                                              nsigs, fsigs, tsigs, sigs, nsigs1, fsigs1, tsigs1, sigs1, \
+                                              nsign2n, fsign2n, tsign2n, sign2n, chi, sigf, \
                                               self.pitch, dz)
             # power distribution
             self.pow = numpy.zeros(shape=(self.nz, self.ny, self.nx), order='F')

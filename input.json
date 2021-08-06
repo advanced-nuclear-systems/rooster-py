@@ -5057,9 +5057,9 @@
     0.00096,
     0.000195
   ],
-  "ng": 25,
+  "ng": 50,
   "dgrain": 1e-05,
   "nrgrain": 20,
   "frate": 1,
-  "nddir": "DATA025"
+  "nddir": "DATA050"
 }

@@ -2,7 +2,9 @@
 ! Fortran 95 solver of eigenvalue probem
 !
 subroutine solve_eigenvalue_problem(meth, geom, nz, ny, nx, nt, ng, nmix, flux, imap, &
-                                  & sigt, sigtra, sigp, nsigs, fsigs, tsigs, sigs, &
+                                  & sigt, sigtra, sigp, &
+                                  & nsigs, fsigs, tsigs, sigs, &
+                                  & nsigs1, fsigs1, tsigs1, sigs1, &
                                   & nsign2n, fsign2n, tsign2n, sign2n, &
                                   & chi, sigf, pitch, dz)
 
@@ -36,6 +38,14 @@ integer fsigs(:,:)
 integer tsigs(:,:)
 ! scattering cross section matrix: sigs(nmix,max(nsigs)))
 real*8 sigs(:,:)
+! number of entries in first Legendre component scattering cross section matrix: sigs1(nmix)
+integer nsigs1(:)
+! index of energy group from which scattering occurs: fsigs1(nmix,max(nsigs1))
+integer fsigs1(:,:)
+! index of energy group to which scattering occurs: tsigs1(nmix,max(nsigs1))
+integer tsigs1(:,:)
+! first Legendre component scattering cross section matrix: sigs(nmix,max(nsigs)))
+real*8 sigs1(:,:)
 ! number of entries in n2n cross section matrix: sign2n(nmix)
 integer nsign2n(:)
 ! index of energy group from which n2n occurs: fsign2n(nmix,max(nsign2n))
@@ -100,7 +110,7 @@ real*8 sigr
 
 ! number of neutrons at the end of cycle and neutrons born at the beginning of cycle, number of inactive source cycles to skip before starting k-eff accumulation and number of active cycles for k-eff accumulation (to be done input parameters)
 integer num_neutrons, num_neutrons_born, num_cycles_inactive, num_cycles_active
-parameter(num_neutrons_born = 50000, num_cycles_inactive = 100, num_cycles_active = 100)
+parameter(num_neutrons_born = 50000, num_cycles_inactive = 100, num_cycles_active = 1000)
 
 ! cycle index
 integer icycle
@@ -112,14 +122,18 @@ real*8 free_path
 real*8 :: keff_active_cycle(num_cycles_active) = 1.0
 ! averaged k-effective
 real*8 :: keff_expected(num_cycles_active) = 1.0
+! scattering cosine
+real*8 mu
 ! pi number
 real*8 :: pi = 3.1415926535897932d0
 ! k-effective standard deviation
 real*8 :: sigma_keff(num_cycles_active) = 0.0d0
 ! total n2n cross section
 real*8 sign2n_sum
-! scattering cross section
-real*8 sigs1(ng)
+! scattering cross section for group ig
+real*8 sigs_ig(ng)
+! first Legendre component scattering cross section for group ig
+real*8 sigs1_ig(ng)
 ! total scattering cross section
 real*8 sigs_sum
 ! majorant
@@ -138,13 +152,15 @@ real*8 xnode(nx,ny), ynode(ny), zb(nz-1)
 ! coordinates of neutrons
 real*8 x(num_neutrons_born*2), y(num_neutrons_born*2), z(num_neutrons_born*2)
 
-logical :: virtual_collision = .false.
 logical absorbed
+logical isotropic
+logical virtual_collision
 
 ! temporal variables
 integer itmp(num_neutrons_born*2), num_new, N, iactive, ixp
 real*8 r, tmp, xtmp(num_neutrons_born*2), ytmp(num_neutrons_born*2), &
-       ztmp(num_neutrons_born*2), wtmp(num_neutrons_born*2),keff_cycle, siga
+       ztmp(num_neutrons_born*2), wtmp(num_neutrons_born*2), keff_cycle, siga, &
+       dir_x_prime, dir_y_prime, dir_z_prime, alfa, beta, f0, r1
 
 !$ call OMP_set_dynamic(.true.)
 
@@ -240,26 +256,43 @@ if(meth == 'MC')then
       end do
 
       !$omp parallel do default(shared) &
-      !$omp private(absorbed,r,free_path,virtual_collision,teta,phi, &
-      !$omp dir_x,dir_y,dir_z,iy,ix,ixp,iz,imix,sigv,f,t,sigs1,sigs_sum, &
-      !$omp tmp,ig,sign2n_sum,siga)
+      !$omp private(absorbed,isotropic,virtual_collision,r,free_path,teta,phi,mu, &
+      !$omp dir_x,dir_y,dir_z,dir_x_prime,dir_y_prime,dir_z_prime,alfa,beta, &
+      !$omp iy,ix,ixp,iz,imix,sigv,f,t,sigs_ig,sigs_sum,sigs1_ig, &
+      !$omp tmp,ig,sign2n_sum,siga,f0,r1)
       ! loop over neutrons
       do i = 1,num_neutrons
           absorbed = .false.
+          isotropic = .true.
+          virtual_collision = .false.
           ! neutron random walk cycle: from emission to absorption
           do while(.not. absorbed)
              ! sample free path length according to the Woodcock method
              call random_number(r)
              free_path = -dlog(r)/sigtmax(igroup(i))
              if(.not. virtual_collision)then
-                ! sample the direction of neutron flight assuming both fission and scattering are isotropic in the lab
-                call random_number(r)
-                teta = pi*r
-                call random_number(r)
-                phi = 2.0d0*pi*r
-                dir_x = dsin(teta)*dcos(phi)
-                dir_y = dsin(teta)*dsin(phi)
-                dir_z = dcos(teta)
+                ! sample the direction of neutron flight assuming isotropic fission and anisotropic scattering
+                if(isotropic)then
+                   call random_number(r)
+                   teta = pi*r
+                   call random_number(r)
+                   phi = 2.0d0*pi*r
+                   dir_x = dsin(teta)*dcos(phi)
+                   dir_y = dsin(teta)*dsin(phi)
+                   dir_z = dcos(teta)
+                else
+                   call random_number(r)
+                   phi = 2.0d0*pi*r
+                   ! Eqs. 5.46 in Jaakko Leppänen "Development of a New Monte Carlo Reactor Physics Code"
+                   alfa = dsqrt(1.0d0 - dir_z**2)
+                   dir_z_prime = dir_z * mu + alfa*dcos(phi)
+                   beta = mu - dir_z * dir_z_prime
+                   dir_y_prime = (dir_y * beta + dir_x * alfa * dsin(phi)) / (1.0d0 - dir_z**2)
+                   dir_x_prime = (dir_x * beta - dir_y * alfa * dsin(phi)) / (1.0d0 - dir_z**2)
+                   dir_x = dir_x_prime/dsqrt(1.0d0+mu**2)
+                   dir_y = dir_y_prime/dsqrt(1.0d0+mu**2)
+                   dir_z = dir_z_prime/dsqrt(1.0d0+mu**2)
+                end if
              end if
              ! fly
              x(i) = x(i) + free_path * dir_x
@@ -284,9 +317,9 @@ if(meth == 'MC')then
              end if
              iz = minloc(dabs(zb - z(i)),1)
              if(z(i) > zb(iz)) iz = iz + 1
+             
              ! mixture index
              imix = imap(iz,iy,ix)
-
              if(imix == 0)then
                 ! neutron is out of core
                 weight(i) = 0.0d0
@@ -307,31 +340,67 @@ if(meth == 'MC')then
                       flux(iz,iy,ix,1,igroup(i)) = flux(iz,iy,ix,1,igroup(i)) + weight(i)
                    end if
                    ! scattering xs for group igroup(i)
-                   do ig = 1,ng
-                      sigs1(ig) = 0.0d0
-                   end do
+                   sigs_ig = 0.0d0
                    do indx = 1,nsigs(imix)
                       f = fsigs(imix,indx)+1
                       t = tsigs(imix,indx)+1
-                      if(f == igroup(i))sigs1(t) = sigs1(t) + sigs(imix,indx)
+                      if(f == igroup(i))sigs_ig(t) = sigs_ig(t) + sigs(imix,indx)
+                   end do
+                   ! first Legendre component scattering xs for group igroup(i)
+                   sigs1_ig = 0.0d0
+                   do indx = 1,nsigs1(imix)
+                      f = fsigs1(imix,indx)+1
+                      t = tsigs1(imix,indx)+1
+                      if(f == igroup(i))sigs1_ig(t) = sigs1_ig(t) + sigs1(imix,indx)
                    end do
                    ! total scattering xs for group igroup(i)
                    sigs_sum = 0.0d0
                    do ig = 1,ng
-                      sigs_sum = sigs_sum + sigs1(ig)
+                      sigs_sum = sigs_sum + sigs_ig(ig)
                    end do
                    ! sample type of the collision: scattering or absorption]
                    call random_number(r)
-                   if(sigs_sum/sigt(imix,igroup(i)) >= r)then ! isotropic scattering
+                   if(sigs_sum/sigt(imix,igroup(i)) >= r)then ! anisotropic scattering
+                      isotropic = .false.
+                      call random_number(r)
+                      ! average cosine of scattering angle
+                      f0 = sigs1_ig(igroup(i))/sigs_ig(igroup(i))
+
+                      ! 1) isotropic scattering angle cosine:
+                      ! mu = 2.d0*r - 1.0d0
+                      ! 2) constant scattering angle cosine:
+                      ! mu = f0 ! 
+                      ! 3) semi-continuous scattering angle cosine:
+                      ! if(1.0d0 - dabs(f0) >= r)then
+                      !    call random_number(r)
+                      !    mu = 2.d0*r - 1.0d0
+                      ! else
+                      !    mu = 1.0d0
+                      !    if(sigs1_ig(igroup(i)) < 0.0d0) mu = -1.0d0
+                      ! end if
+                      ! 4) scattering angle cosine using Coveyou's method
+                      f0 = dabs(f0)
+                      if(3.0d0*f0 <= 1.0d0 .and. (1.0d0 - 3.0d0*f0) >= r)then
+                         call random_number(r)
+                         mu = 2.0d0*r - 1.0d0
+                      else if(3.0d0*f0 > 1.0d0 .and. 1.5d0*(1.0d0 - f0) < r)then
+                         mu = 1.0d0
+                      else
+                         call random_number(r)
+                         call random_number(r1)
+                         mu = 2.0d0*max(r,r1) - 1.0d0
+                      end if
+                      if(sigs1_ig(igroup(i)) < 0.0d0) mu = -mu
                       ! sample group for the secondary neutron by comparing cumulative sum of partial scattering xs with random number
                       call random_number(r)
                       tmp = 0.0d0
                       ig = ng + 1
                       do while(tmp <= r)
                          ig = ig - 1
-                         tmp = tmp + sigs1(ig)/sigs_sum
+                         tmp = tmp + sigs_ig(ig)/sigs_sum
                       end do
                       igroup(i) = ig
+
                    else ! absorption
                       absorbed = .true.
                       ! total n2n XS
