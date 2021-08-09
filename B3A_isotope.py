@@ -64,11 +64,9 @@ class Isotope:
 
         # dictionary of cross sections
         self.xs = {'chi':[0]*ng, \
-                   'ela':[], \
-                   'ela1':[], \
+                   'elan':[], \
                    'fis':[[[0]*nsig0 for i in range(ntemp)] for j in range(ng)], \
                    'ine':[], \
-                   'ine1':[], \
                    'inv':[0]*ng, \
                    'kerma':[[0]*nsig0 for j in range(ng)], \
                    'n2n':[], \
@@ -101,41 +99,37 @@ class Isotope:
                 if nubar != [] :
                     self.xs['nub'][ig][itemp] = nubar[ig][0]
                     self.xs['fis'][ig][itemp] = sigf[ig]
-            # elastic scattering (mt = 2)
-            sige = extract_mf6(2, itemp, nlgndr, cards)
-            for s in sige:
-                self.xs['ela'].append(s)
 
-            nlgndr = 1
-            # first Legendre component of elastic scattering (mt = 2)
-            sige1 = extract_mf6(2, itemp, nlgndr, cards)
-            for s in sige1:
-                self.xs['ela1'].append(s)
-            for ig in range(ng):
-                for i in range(nsig0):
-                    # transport cross section = total cross section - first Legendre component of elastic out-scattering cross section 
-                    self.xs['tra'][ig][itemp][i] = self.xs['tot'][ig][itemp][i]
-                    for j in range(len(sige1)):
-                        if sige1[j][0][0] == ig : self.xs['tra'][ig][itemp][i] -= sige1[j][i+1]
+            for nlgndr in range(8):
+                sigen = extract_mf6(2, itemp, nlgndr, cards)
+                # nth Legendre component of elastic scattering (mt = 2)
+                self.xs['elan'].append([])
+                for s in sigen:
+                    self.xs['elan'][nlgndr].append(s)
+                if nlgndr == 1:
+                    for ig in range(ng):
+                        for i in range(nsig0):
+                            # transport cross section = total cross section - first Legendre component of elastic out-scattering cross section 
+                            self.xs['tra'][ig][itemp][i] = self.xs['tot'][ig][itemp][i]
+                            for j in range(len(sigen)):
+                                if sigen[j][0][0] == ig : self.xs['tra'][ig][itemp][i] -= sigen[j][i+1]
 
-        # number of entries in elastic scattering matrix
-        n = len(self.xs['ela'])
-        # number of entries in elastic scattering matrix for one temperature
-        n1 = int(n/ntemp)
-        # re-arrange self.xs['ela'] and self.xs['ela1'] to facilitate temperature interpolation 
-        # [(f,t) [sig[0], sig[1], ..., sig[nsig0-1]]*ntemp]
-        s, s1 = [], []
-        for j in range(n1):
-            # find and group all entries with (f,t) tuple
-            f_t = self.xs['ela'][j][0]
-            s.append([f_t])
-            s1.append([f_t])
-            for k in range(n):
-                if self.xs['ela'][k][0] == f_t:
-                    s[j] += [self.xs['ela'][k][1:]]
-                    s1[j] += [self.xs['ela1'][k][1:]]
-        self.xs['ela'] = s
-        self.xs['ela1'] = s1
+        for nlgndr in range(8):
+            # number of entries in full elastic scattering matrix
+            n = len(self.xs['elan'][nlgndr])
+            # number of entries in full elastic scattering matrix for one temperature
+            n1 = int(n/ntemp)
+            # re-arrange self.xs['elan'] to facilitate temperature interpolation 
+            # [(f,t) [sig[0], sig[1], ..., sig[nsig0-1]]*ntemp]
+            s = []
+            for j in range(n1):
+                # find and group all entries with (f,t) tuple
+                f_t = self.xs['elan'][nlgndr][j][0]
+                s.append([f_t])
+                for k in range(n):
+                    if self.xs['elan'][nlgndr][k][0] == f_t:
+                        s[j] += [self.xs['elan'][nlgndr][k][1:]]
+            self.xs['elan'][nlgndr] = s
 
         # inelastic scattering (mt = 51... 91)
         nlgndr = 0

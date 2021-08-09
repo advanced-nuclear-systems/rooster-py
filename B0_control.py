@@ -749,7 +749,7 @@ class Control:
                     for itemp in range(ntemp):
                         fid[indx].write('elastic scattering XS @' + '{0:12.5e} '.format(reactor.core.iso[i].temp[itemp]) + 'K \n')
                         fid[indx].write(' ' + 'from'.ljust(13) + 'to/sig0'.ljust(12) + ''.join(['{0:12.5e} '.format(reactor.core.iso[i].sig0[isig0]) for isig0 in range(nsig0)]) + '\n')
-                        for s in reactor.core.iso[i].xs['ela']:
+                        for s in reactor.core.iso[i].xs['elan'][0]:
                             fid[indx].write(' ' + str(s[0][0]+1).ljust(13) + str(s[0][1]+1).ljust(12) + ''.join(['{0:12.5e} '.format(s[1][isig0]) for isig0 in range(nsig0)]) + '\n')
 
                     fid[indx].write('inelastic scattering XS\n')
@@ -775,11 +775,11 @@ class Control:
                     for ig in range(reactor.core.ng):
                         sigso = 0
                         sigsi = 0
-                        for j in range(len(reactor.core.mix[i].sigs)):
-                            f = reactor.core.mix[i].sigs[j][0][0]
-                            t = reactor.core.mix[i].sigs[j][0][1]
-                            if f == ig and t != ig : sigso = sigso + reactor.core.mix[i].sigs[j][1]
-                            if f == ig and t == ig : sigsi = sigsi + reactor.core.mix[i].sigs[j][1]
+                        for j in range(len(reactor.core.mix[i].sigsn[0])):
+                            f = reactor.core.mix[i].sigsn[0][j][0][0]
+                            t = reactor.core.mix[i].sigsn[0][j][0][1]
+                            if f == ig and t != ig : sigso = sigso + reactor.core.mix[i].sigsn[0][j][1]
+                            if f == ig and t == ig : sigsi = sigsi + reactor.core.mix[i].sigsn[0][j][1]
                         sign2n = 0
                         for j in range(len(reactor.core.mix[i].sign2n)):
                             f = reactor.core.mix[i].sign2n[j][0][0]
@@ -788,10 +788,10 @@ class Control:
                         fid[indx].write(' ' + str(ig+1).ljust(12) + str('{0:12.5e} '.format(reactor.core.mix[i].sigt[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].sigp[ig])) + str('{0:12.5e} '.format(reactor.core.mix[i].chi[ig])) + str('{0:12.5e} '.format(sigsi)) + str('{0:12.5e} '.format(sigso)) + str('{0:12.5e} '.format(sign2n)) + str('{0:12.5e} '.format(reactor.core.mix[i].kerma[ig])) + '\n')
                     fid[indx].write('scattering XS\n')
                     fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sigs'.ljust(13) + '\n')
-                    for j in range(len(reactor.core.mix[i].sigs)):
-                        f = reactor.core.mix[i].sigs[j][0][0] + 1
-                        t = reactor.core.mix[i].sigs[j][0][1] + 1
-                        sigs = reactor.core.mix[i].sigs[j][1]
+                    for j in range(len(reactor.core.mix[i].sigsn[0])):
+                        f = reactor.core.mix[i].sigsn[0][j][0][0] + 1
+                        t = reactor.core.mix[i].sigsn[0][j][0][1] + 1
+                        sigs = reactor.core.mix[i].sigsn[0][j][1]
                         fid[indx].write(' ' + str(f).ljust(13) + str(t).ljust(12) + '{0:12.5e} '.format(sigs) + '\n')
                     fid[indx].write('n2n XS\n')
                     fid[indx].write(' ' + 'from'.ljust(13) + 'to'.ljust(13) + 'sign2n'.ljust(13) + '\n')

@@ -86,7 +86,7 @@ class Mix:
                 sys.exit()
 
             if reaction_type == 'ela' or reaction_type == 'ela1':
-                # number of entries in elastic scaterring matrix
+                # number of entries in elastic scattering matrix
                 n = len(core.iso[isoindx].xs[reaction_type])
                 sig.append([[0]*(nsig0+1) for j in range(n)])
                 for j in range(n):
@@ -96,8 +96,25 @@ class Mix:
                         # interpolate elastic scattering xs for isotope temperature temp
                         x = grid_temp
                         y = [core.iso[isoindx].xs[reaction_type][j][1+itemp][isig0] for itemp in range(ntemp)]
-                        f = interp1d(x, y) #scipy function
+                        f = interp1d(x, y) # scipy function
                         sig[i][j][isig0+1] = f(temp)
+
+            elif reaction_type == 'elan':
+                for nlgndr in range(8):
+                    sig.append([])
+                    # number of entries in elastic scattering matrix
+                    n = len(core.iso[isoindx].xs[reaction_type][nlgndr])
+                    sig[nlgndr].append([[0]*(nsig0+1) for j in range(n)])
+                    for j in range(n):
+                        # from-to tuple
+                        sig[nlgndr][i][j][0] = core.iso[isoindx].xs[reaction_type][nlgndr][j][0]
+                        for isig0 in range(nsig0):
+                            # interpolate elastic scattering xs for isotope temperature temp
+                            x = grid_temp
+                            y = [core.iso[isoindx].xs[reaction_type][nlgndr][j][1+itemp][isig0] for itemp in range(ntemp)]
+                            f = interp1d(x, y) # scipy function
+                            sig[nlgndr][i][j][isig0+1] = f(temp)
+
             elif reaction_type == 'nub':
                 sig.append([0]*self.ng)
                 for ig in range(self.ng):
@@ -134,7 +151,7 @@ class Mix:
             # interpolate sig1 cross section for sig0
             x = grid_sig0
             y = [sig1[i][ig][isig0] for isig0 in range(nsig0)]
-            f = interp1d(x, y) #scipy function
+            f = interp1d(x, y) # scipy function
             sig2[i] = f(self.sig0[ig][i])
         return sig2
 
@@ -188,85 +205,59 @@ class Mix:
         # normalize fission spectrum
         s = sum(self.chi)
         if s > 0 : self.chi = [self.chi[ig]/s for ig in range(self.ng)]
+
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic scattering cross sections for the mix
-    def calculate_sigs(self, core, reactor):
+    def calculate_sigsn(self, core, reactor):
         # perform temperature and sig0 interpolations for all isotopes and all groups
-        sig_tmp1 = self.interpolate_temp(core, reactor, 'ela')
-        self.sigs = []
-        for i in range(self.niso):
-            # index of the isotope i in the global list of isotopes core.iso
-            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
-            # grid sig0s for this isotope
-            x = core.iso[isoindx].sig0
-            nsig0 = len(x)
-            # number of entries in elastic scattering matrix for isotope i
-            nesca = len(sig_tmp1[i])
-            for j in range(nesca):
-                # (from, to) tuple
-                f_t = sig_tmp1[i][j][0]
-                # scattering xs corresponding to x
-                y = [sig_tmp1[i][j][isig0+1] for isig0 in range(nsig0)]
-                # scipy function
-                f = interp1d(x, y)
-                # index of 'from' group
-                ig = f_t[0]
-                # interpolate scattering cross section for sig0 of group ig for isotope i
-                value = f(self.sig0[ig][i])
-                f_t_list = [s[0] for s in self.sigs]
-                if f_t in f_t_list:
-                    # if the (from, to) tuple is already in the self.sigs list
-                    indx = f_t_list.index(f_t)
-                    self.sigs[indx][1] += self.numdens[i]*value
-                else:
-                    self.sigs.append([f_t, self.numdens[i]*value])
+        sig_tmp1 = self.interpolate_temp(core, reactor, 'elan')
+        self.sigsn = []
+        for nlgndr in range(8):
+            self.sigsn.append([])
+            for i in range(self.niso):
+                # index of the isotope i in the global list of isotopes core.iso
+                isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
+                # grid sig0s for this isotope
+                x = core.iso[isoindx].sig0
+                nsig0 = len(x)
+                # number of entries in elastic scattering matrix for isotope i
+                nesca = len(sig_tmp1[nlgndr][i])
+                for j in range(nesca):
+                    # (from, to) tuple
+                    f_t = sig_tmp1[nlgndr][i][j][0]
+                    # scattering xs corresponding to x
+                    y = [sig_tmp1[nlgndr][i][j][isig0+1] for isig0 in range(nsig0)]
+                    # scipy function
+                    f = interp1d(x, y)
+                    # index of 'from' group
+                    ig = f_t[0]
+                    # interpolate scattering cross section for sig0 of group ig for isotope i
+                    value = f(self.sig0[ig][i])
+                    f_t_list = [s[0] for s in self.sigsn[nlgndr]]
+                    if f_t in f_t_list:
+                        # if the (from, to) tuple is already in the self.sigsn list
+                        indx = f_t_list.index(f_t)
+                        self.sigsn[nlgndr][indx][1] += self.numdens[i]*value
+                    else:
+                        self.sigsn[nlgndr].append([f_t, self.numdens[i]*value])
 
-            # number of entries in inelastic scattering matrix for isotope i
-            nisca = len(core.iso[isoindx].xs['ine'])
-            for j in range(nisca):
-                # (from, to) tuple
-                f_t = core.iso[isoindx].xs['ine'][j][0]
-                # inelastic scattering xs
-                value = core.iso[isoindx].xs['ine'][j][1]
-                f_t_list = [s[0] for s in self.sigs]
-                if f_t in f_t_list:
-                    # if the (from, to) tuple is already in the self.sigs list
-                    indx = f_t_list.index(f_t)
-                    self.sigs[indx][1] += self.numdens[i]*value
-                else:
-                    self.sigs.append([f_t, self.numdens[i]*value])
-    #----------------------------------------------------------------------------------------------
-    # calculates first Legndre component of macroscopic scattering cross sections for the mix
-    def calculate_sigs1(self, core, reactor):
-        # perform temperature and sig0 interpolations for all isotopes and all groups
-        sig_tmp1 = self.interpolate_temp(core, reactor, 'ela1')
-        self.sigs1 = []
-        for i in range(self.niso):
-            # index of the isotope i in the global list of isotopes core.iso
-            isoindx = [x.isoid for x in core.iso].index(self.isoid[i])
-            # grid sig0s for this isotope
-            x = core.iso[isoindx].sig0
-            nsig0 = len(x)
-            # number of entries in first Legndre component of elastic scattering matrix for isotope i
-            nesca = len(sig_tmp1[i])
-            for j in range(nesca):
-                # (from, to) tuple
-                f_t = sig_tmp1[i][j][0]
-                # scattering xs corresponding to x
-                y = [sig_tmp1[i][j][isig0+1] for isig0 in range(nsig0)]
-                # scipy function
-                f = interp1d(x, y)
-                # index of 'from' group
-                ig = f_t[0]
-                # interpolate scattering cross section for sig0 of group ig for isotope i
-                value = f(self.sig0[ig][i])
-                f_t_list = [s[0] for s in self.sigs1]
-                if f_t in f_t_list:
-                    # if the (from, to) tuple is already in the self.sigs1 list
-                    indx = f_t_list.index(f_t)
-                    self.sigs1[indx][1] += self.numdens[i]*value
-                else:
-                    self.sigs1.append([f_t, self.numdens[i]*value])
+                # number of entries in inelastic scattering matrix for isotope i
+                nisca = len(core.iso[isoindx].xs['ine'])
+                for j in range(nisca):
+                    # (from, to) tuple
+                    f_t = core.iso[isoindx].xs['ine'][j][0]
+                    # inelastic scattering xs
+                    if nlgndr == 0:
+                        value = core.iso[isoindx].xs['ine'][j][1]
+                    else:
+                        value = 0
+                    f_t_list = [s[0] for s in self.sigsn[nlgndr]]
+                    if f_t in f_t_list:
+                        # if the (from, to) tuple is already in the self.sigsn[nlgndr] list
+                        indx = f_t_list.index(f_t)
+                        self.sigsn[nlgndr][indx][1] += self.numdens[i]*value
+                    else:
+                        self.sigsn[nlgndr].append([f_t, self.numdens[i]*value])
 
     #----------------------------------------------------------------------------------------------
     # calculates macroscopic n2n cross sections for the mix

@@ -3,10 +3,9 @@
 !
 subroutine solve_eigenvalue_problem(meth, geom, nz, ny, nx, nt, ng, nmix, flux, imap, &
                                   & sigt, sigtra, sigp, &
-                                  & nsigs, fsigs, tsigs, sigs, &
-                                  & nsigs1, fsigs1, tsigs1, sigs1, &
+                                  & nsigsn, fsigsn, tsigsn, sigsn, &
                                   & nsign2n, fsign2n, tsign2n, sign2n, &
-                                  & chi, sigf, pitch, dz)
+                                  & chi, pitch, dz)
 
 use omp_lib
  
@@ -28,24 +27,14 @@ real*8 sigt(:,:)
 real*8 sigtra(:,:)
 ! production cross section: sigp(nmix,ng)
 real*8 sigp(:,:)
-! fission cross section: sigf(nmix,ng)
-real*8 sigf(:,:)
-! number of entries in scattering cross section matrix: sigs(nmix)
-integer nsigs(:)
-! index of energy group from which scattering occurs: fsigs(nmix,max(nsigs))
-integer fsigs(:,:)
-! index of energy group to which scattering occurs: tsigs(nmix,max(nsigs))
-integer tsigs(:,:)
-! scattering cross section matrix: sigs(nmix,max(nsigs)))
-real*8 sigs(:,:)
-! number of entries in first Legendre component scattering cross section matrix: sigs1(nmix)
-integer nsigs1(:)
-! index of energy group from which scattering occurs: fsigs1(nmix,max(nsigs1))
-integer fsigs1(:,:)
-! index of energy group to which scattering occurs: tsigs1(nmix,max(nsigs1))
-integer tsigs1(:,:)
-! first Legendre component scattering cross section matrix: sigs(nmix,max(nsigs)))
-real*8 sigs1(:,:)
+! number of entries in full scattering cross section matrix: nsigsn(nmix)
+integer nsigsn(:)
+! index of energy group from which scattering occurs: fsigsn(nlgndr,nmix,max(nsigsn))
+integer fsigsn(:,:,:)
+! index of energy group to which scattering occurs: tsigsn(nlgndr,nmix,max(nsigsn))
+integer tsigsn(:,:,:)
+! full scattering cross section matrix: sigsn(nlgndr,nmix,max(nsigsn)))
+real*8 sigsn(:,:,:)
 ! number of entries in n2n cross section matrix: sign2n(nmix)
 integer nsign2n(:)
 ! index of energy group from which n2n occurs: fsign2n(nmix,max(nsign2n))
@@ -130,6 +119,8 @@ real*8 :: pi = 3.1415926535897932d0
 real*8 :: sigma_keff(num_cycles_active) = 0.0d0
 ! total n2n cross section
 real*8 sign2n_sum
+! n2n cross section for group ig
+real*8 sign2n_ig(ng)
 ! scattering cross section for group ig
 real*8 sigs_ig(ng)
 ! first Legendre component scattering cross section for group ig
@@ -170,6 +161,9 @@ imap = imap + 1
 if(meth == 'MC')then
 
    ! MONTE CARLO SOLVER
+
+   ! prepare angular distribution of scattering cross section
+   ! ...
 
    ! prepare flux array
    do iz = 1,nz
@@ -259,7 +253,7 @@ if(meth == 'MC')then
       !$omp private(absorbed,isotropic,virtual_collision,r,free_path,teta,phi,mu, &
       !$omp dir_x,dir_y,dir_z,dir_x_prime,dir_y_prime,dir_z_prime,alfa,beta, &
       !$omp iy,ix,ixp,iz,imix,sigv,f,t,sigs_ig,sigs_sum,sigs1_ig, &
-      !$omp tmp,ig,sign2n_sum,siga,f0,r1)
+      !$omp tmp,ig,sign2n_ig,sign2n_sum,siga,f0,r1)
       ! loop over neutrons
       do i = 1,num_neutrons
           absorbed = .false.
@@ -271,16 +265,17 @@ if(meth == 'MC')then
              call random_number(r)
              free_path = -dlog(r)/sigtmax(igroup(i))
              if(.not. virtual_collision)then
-                ! sample the direction of neutron flight assuming isotropic fission and anisotropic scattering
                 if(isotropic)then
-                   call random_number(r)
-                   teta = pi*r
+                   ! sample the direction of neutron flight assuming isotropic fission
                    call random_number(r)
                    phi = 2.0d0*pi*r
+                   call random_number(r)
+                   teta = pi*r
                    dir_x = dsin(teta)*dcos(phi)
                    dir_y = dsin(teta)*dsin(phi)
                    dir_z = dcos(teta)
                 else
+                   ! sample the direction of neutron flight assuming anisotropic scattering
                    call random_number(r)
                    phi = 2.0d0*pi*r
                    ! Eqs. 5.46 in Jaakko Leppänen "Development of a New Monte Carlo Reactor Physics Code"
@@ -341,17 +336,17 @@ if(meth == 'MC')then
                    end if
                    ! scattering xs for group igroup(i)
                    sigs_ig = 0.0d0
-                   do indx = 1,nsigs(imix)
-                      f = fsigs(imix,indx)+1
-                      t = tsigs(imix,indx)+1
-                      if(f == igroup(i))sigs_ig(t) = sigs_ig(t) + sigs(imix,indx)
+                   do indx = 1,nsigsn(imix)
+                      f = fsigsn(1,imix,indx)+1
+                      t = tsigsn(1,imix,indx)+1
+                      if(f == igroup(i))sigs_ig(t) = sigs_ig(t) + sigsn(1,imix,indx)
                    end do
                    ! first Legendre component scattering xs for group igroup(i)
                    sigs1_ig = 0.0d0
-                   do indx = 1,nsigs1(imix)
-                      f = fsigs1(imix,indx)+1
-                      t = tsigs1(imix,indx)+1
-                      if(f == igroup(i))sigs1_ig(t) = sigs1_ig(t) + sigs1(imix,indx)
+                   do indx = 1,nsigsn(imix)
+                      f = fsigsn(2,imix,indx)+1
+                      t = tsigsn(2,imix,indx)+1
+                      if(f == igroup(i))sigs1_ig(t) = sigs1_ig(t) + sigsn(2,imix,indx)
                    end do
                    ! total scattering xs for group igroup(i)
                    sigs_sum = 0.0d0
@@ -362,6 +357,7 @@ if(meth == 'MC')then
                    call random_number(r)
                    if(sigs_sum/sigt(imix,igroup(i)) >= r)then ! anisotropic scattering
                       isotropic = .false.
+                      ! sample scattering angle cosine
                       call random_number(r)
                       ! average cosine of scattering angle
                       f0 = sigs1_ig(igroup(i))/sigs_ig(igroup(i))
@@ -369,28 +365,36 @@ if(meth == 'MC')then
                       ! 1) isotropic scattering angle cosine:
                       ! mu = 2.d0*r - 1.0d0
                       ! 2) constant scattering angle cosine:
-                      ! mu = f0 ! 
+                      !  mu = f0
                       ! 3) semi-continuous scattering angle cosine:
-                      ! if(1.0d0 - dabs(f0) >= r)then
-                      !    call random_number(r)
-                      !    mu = 2.d0*r - 1.0d0
-                      ! else
-                      !    mu = 1.0d0
-                      !    if(sigs1_ig(igroup(i)) < 0.0d0) mu = -1.0d0
-                      ! end if
-                      ! 4) scattering angle cosine using Coveyou's method
+                      !if(1.0d0 - dabs(f0) >= r)then
+                      !   call random_number(r)
+                      !   mu = 2.d0*r - 1.0d0
+                      !else
+                      !   mu = 1.0d0
+                      !   if(f0 < 0.0d0) mu = -1.0d0
+                      !end if
+                      ! 4) scattering angle cosine using Coveyou's method (original)
+                      !f0 = dabs(f0)
+                      !if(3.0d0*f0 <= 1.0d0 .and. (1.0d0 - 3.0d0*f0) >= r)then
+                      !   call random_number(r)
+                      !   mu = 2.0d0*r - 1.0d0
+                      !else if(3.0d0*f0 > 1.0d0 .and. 1.5d0*(1.0d0 - f0) < r)then
+                      !   mu = 1.0d0
+                      !else
+                      !   call random_number(r)
+                      !   call random_number(r1)
+                      !   mu = 2.0d0*max(r,r1) - 1.0d0
+                      !end if
+                      !if(sigs1_ig(igroup(i)) < 0.0d0) mu = -mu
+                      ! 5) scattering angle cosine using Coveyou's method (modified)
                       f0 = dabs(f0)
-                      if(3.0d0*f0 <= 1.0d0 .and. (1.0d0 - 3.0d0*f0) >= r)then
-                         call random_number(r)
-                         mu = 2.0d0*r - 1.0d0
-                      else if(3.0d0*f0 > 1.0d0 .and. 1.5d0*(1.0d0 - f0) < r)then
-                         mu = 1.0d0
+                      if(1.5d0*(1.0d0 - f0) >= r)then
+                         mu = 2.0d0*dsqrt(r) - 1.0d0
                       else
-                         call random_number(r)
-                         call random_number(r1)
-                         mu = 2.0d0*max(r,r1) - 1.0d0
+                         mu = 1.0d0
+                         if(sigs1_ig(igroup(i)) < 0.0d0) mu = -1.0d0
                       end if
-                      if(sigs1_ig(igroup(i)) < 0.0d0) mu = -mu
                       ! sample group for the secondary neutron by comparing cumulative sum of partial scattering xs with random number
                       call random_number(r)
                       tmp = 0.0d0
@@ -403,26 +407,48 @@ if(meth == 'MC')then
 
                    else ! absorption
                       absorbed = .true.
-                      ! total n2n XS
-                      sign2n_sum = 0.0d0
+                      ! n2n xs for group igroup(i)
+                      sign2n_ig = 0.0d0
                       do indx = 1,nsign2n(imix)
                          f = fsign2n(imix,indx)+1
-                         if(f .eq. igroup(i))sign2n_sum = sign2n_sum + sign2n(imix,indx)
+                         t = tsign2n(imix,indx)+1
+                         if(f == igroup(i))sign2n_ig(t) = sign2n_ig(t) + sign2n(imix,indx)
+                      end do
+                      ! total n2n XS
+                      sign2n_sum = 0.0d0
+                      do ig = 1,ng
+                         sign2n_sum = sign2n_sum + sign2n_ig(ig)
                       end do
                       siga = sigt(imix,igroup(i)) - sigs_sum
-                      ! neutron is converted to the new fission neutron with the weight increased by eta
-                      weight(i) = weight(i) * (sigp(imix,igroup(i)) + 2.0*sign2n_sum)/siga
-                      if(weight(i) > 0.0)then
-                         ! sample group for the new-born neutron by comparing cumulative sum of fission spectrum with random number
+                      ! sample type of the collision: n2n or non-n2n absorption
+                      call random_number(r)
+                      if(sign2n_sum/siga >= r)then ! isotropic n2n
+                         ! neutron is converted to the new neutron with the weight increased by 2
+                         weight(i) = weight(i) * 2.0d0
+                         ! sample group for the secondary neutrons by comparing cumulative sum of partial n2n xs with random number
                          call random_number(r)
                          tmp = 0.0d0
                          ig = ng + 1
                          do while(tmp <= r)
                             ig = ig - 1
-                            tmp = tmp + chi(imix,ig)
+                            tmp = tmp + sign2n_ig(ig)/sign2n_sum
                          end do
                          igroup(i) = ig
-                      end if
+                      else
+                         ! neutron is converted to the new fission neutron with the weight increased by eta
+                         weight(i) = weight(i) * sigp(imix,igroup(i))/(siga - sign2n_sum)
+                         if(weight(i) > 0.0)then
+                            ! sample group for the new-born neutron by comparing cumulative sum of fission spectrum with random number
+                            call random_number(r)
+                            tmp = 0.0d0
+                            ig = ng + 1
+                            do while(tmp <= r)
+                               ig = ig - 1
+                               tmp = tmp + chi(imix,ig)
+                            end do
+                            igroup(i) = ig
+                         end if
+                      end if ! n2n or non-n2n absorption
                    end if ! scattering or absorption
                 end if ! virtual or real
              end if ! imix <= 0 or imix > 0
@@ -432,7 +458,7 @@ if(meth == 'MC')then
 
       ! Russian roulette
       do i = 1,num_neutrons
-         if(weight(i) > 0.0d0 .and. weight(i) < 1.0d0 .and. weight(i) < weight0(i))then
+         if(weight(i) > 0.0d0 .and. weight(i) < 0.5d0 .and. weight(i) < weight0(i))then
             terminate_p = 1.0d0 - weight(i)/weight0(i)
             call random_number(r)
             if(terminate_p >= r)then
@@ -606,11 +632,11 @@ else
                
                            ! removal xs
                            sigr = sigt(imix,ig)
-                           do indx = 1,nsigs(imix)
-                              f = fsigs(imix,indx)+1
-                              t = tsigs(imix,indx)+1
+                           do indx = 1,nsigsn(imix)
+                              f = fsigsn(1,imix,indx)+1
+                              t = tsigsn(1,imix,indx)+1
                               if(f == ig .and. t == ig)then
-                                 sigr = sigr - sigs(imix,indx)
+                                 sigr = sigr - sigsn(1,imix,indx)
                               end if
                            end do
                               
@@ -618,11 +644,11 @@ else
                
                            ! scattering source
                            qs = 0.
-                           do indx = 1,nsigs(imix)
-                              f = fsigs(imix,indx)+1
-                              t = tsigs(imix,indx)+1
+                           do indx = 1,nsigsn(imix)
+                              f = fsigsn(1,imix,indx)+1
+                              t = tsigsn(1,imix,indx)+1
                               if(f .ne. ig .and. t == ig)then
-                                 qs = qs + sigs(imix,indx) * flux(iz,iy,ix,it,f)
+                                 qs = qs + sigsn(1,imix,indx) * flux(iz,iy,ix,it,f)
                               end if
                            end do
                            ! n2n source

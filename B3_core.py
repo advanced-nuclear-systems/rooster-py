@@ -83,8 +83,7 @@ class Core:
                 self.mix[i].calculate_sigtra(self, reactor)
                 self.mix[i].calculate_sigp(self, reactor)
                 self.mix[i].calculate_chi(self)
-                self.mix[i].calculate_sigs(self, reactor)
-                self.mix[i].calculate_sigs1(self, reactor)
+                self.mix[i].calculate_sigsn(self, reactor)
                 self.mix[i].calculate_sign2n(self, reactor)
                 self.mix[i].calculate_kerma(self, reactor)
                 self.mix[i].update_xs = False
@@ -182,22 +181,14 @@ class Core:
             sigt = numpy.array([[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # production cross section
             sigp = numpy.array([[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
-            # number of elements in scattering matrix
-            nsigs = numpy.array([len(self.mix[imix].sigs) for imix in range(self.nmix)], order='F')
-            # scattering matrix
-            sigs = numpy.zeros(shape=(self.nmix, max(nsigs)), order='F')
-            # 'from' index of scattering matrix elements
-            fsigs = numpy.zeros(shape=(self.nmix, max(nsigs)), dtype=int, order='F')
-            # 'to' index of scattering matrix elements
-            tsigs = numpy.zeros(shape=(self.nmix, max(nsigs)), dtype=int, order='F')
-            # number of elements in first Legendre component scattering matrix
-            nsigs1 = numpy.array([len(self.mix[imix].sigs1) for imix in range(self.nmix)], order='F')
-            # first Legendre component scattering matrix
-            sigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), order='F')
-            # 'from' index of first Legendre component scattering matrix elements
-            fsigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), dtype=int, order='F')
-            # 'to' index of first Legendre component scattering matrix elements
-            tsigs1 = numpy.zeros(shape=(self.nmix, max(nsigs1)), dtype=int, order='F')
+            # number of elements in full scattering matrix
+            nsigsn = numpy.array([len(self.mix[imix].sigsn[0]) for imix in range(self.nmix)], order='F')
+            # full scattering matrix
+            sigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), order='F')
+            # 'from' index of full scattering matrix elements
+            fsigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), dtype=int, order='F')
+            # 'to' index of full scattering matrix elements
+            tsigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), dtype=int, order='F')
             # number of elements in n2n matrix
             nsign2n = numpy.array([len(self.mix[imix].sign2n) for imix in range(self.nmix)], order='F')
             # n2n matrix )1D_
@@ -208,21 +199,16 @@ class Core:
             tsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
             # fission source
             chi = numpy.array([[self.mix[imix].chi[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
-            # fission cross section
-            sigf = numpy.array([[self.mix[imix].sigf[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # axial nodalization (cm)
             dz = numpy.array(self.map['dz'], order='F')*100.
 
             # fill out scattering arrays
             for imix in range(self.nmix):
-                for indx in range(nsigs[imix]):
-                    fsigs[imix][indx] = self.mix[imix].sigs[indx][0][0]
-                    tsigs[imix][indx] = self.mix[imix].sigs[indx][0][1]
-                    sigs[imix][indx] = self.mix[imix].sigs[indx][1]
-                for indx in range(nsigs1[imix]):
-                    fsigs1[imix][indx] = self.mix[imix].sigs1[indx][0][0]
-                    tsigs1[imix][indx] = self.mix[imix].sigs1[indx][0][1]
-                    sigs1[imix][indx] = self.mix[imix].sigs1[indx][1]
+                for nlgndr in range(8):
+                    for indx in range(nsigsn[imix]):
+                        fsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][0]
+                        tsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][1]
+                        sigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][1]
 
             # fill out n2n arrays
             for imix in range(self.nmix):
@@ -237,8 +223,8 @@ class Core:
             # call the Fortran eigenvalue problem solver
             B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
-                                              nsigs, fsigs, tsigs, sigs, nsigs1, fsigs1, tsigs1, sigs1, \
-                                              nsign2n, fsign2n, tsign2n, sign2n, chi, sigf, \
+                                              nsigsn, fsigsn, tsigsn, sigsn, \
+                                              nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
             # power distribution
             self.pow = numpy.zeros(shape=(self.nz, self.ny, self.nx), order='F')
