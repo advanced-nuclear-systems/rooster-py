@@ -100,7 +100,7 @@ class Isotope:
                     self.xs['nub'][ig][itemp] = nubar[ig][0]
                     self.xs['fis'][ig][itemp] = sigf[ig]
 
-            for nlgndr in range(8):
+            for nlgndr in range(2):
                 sigen = extract_mf6(2, itemp, nlgndr, cards)
                 # nth Legendre component of elastic scattering (mt = 2)
                 self.xs['elan'].append([])
@@ -114,7 +114,7 @@ class Isotope:
                             for j in range(len(sigen)):
                                 if sigen[j][0][0] == ig : self.xs['tra'][ig][itemp][i] -= sigen[j][i+1]
 
-        for nlgndr in range(8):
+        for nlgndr in range(2):
             # number of entries in full elastic scattering matrix
             n = len(self.xs['elan'][nlgndr])
             # number of entries in full elastic scattering matrix for one temperature

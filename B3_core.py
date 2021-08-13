@@ -40,16 +40,16 @@ class Core:
                     sys.exit()
             # add bottom and top layers for boundary conditions
             self.nz += 2
-            self.ny = len(reactor.control.input['coremap'])
-            self.nx = len(reactor.control.input['coremap'][0])
+            self.nx = len(reactor.control.input['coremap'])
+            self.ny = len(reactor.control.input['coremap'][0])
             if self.geom == 'hex24':
                 self.nt = 24
             elif self.geom == 'hex06':
                 self.nt = 6
             else:
                 self.nt = 1
-            for i in range(self.nx):
-                if len(reactor.control.input['coremap'][i]) != self.nx:
+            for i in range(self.ny):
+                if len(reactor.control.input['coremap'][i]) != self.ny:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
                     sys.exit()
             if 'power0' not in reactor.control.input:
@@ -57,7 +57,7 @@ class Core:
                 sys.exit()
 
             # initialize flux
-            self.flux = numpy.ones(shape=(self.nz, self.ny, self.nx, self.nt, self.ng), order='F')
+            self.flux = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -105,24 +105,24 @@ class Core:
             for iz in range(self.nz):
                 self.map['imix'].append([])
                 self.map['ipipe'].append([])
-                for iy in range(self.ny):
+                for ix in range(self.nx):
                     self.map['imix'][iz].append([])
                     self.map['ipipe'][iz].append([])
                     if iz == 0:
                         # bottom boundary conditions
                         botBC = int(reactor.control.input['coregeom']['botBC'])
-                        for ix in range(self.nx):
-                            self.map['imix'][iz][iy].append(bc[botBC])
+                        for iy in range(self.ny):
+                            self.map['imix'][iz][ix].append(bc[botBC])
                     elif iz == self.nz-1:
                         # top boundary conditions
                         topBC = int(reactor.control.input['coregeom']['topBC'])
-                        for ix in range(self.nx):
-                            self.map['imix'][iz][iy].append(bc[topBC])
+                        for iy in range(self.ny):
+                            self.map['imix'][iz][ix].append(bc[topBC])
                     else:
-                        for ix in range(self.nx):
-                            id = reactor.control.input['coremap'][iy][ix]
+                        for iy in range(self.ny):
+                            id = reactor.control.input['coremap'][ix][iy]
                             if isinstance(id, float):
-                                self.map['imix'][iz][iy].append(bc[int(id)])
+                                self.map['imix'][iz][ix].append(bc[int(id)])
                             else:
                                 if id not in stackid_list:
                                     print('****ERROR: stack id (' + id + ') in coremap card not specified in stack card.')
@@ -130,7 +130,7 @@ class Core:
                                 else:
                                     # index of stack
                                     istack = stackid_list.index(id)
-                                    # id of mix at (ix, iy, iz)
+                                    # id of mix at (iy, ix, iz)
                                     mixid = reactor.control.input['stack'][istack]['mixid'][iz-1]
                                     if mixid not in mixid_list:
                                         print('****ERROR: mix id in stack card (' + mixid + ') not specified in mix card.')
@@ -138,8 +138,8 @@ class Core:
                                     else:
                                         # index of stack
                                         imix = mixid_list.index(mixid)
-                                        self.map['imix'][iz][iy].append(imix)
-                                    # id of pipe at (ix, iy, iz)
+                                        self.map['imix'][iz][ix].append(imix)
+                                    # id of pipe at (iy, ix, iz)
                                     pipeid = reactor.control.input['stack'][istack]['pipeid'][iz-1]
                                     if pipeid not in pipeid_list:
                                         print('****ERROR: pipe id (' + pipeid + ') in stack card not specified in pipe card.')
@@ -147,13 +147,13 @@ class Core:
                                     else:
                                         # index of pipe
                                         ipipe = pipeid_list.index(pipeid)
-                                        # id of pipenode at (ix, iy, iz)
+                                        # id of pipenode at (iy, ix, iz)
                                         pipenode = reactor.control.input['stack'][istack]['pipenode'][iz-1]
                                         if pipenode > reactor.control.input['pipe'][ipipe]['nnodes']:
                                             print('****ERROR: pipenode index (' + pipenode + ') in stack card is bigger than number of nodes in pipe ' + pipeid + '.')
                                             sys.exit()
                                         else:
-                                            self.map['ipipe'][iz][iy].append((ipipe,pipenode))
+                                            self.map['ipipe'][iz][ix].append((ipipe,pipenode))
                                 # node height
                                 if len(self.map['dz']) < iz:
                                     self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
@@ -162,13 +162,13 @@ class Core:
 
             #f = open('tmp_map.txt', 'w')
             #for iz in range(self.nz):
-            #    for iy in range(self.ny):
-            #        if iy % 2 == 0:
+            #    for ix in range(self.nx):
+            #        if ix % 2 == 0:
             #            pass
             #        else:
             #            f.write(' ')
-            #        for ix in range(self.nx):
-            #            f.write(str(self.map['imix'][iz][iy][ix]+1) + ' ')
+            #        for iy in range(self.ny):
+            #            f.write(str(self.map['imix'][iz][ix][iy]+1) + ' ')
             #        f.write('\n')
             #    f.write('\niz = '+str(iz)+'\n')
             #f.close()
@@ -204,7 +204,7 @@ class Core:
 
             # fill out scattering arrays
             for imix in range(self.nmix):
-                for nlgndr in range(8):
+                for nlgndr in range(2):
                     for indx in range(nsigsn[imix]):
                         fsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][0]
                         tsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][1]
@@ -221,14 +221,14 @@ class Core:
             sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
             # call the Fortran eigenvalue problem solver
-            B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.ny, self.nx, self.nt, self.ng, self.nmix, \
+            B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigsn, fsigsn, tsigsn, sigsn, \
                                               nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
             # power distribution
-            self.pow = numpy.zeros(shape=(self.nz, self.ny, self.nx), order='F')
-            self.powxy = numpy.zeros(shape=(self.ny, self.nx), order='F')
+            self.pow = numpy.zeros(shape=(self.nz, self.nx, self.ny), order='F')
+            self.powxy = numpy.zeros(shape=(self.nx, self.ny), order='F')
             if self.geom == 'square':
                 az = self.pitch**2
             elif self.geom == 'hex01':
@@ -240,30 +240,30 @@ class Core:
             # power normalization factor
             factor = 0.
             for iz in range(self.nz):
-                for iy in range(self.ny):
-                    for ix in range(self.nx):
-                        # if (ix, iy, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-                        imix = self.map['imix'][iz][iy][ix]
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
                         if imix >= 0 and any(self.mix[imix].sigf) > 0:
                             vol = az*self.map['dz'][iz-1]
                             for it in range(self.nt):
                                 for ig in range(self.ng):
-                                    self.pow[iz][iy][ix] += self.mix[imix].kerma[ig]*self.flux[iz][iy][ix][it][ig]*vol
-                                    #self.pow[iz][iy][ix] += self.mix[imix].sigf[ig]*self.flux[iz][iy][ix][it][ig]*vol * 200. * 1.6022e-19
-                                self.powxy[iy][ix] += self.pow[iz][iy][ix]
-                                factor += self.pow[iz][iy][ix]
+                                    #self.pow[iz][ix][iy] += self.mix[imix].kerma[ig]*self.flux[iz][ix][iy][it][ig]*vol
+                                    self.pow[iz][ix][iy] += self.mix[imix].sigf[ig]*self.flux[iz][ix][iy][it][ig]*vol * 200. * 1.6022e-19
+                                self.powxy[ix][iy] += self.pow[iz][ix][iy]
+                                factor += self.pow[iz][ix][iy]
             factor = reactor.control.input['power0'] / factor
             # normalize flux and power to power0
             for iz in range(self.nz):
-                for iy in range(self.ny):
-                    for ix in range(self.nx):
-                        self.pow[iz][iy][ix] *= factor
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        self.pow[iz][ix][iy] *= factor
                         for it in range(self.nt):
                             for ig in range(self.ng):
-                                self.flux[iz][iy][ix][it][ig] *= factor
-            for iy in range(self.ny):
-                for ix in range(self.nx):
-                    self.powxy[iy][ix] *= factor
+                                self.flux[iz][ix][iy][it][ig] *= factor
+            for ix in range(self.nx):
+                for iy in range(self.ny):
+                    self.powxy[ix][iy] *= factor
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B

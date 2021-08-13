@@ -100,7 +100,7 @@ class Mix:
                         sig[i][j][isig0+1] = f(temp)
 
             elif reaction_type == 'elan':
-                for nlgndr in range(8):
+                for nlgndr in range(2):
                     sig.append([])
                     # number of entries in elastic scattering matrix
                     n = len(core.iso[isoindx].xs[reaction_type][nlgndr])
@@ -212,7 +212,7 @@ class Mix:
         # perform temperature and sig0 interpolations for all isotopes and all groups
         sig_tmp1 = self.interpolate_temp(core, reactor, 'elan')
         self.sigsn = []
-        for nlgndr in range(8):
+        for nlgndr in range(2):
             self.sigsn.append([])
             for i in range(self.niso):
                 # index of the isotope i in the global list of isotopes core.iso
