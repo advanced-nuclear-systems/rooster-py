@@ -45,20 +45,6 @@ class Clad:
         # list of initial temperatures in clad radial nodes
         self.temp = [mat['temp0']]*self.nr
 
-        # check existence of neighbouring fluid pipe
-        jpipe = (dictfuelrod['pipeid'][indx], dictfuelrod['pipenode'][indx])
-        if not jpipe[0] in reactor.fluid.pipeid:
-            print('****ERROR: pipe id ' + jpipe[0] + ' given in \'fuelrod\' card is not specified in the \'pipe\' card of input.')
-            sys.exit()
-        else:
-            # pipe index
-            ipipe = reactor.fluid.pipeid.index(jpipe[0])
-        # check existence of neighbouring fluid pipe node
-        if jpipe[1] > reactor.fluid.pipennodes[ipipe]:
-            print('****ERROR: pipe node index (' + str(jpipe[1]) + ') given in \'fuelrod\' card exceeds number of nodes (' + str(reactor.fluid.pipennodes[ipipe]) + ') of pipe ' + jpipe[0])
-            sys.exit()
-
-
         # mesh grid step
         self.dr = (self.ro - self.ri)/(self.nr-1)
         # list of node radii (size = nr)

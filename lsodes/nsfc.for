@@ -6,7 +6,7 @@
       integer ia(1), ja(1), ira(1), jra(1), il(1), jl(1), ijl(1)
       integer iu(1), ju(1), iju(1), irl(1), jrl(1), iru(1), jru(1)
       integer r(1), ic(1), q(1), irac(1), flag
-      logical exit17, exit 34
+      logical exit17, exit34
 
       np1 = n + 1
       jlmin = 1

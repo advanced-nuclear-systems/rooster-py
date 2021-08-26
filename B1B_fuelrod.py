@@ -1,3 +1,5 @@
+import sys
+
 from B1B0_fuel import Fuel
 from B1B1_innergas import InnerGas
 from B1B2_clad import Clad
@@ -10,10 +12,31 @@ class FuelRod:
     def __init__(self, indx, reactor):
 
         # INITIALIZATION
+        # dictionary of the fuel rod
+        dictfuelrod = reactor.control.input['fuelrod'][indx]
+        
         # fuel rod id
-        self.id = reactor.control.input['fuelrod'][indx]['id']
+        self.id = dictfuelrod['id']
         # number of axial layers specified in input for fuel rod indx
-        self.nz = len(reactor.control.input['fuelrod'][indx]['fuelid'])
+        self.nz = len(dictfuelrod['fuelid'])
+        # axial mesh size
+        self.dz = []
+        for i in range(self.nz):
+            # check existence of neighbouring fluid pipe
+            jpipe = (dictfuelrod['pipeid'][i], dictfuelrod['pipenode'][i])
+            if not jpipe[0] in reactor.fluid.pipeid:
+                print('****ERROR: pipe id ' + jpipe[0] + ' given in \'fuelrod\' card is not specified in the \'pipe\' card of input.')
+                sys.exit()
+            else:
+                # pipe index
+                ipipe = reactor.fluid.pipeid.index(jpipe[0])
+            # check existence of neighbouring fluid pipe node
+            if jpipe[1] > reactor.fluid.pipennodes[ipipe]:
+                print('****ERROR: pipe node index (' + str(jpipe[1]) + ') given in \'fuelrod\' card exceeds number of nodes (' + str(reactor.fluid.pipennodes[ipipe]) + ') of pipe ' + jpipe[0])
+                sys.exit()
+            # pipe node indexes
+            jpipe = (ipipe, jpipe[1]-1)
+            self.dz.append(reactor.fluid.len[jpipe[0]]/reactor.fluid.pipennodes[jpipe[0]])
         # create an object for every axial layer of fuel
         self.fuel = []
         for i in range(self.nz):

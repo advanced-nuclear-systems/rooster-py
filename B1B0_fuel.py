@@ -60,10 +60,11 @@ class Fuel:
         # list of node volume per unit height (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
 
-        # create an object fuel grain for every radial node of fuel
-        self.fuelgrain = []
-        for i in range(self.nr):
-            self.fuelgrain.append(FuelGrain(i, indx, indxfuelrod, reactor))
+        if 'fuelgrain' in reactor.solve:
+            # create an object fuel grain for every radial node of fuel
+            self.fuelgrain = []
+            for i in range(self.nr):
+                self.fuelgrain.append(FuelGrain(i, indx, indxfuelrod, reactor))
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuel' object created in B1B

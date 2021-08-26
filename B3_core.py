@@ -23,6 +23,14 @@ class Core:
             self.cdnp = [0] * self.ndnp
             for i in range(self.ndnp) :
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
+            if 'power0' not in reactor.control.input:
+                print('***ERROR: there is no card power0 in the input.')
+                sys.exit()
+            self.fuelvol = 0
+            for i in range(reactor.solid.nfuelrods):
+                for iz in range(reactor.solid.fuelrod[i].nz):
+                    self.fuelvol += sum(reactor.solid.fuelrod[i].fuel[iz].vol)
+            self.qv_average = reactor.control.input['power0']
 
         if 'spatialkinetics' in reactor.solve:
 
@@ -220,12 +228,17 @@ class Core:
             # transport cross section = total cross section - first Legendre component of elastic out-scattering cross section 
             sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
 
+            reactor.tic = time.time()
+
             # call the Fortran eigenvalue problem solver
             B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigsn, fsigsn, tsigsn, sigsn, \
                                               nsign2n, fsign2n, tsign2n, sign2n, chi, \
                                               self.pitch, dz)
+            tac = time.time()
+            print('{0:.3f}'.format(tac - reactor.tic), ' s | eigenvalue problem done.')
+
             # power distribution
             self.pow = numpy.zeros(shape=(self.nz, self.nx, self.ny), order='F')
             self.powxy = numpy.zeros(shape=(self.nx, self.ny), order='F')
