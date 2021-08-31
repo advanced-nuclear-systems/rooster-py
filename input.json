@@ -1,10 +1,17 @@
 {
   "clad": [
     {
-      "id": "C01",
-      "matid": "SS1",
-      "ri": 0.0041,
-      "ro": 0.0045,
+      "id": "CFIS",
+      "matid": "SS316",
+      "ri": 0.003685,
+      "ro": 0.00425,
+      "nr": 3
+    },
+    {
+      "id": "CFER",
+      "matid": "SS316",
+      "ri": 0.00733,
+      "ro": 0.0079,
       "nr": 3
     }
   ],
@@ -17,65 +24,180 @@
   "coremap": [],
   "fuel": [
     {
-      "id": "F01",
-      "matid": "MOX1",
+      "id": "FIS",
+      "matid": "MOX",
       "ri": 0.001,
-      "ro": 0.004,
+      "ro": 0.00357,
+      "nr": 20
+    },
+    {
+      "id": "FER",
+      "matid": "U",
+      "ri": 0.0,
+      "ro": 0.00718,
       "nr": 20
     }
   ],
   "fuelrod": [
     {
-      "id": "FR01",
+      "id": "FRIC",
       "fuelid": [
-        "F01",
-        "F01",
-        "F01",
-        "F01"
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS"
       ],
       "hgap": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
         0.0,
         0.0,
         0.0,
         0.0
       ],
       "cladid": [
-        "C01",
-        "C01",
-        "C01",
-        "C01"
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS"
       ],
       "p2d": [
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
         1.1,
         1.1,
         1.1,
         1.1
       ],
       "mltpl": [
-        10.0,
-        10.0,
-        10.0,
-        10.0
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0,
+        51490.0
       ],
       "pipeid": [
-        "UP07",
-        "UP07",
-        "UP07",
-        "UP07"
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA",
+        "ICSA"
       ],
       "pipenode": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
         21,
-        3,
-        4,
-        5
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
       ],
       "kr": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
         1
       ],
       "kz": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
@@ -83,56 +205,329 @@
       ]
     },
     {
-      "id": "FR02",
+      "id": "FROC",
       "fuelid": [
-        "F01",
-        "F01",
-        "F01",
-        "F01"
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS",
+        "FIS"
       ],
       "hgap": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
         0.0,
         0.0,
         0.0,
         0.0
       ],
       "cladid": [
-        "C01",
-        "C01",
-        "C01",
-        "C01"
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS",
+        "CFIS"
       ],
       "p2d": [
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
         1.1,
         1.1,
         1.1,
         1.1
       ],
       "mltpl": [
-        1.0,
-        1.0,
-        1.0,
-        1.0
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0,
+        45528.0
       ],
       "pipeid": [
-        "UP07",
-        "UP07",
-        "UP07",
-        "UP07"
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA",
+        "OCSA"
       ],
       "pipenode": [
-        2,
-        3,
-        4,
-        5
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
       ],
       "kr": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
         1
       ],
       "kz": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "FRRB",
+      "fuelid": [
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER",
+        "FER"
+      ],
+      "hgap": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cladid": [
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER",
+        "CFER"
+      ],
+      "p2d": [
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1
+      ],
+      "mltpl": [
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0,
+        20475.0
+      ],
+      "pipeid": [
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA",
+        "RBSA"
+      ],
+      "pipenode": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "kr": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "kz": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
@@ -142,12 +537,17 @@
   ],
   "innergas": [
     {
-      "fuelrodid": "FR01",
+      "fuelrodid": "FRIC",
       "matid": "HE1",
       "plenv": 5.3e-05
     },
     {
-      "fuelrodid": "FR02",
+      "fuelrodid": "FROC",
+      "matid": "HE1",
+      "plenv": 5.3e-05
+    },
+    {
+      "fuelrodid": "FRRB",
       "matid": "HE1",
       "plenv": 5.3e-05
     }
@@ -156,59 +556,31 @@
     "from": [
       "PLN",
       "DOWN",
-      "UP01",
-      "UP02",
-      "UP03",
-      "UP04",
-      "UP05",
-      "UP06",
-      "UP07",
-      "UP08",
-      "UP09",
-      "UP10",
-      "UP11",
-      "UP12"
+      "DOWN",
+      "DOWN",
+      "ICSA",
+      "OCSA",
+      "RBSA"
     ],
     "to": [
       "DOWN",
-      "UP01",
-      "UP02",
-      "UP03",
-      "UP04",
-      "UP05",
-      "UP06",
-      "UP07",
-      "UP08",
-      "UP09",
-      "UP10",
-      "UP11",
-      "UP12",
+      "ICSA",
+      "OCSA",
+      "RBSA",
+      "PLN",
+      "PLN",
       "PLN"
     ],
     "type": [
+      "dependent",
       "independent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
-      "dependent",
+      "independent",
+      "independent",
       "dependent",
       "dependent",
       "dependent"
     ],
     "pumphead": [
-      "PMPHEAD_VS_T",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
       "",
       "",
       "",
@@ -219,16 +591,9 @@
     ],
     "flowrate": [
       "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
+      "MDOT_VS_T_IC",
+      "MDOT_VS_T_OC",
+      "MDOT_VS_T_RB",
       "",
       "",
       ""
@@ -251,24 +616,36 @@
       "x": [
         "TIME",
         0.0,
-        10.0
+        1.0
       ],
       "f(x)": [
-        "PMPHEAD_VS_T",
+        "MDOT_VS_T_IC",
         0.0,
-        100000.0
+        9394.0
       ]
     },
     {
       "x": [
         "TIME",
         0.0,
-        10.0
+        1.0
       ],
       "f(x)": [
-        "MDOT_VS_T",
+        "MDOT_VS_T_OC",
         0.0,
-        10.0
+        6481.0
+      ]
+    },
+    {
+      "x": [
+        "TIME",
+        0.0,
+        1.0
+      ],
+      "f(x)": [
+        "MDOT_VS_T_RB",
+        0.0,
+        525.0
       ]
     },
     {
@@ -279,8 +656,8 @@
       ],
       "f(x)": [
         "TEMP_VS_T",
-        700.0,
-        700.0
+        673.0,
+        673.0
       ]
     }
   ],
@@ -292,7 +669,7 @@
       "temp0": 673.0
     },
     {
-      "id": "MOX1",
+      "id": "MOX",
       "type": "mox",
       "pu": 0.15,
       "b": 0.0,
@@ -301,7 +678,16 @@
       "temp0": 673.0
     },
     {
-      "id": "SS1",
+      "id": "U",
+      "type": "mox",
+      "pu": 0.0,
+      "b": 0.0,
+      "x": 0.02,
+      "por": 0.05,
+      "temp0": 673.0
+    },
+    {
+      "id": "SS316",
       "type": "ss316",
       "temp0": 673.0
     },
@@ -319,10 +705,10 @@
       "id": "PLN",
       "type": "freelevel",
       "matid": "NA",
-      "dhyd": 0.1,
+      "dhyd": 1.0,
       "len": 1.0,
       "dir": 1.0,
-      "areaz": 0.22,
+      "areaz": 4.1154,
       "nnodes": 1,
       "signaltemp": ""
     },
@@ -331,142 +717,43 @@
       "type": "normal",
       "matid": "NA",
       "dhyd": 0.01,
-      "len": 3.0,
+      "len": 4.3,
       "dir": -1.0,
-      "areaz": 1.1,
-      "nnodes": 30,
+      "areaz": 4.1154,
+      "nnodes": 43,
       "signaltemp": "TEMP_VS_T"
     },
     {
-      "id": "UP01",
+      "id": "ICSA",
       "type": "normal",
       "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.04027,
+      "dhyd": 0.004084,
+      "len": 4.3,
       "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 1,
+      "areaz": 1.5244,
+      "nnodes": 43,
       "signaltemp": ""
     },
     {
-      "id": "UP02",
+      "id": "OCSA",
       "type": "normal",
       "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.76512,
+      "dhyd": 0.004084,
+      "len": 4.3,
       "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 8,
+      "areaz": 1.3479,
+      "nnodes": 43,
       "signaltemp": ""
     },
     {
-      "id": "UP03",
+      "id": "RBSA",
       "type": "normal",
       "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.0302,
+      "dhyd": 0.004317,
+      "len": 4.3,
       "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 1,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP04",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.0604,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 1,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP05",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.02013,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 1,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP06",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.30182,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 6,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP07",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 1.01306,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 20,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP08",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.30182,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 6,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP09",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.15718,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 2,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP10",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.02819,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 1,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP11",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 0.26477,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 3,
-      "signaltemp": ""
-    },
-    {
-      "id": "UP12",
-      "type": "normal",
-      "matid": "NA",
-      "dhyd": 0.01,
-      "len": 1.07319,
-      "dir": 1.0,
-      "areaz": 1.1,
-      "nnodes": 10,
+      "areaz": 1.2431,
+      "nnodes": 43,
       "signaltemp": ""
     }
   ],
@@ -476,41 +763,14 @@
       "value": [
         "time"
       ]
-    },
-    {
-      "id": "PI",
-      "value": [
-        3.14159
-      ]
-    },
-    {
-      "id": "TEMPF",
-      "value": [
-        1500.0
-      ]
-    },
-    {
-      "id": "TEMPB",
-      "value": [
-        900.0
-      ]
-    },
-    {
-      "id": "TEMP",
-      "value": [
-        600.0
-      ]
     }
   ],
   "signalid": [
     "TIME",
-    "PI",
-    "TEMPF",
-    "TEMPB",
-    "TEMP",
     "RHO_INS",
-    "PMPHEAD_VS_T",
-    "MDOT_VS_T",
+    "MDOT_VS_T_IC",
+    "MDOT_VS_T_OC",
+    "MDOT_VS_T_RB",
     "TEMP_VS_T"
   ],
   "solve": [
@@ -528,7 +788,7 @@
     ]
   ],
   "thermbc": [],
-  "power0": 2990000000.0,
+  "power0": 0.0,
   "tlife": 0.0005,
   "dnplmb": [
     0.0127,

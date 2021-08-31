@@ -37,10 +37,11 @@ class FuelRod:
             # pipe node indexes
             jpipe = (ipipe, jpipe[1]-1)
             self.dz.append(reactor.fluid.len[jpipe[0]]/reactor.fluid.pipennodes[jpipe[0]])
+
         # create an object for every axial layer of fuel
         self.fuel = []
         for i in range(self.nz):
-            self.fuel.append(Fuel(i, indx, reactor))
+            self.fuel.append(Fuel(i, indx, self.dz[i], reactor))
 
         # create an object for inner gas
         self.innergas = InnerGas(indx, reactor)

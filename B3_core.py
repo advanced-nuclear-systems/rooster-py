@@ -29,8 +29,8 @@ class Core:
             self.fuelvol = 0
             for i in range(reactor.solid.nfuelrods):
                 for iz in range(reactor.solid.fuelrod[i].nz):
-                    self.fuelvol += sum(reactor.solid.fuelrod[i].fuel[iz].vol)
-            self.qv_average = reactor.control.input['power0']
+                    self.fuelvol += sum(reactor.solid.fuelrod[i].fuel[iz].vol)*reactor.control.input['fuelrod'][i]['mltpl'][iz]
+            self.qv_average = reactor.control.input['power0']/self.fuelvol
 
         if 'spatialkinetics' in reactor.solve:
 

@@ -1,5 +1,6 @@
 from B1B0A_fuelgrain import FuelGrain
 
+import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -8,7 +9,7 @@ class Fuel:
     #----------------------------------------------------------------------------------------------
     # constructor: self is a 'fuel' object created in B1B, 
     # indx is the axial index of this object in the fuel rod with index indxfuelrod
-    def __init__(self, indx, indxfuelrod, reactor):
+    def __init__(self, indx, indxfuelrod, dz, reactor):
 
         # INITIALIZATION
         # dictionary of the fuel rod to which the fuel belongs
@@ -57,8 +58,9 @@ class Fuel:
         self.r = [self.ri + i*self.dr for i in range(self.nr)]
         # list of node boundary radii (size = nr-1)
         self.rb = [self.r[i]+self.dr/2 for i in range(self.nr-1)]
-        # list of node volume per unit height (size = nr)
-        self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
+        # list of node volume (size = nr)
+        self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]       
+        self.vol = [math.pi*vol*dz for vol in self.vol]
 
         if 'fuelgrain' in reactor.solve:
             # create an object fuel grain for every radial node of fuel
@@ -103,8 +105,8 @@ class Fuel:
         Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
         Q += [(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
-        rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
-        dTdt = [(Q[i] - Q[i+1] + 1e9*self.vol[i])/rhocpv[i] for i in range(self.nr)]
+        rhocp = [self.prop['rho'][i]*self.prop['cp'][i] for i in range(self.nr)]
+        dTdt = [(Q[i] - Q[i+1] + reactor.core.qv_average)/rhocp[i] for i in range(self.nr)]
         rhs += dTdt
 
         return rhs

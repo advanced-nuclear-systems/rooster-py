@@ -10,21 +10,11 @@ t_dt      100.      1
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     value
-power0    2990.e6
+power0    0.e6      #2990e6
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        value
 signal    TIME      time
-#
-#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-#####     id        value
-signal    PI        3.14159
-#
-#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
-#####     id        value
-signal    TEMPF     1500.
-signal    TEMPB     900.
-signal    TEMP      600.
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     insignal  outsignal
@@ -34,21 +24,27 @@ lookup    TIME      RHO_INS &
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     insignal  outsignal
-lookup    TIME      PMPHEAD_VS_T &
+lookup    TIME      MDOT_VS_T_IC &
           0.0       0       &
-          10.0      1e5
+          1.0       9394
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     insignal  outsignal
-lookup    TIME      MDOT_VS_T &
+lookup    TIME      MDOT_VS_T_OC &
           0.0       0       &
-          10.0      10
+          1.0       6481
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     insignal  outsignal
+lookup    TIME      MDOT_VS_T_RB &
+          0.0       0       &
+          1.0       525
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     insignal  outsignal
 lookup    TIME      TEMP_VS_T &
-          0.0       700       &
-          10.0      700
+          0.0       673       &
+          10.0      673
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     prompt_neutron_life_time
@@ -76,9 +72,10 @@ solve     pointkinetics
 #####     id        type      p0(Pa)    temp0(K)
 mat       NA        na        1e5       673
 #####     id        type      pu(-)     b(MWD/kg) x(-)      por(-)    temp0(K)
-mat       MOX1      mox       0.15      0         0.02      0.05      673
+mat       MOX       mox       0.15      0         0.02      0.05      673
+mat       U         mox       0.0       0         0.02      0.05      673
 #####     id        type      temp0(K)
-mat       SS1       ss316     673
+mat       SS316     ss316     673
 #####     id        type      p0(Pa)    temp0(K)
 mat       HE1       he        1e6       673
 #
@@ -86,69 +83,97 @@ mat       HE1       he        1e6       673
 # COOLING SYSTEMS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        matid     dhyd(m)   len(m)    dir       areaz(m2)
-pipe-f    PLN       NA        0.1       1.0       1         0.22
-jun-i-p   PLN       DOWN      PMPHEAD_VS_T
+pipe-f    PLN       NA        1.0       1.0       1         4.1154
+jun       PLN       DOWN
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        matid     dhyd(m)   len(m)   dir        areaz(m2) nnodes    signal
-pipe-t    DOWN      NA        0.01      3.0      -1         1.1       30        TEMP_VS_T
-jun       DOWN      UP01
+pipe-t    DOWN      NA        0.01      4.3      -1         4.1154    43        TEMP_VS_T
+jun-i-f   DOWN      ICSA      MDOT_VS_T_IC
+jun-i-f   DOWN      OCSA      MDOT_VS_T_OC
+jun-i-f   DOWN      RBSA      MDOT_VS_T_RB
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        matid     dhyd(m)   len(m)    dir       areaz(m2) nnodes
-pipe      UP01      NA        0.01      0.04027   1         1.1       1
-jun       UP01      UP02
-pipe      UP02      NA        0.01      0.76512   1         1.1       8
-jun       UP02      UP03
-pipe      UP03      NA        0.01      0.03020   1         1.1       1
-jun       UP03      UP04
-pipe      UP04      NA        0.01      0.06040   1         1.1       1
-jun       UP04      UP05
-pipe      UP05      NA        0.01      0.02013   1         1.1       1
-jun       UP05      UP06
-pipe      UP06      NA        0.01      0.30182   1         1.1       6
-jun       UP06      UP07
-pipe      UP07      NA        0.01      1.01306   1         1.1       20
-jun       UP07      UP08
-pipe      UP08      NA        0.01      0.30182   1         1.1       6
-jun       UP08      UP09
-pipe      UP09      NA        0.01      0.15718   1         1.1       2
-jun       UP09      UP10
-pipe      UP10      NA        0.01      0.02819   1         1.1       1
-jun       UP10      UP11
-pipe      UP11      NA        0.01      0.26477   1         1.1       3
-jun       UP11      UP12
-pipe      UP12      NA        0.01      1.07319   1         1.1       10
-jun       UP12      PLN
+pipe      ICSA      NA        4.084E-3  4.3       1         1.5244    43        # 190 SAs
+jun       ICSA      PLN
+pipe      OCSA      NA        4.084E-3  4.3       1         1.3479    43        # 168 SAs
+jun       OCSA      PLN
+pipe      RBSA      NA        4.317E-3  4.3       1         1.2431    43        # 225 SAs
+jun       RBSA      PLN
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # FUEL
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        matid     ri(m)     ro(m)     nr
-fuel      F01       MOX1      1e-3      4e-3      20
+fuel      FIS       MOX       1e-3      3.57e-3   20
+fuel      FER       U         0         7.18e-3   20
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # CLADDINGS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        matid     ri(m)     ro(m)     nr
-clad      C01       SS1       4.1e-3    4.5e-3    3
+clad      CFIS      SS316     3.685e-3  4.25e-3   3
+clad      CFER      SS316     7.33e-3   7.9e-3    3
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # FUEL ROD AXIAL LEVELS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenodid kr        kz
-fuelrod   FR01      F01       0         C01       1.1       10        UP07      2         1.0       1.0
-fuelrod   FR01      F01       0         C01       1.1       10        UP07      3         1.0       1.0
-fuelrod   FR01      F01       0         C01       1.1       10        UP07      4         1.0       1.0
-fuelrod   FR01      F01       0         C01       1.1       10        UP07      5         1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      12        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      13        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      14        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      15        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      16        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      17        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      18        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      19        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      20        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      21        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      22        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      23        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      24        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      25        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      26        1.0       1.0
+fuelrod   FRIC      FIS       0         CFIS      1.1       51490     ICSA      27        1.0       1.0
 #
-fuelrod   FR02      F01       0         C01       1.1       1         UP07      2         1.0       1.0
-fuelrod   FR02      F01       0         C01       1.1       1         UP07      3         1.0       1.0
-fuelrod   FR02      F01       0         C01       1.1       1         UP07      4         1.0       1.0
-fuelrod   FR02      F01       0         C01       1.1       1         UP07      5         1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      12        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      13        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      14        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      15        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      16        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      17        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      18        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      19        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      20        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      21        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      22        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      23        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      24        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      25        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      26        1.0       1.0
+fuelrod   FROC      FIS       0         CFIS      1.1       45528     OCSA      27        1.0       1.0
+#
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      12        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      13        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      14        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      15        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      16        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      17        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      18        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      19        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      20        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      21        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      22        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      23        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      24        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      25        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      26        1.0       1.0
+fuelrod   FRRB      FER       0         CFER      1.1       20475     RBSA      27        1.0       1.0
 #
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 # INNER GAS
 #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
 #####     fuelrodid matid     plenv(m3)
-innergas  FR01      HE1       53e-6
-innergas  FR02      HE1       53e-6
+innergas  FRIC      HE1       53e-6
+innergas  FROC      HE1       53e-6
+innergas  FRRB      HE1       53e-6
 #

@@ -182,10 +182,13 @@ class Control:
 
         # signal-dependent junction: impose flowrate
         if 'fluid' in reactor.solve:
+            k = 0
             for j in range(reactor.fluid.njun):
-                if reactor.fluid.juntype[j] == 'independent' and reactor.fluid.junflowrate[j] != '':
-                    # impose flowrate from the look-up table
-                    reactor.fluid.mdoti[j] = self.signal[reactor.fluid.junflowrate[j]]
+                if reactor.fluid.juntype[j] == 'independent':
+                    if reactor.fluid.junflowrate[j] != '':
+                        # impose flowrate from the look-up table
+                        reactor.fluid.mdoti[k] = self.signal[reactor.fluid.junflowrate[j]]
+                    k += 1
         
         # signal-dependent pipe: impose temperature
         if 'fluid' in reactor.solve:
@@ -845,10 +848,12 @@ class Control:
         # write list of unknowns to y
         y = []
         if 'fluid' in reactor.solve:
+            k = 0
             for j in range(reactor.fluid.njun):
                 if reactor.fluid.juntype[j] == 'independent':
                     # flowrate in independent junctions
-                    y.append(reactor.fluid.mdoti[j])
+                    y.append(reactor.fluid.mdoti[k])
+                    k += 1
             for i in range(reactor.fluid.npipe):
                 for j in range(reactor.fluid.pipennodes[i]):
                     # temperature in pipe nodes
@@ -899,10 +904,13 @@ class Control:
         # read list of unknowns from y
         indx = 0
         if 'fluid' in reactor.solve:
+            k = 0
             for j in range(reactor.fluid.njun):
                 if reactor.fluid.juntype[j] == 'independent':
-                    # flowrate in independent junctions
-                    reactor.fluid.mdoti[j] = y[indx]
+                    if reactor.fluid.junflowrate[j] == '':
+                        # flowrate in independent junctions
+                        reactor.fluid.mdoti[k] = y[indx]
+                    k += 1
                     indx += 1
             for i in range(reactor.fluid.npipe):
                 for j in range(reactor.fluid.pipennodes[i]):
