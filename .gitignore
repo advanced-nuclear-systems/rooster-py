@@ -5,6 +5,7 @@ _f2py
 *.o
 *.exe
 *.pdf
+input.*
 output
 *.zip
 papers
