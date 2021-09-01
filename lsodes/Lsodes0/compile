@@ -1,5 +1,0 @@
-gfortran -ffixed-line-length-none -w -c 0driver.for
-
-gfortran -ffixed-line-length-none -w -c Lsodes0.for
-
-gfortran -o lsodes.exe *.o

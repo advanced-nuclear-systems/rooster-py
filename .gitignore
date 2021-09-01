@@ -6,8 +6,8 @@ _f2py
 *.exe
 *.pdf
 input.*
+lsodes
 output
 *.zip
-papers
-DATA*
+gitignore
 *.so
