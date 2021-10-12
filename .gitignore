@@ -11,3 +11,4 @@ output
 *.zip
 gitignore
 *.so
+DATA*

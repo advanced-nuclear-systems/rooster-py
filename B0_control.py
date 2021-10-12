@@ -469,17 +469,23 @@ class Control:
                             print('solve', v)
                         sys.exit()
                     if word[1] == 'spatialkinetics':
-                        # check that there is a second value
-                        if len(word)-1 == 1:
-                            print('****ERROR: solve spatialkinetics card should have a second value after the keyword: number of energy groups (integer), e.g.:\nsolve spatialkinetics 25')
+                        # check that there are two additional values
+                        if len(word)-1 < 3:
+                            print('****ERROR: solve spatialkinetics card should have two value after the keyword: number of energy groups (integer) and method indicator (DIF or MC), e.g.:\nsolve spatialkinetics 25 MC')
                             sys.exit()
-                        # check that there the second value is integer
+                        # check that the second value is integer
                         try:
                             # number of energy groups
                             inp['ng'] = int(word[2])
                         except:
                             print('****ERROR: the second value after the keyword of solve spatialkinetics card should be integer (number of energy groups), e.g.:\nsolve spatialkinetics 25')
                             sys.exit()
+                        # check that the thrid value is DIF or MC
+                        if word[3] != 'DIF' and word[3] != 'MC':
+                            print('****ERROR: solve spatialkinetics card should have the third value of method indicator either DIF (neutron diffusion solver) or MC (Monte Carlo method)')
+                            sys.exit()
+                        # method indicator
+                        inp['nmeth'] = int(word[2])
                 #--------------------------------------------------------------------------------------
                 # stack of mixes of isotopes
                 elif key == 'stack':
