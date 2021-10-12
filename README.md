@@ -14,3 +14,6 @@ The ROOSTER projects aims at developing a software for multi-physics modeling of
 ROOSTER has not yet been tested for Windows.
 
 More details are at https://armstrong-dev.github.io/index.html#rooster.
+
+## How to push to armstrong-dev
+git push rooster main

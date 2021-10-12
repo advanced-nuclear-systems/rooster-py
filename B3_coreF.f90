@@ -11,7 +11,7 @@ use omp_lib
  
 implicit none
 
-! method flag ('MC', 'df')
+! method flag ('MC', 'DI')
 character*2 meth
 ! geometry flag ('squar', 'hex01', 'hex06', 'hex24')
 character*5 geom

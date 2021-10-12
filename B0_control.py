@@ -485,7 +485,7 @@ class Control:
                             print('****ERROR: solve spatialkinetics card should have the third value of method indicator either DIF (neutron diffusion solver) or MC (Monte Carlo method)')
                             sys.exit()
                         # method indicator
-                        inp['nmeth'] = int(word[2])
+                        inp['nmeth'] = word[3]
                 #--------------------------------------------------------------------------------------
                 # stack of mixes of isotopes
                 elif key == 'stack':

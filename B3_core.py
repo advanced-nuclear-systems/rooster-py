@@ -34,6 +34,9 @@ class Core:
 
         if 'spatialkinetics' in reactor.solve:
 
+            # neutronics method
+            self.meth = reactor.control.input['nmeth']
+
             # core geometry flag
             self.geom = reactor.control.input['coregeom']['geom']
 
@@ -231,7 +234,7 @@ class Core:
             reactor.tic = time.time()
 
             # call the Fortran eigenvalue problem solver
-            B3_coreF.solve_eigenvalue_problem('MC', self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
+            B3_coreF.solve_eigenvalue_problem(self.meth, self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigsn, fsigsn, tsigsn, sigsn, \
                                               nsign2n, fsign2n, tsign2n, sign2n, chi, \
