@@ -128,12 +128,18 @@ class Fluid:
                 i += 1
         self.invA = linalg.inv(A)
 
-        # create and inverse a matrix B of left-hand sides of momentum conservation equations (self.njun) and 
+        # create list of geometrical parameters for every junction: l_over_a = 0.5*len(from)/areaz(from) + 0.5*len(to)/areaz(to)
+        l_over_a = []
+        for j in range(self.njun):
+            l_over_a[j] = 0.5*self.len(self.f[j][0])/self.pipennodes[self.f[j][0]]/self.areaz(self.f[j][0]) + \
+                          0.5*self.len(self.t[j][0])/self.pipennodes[self.t[j][0]]/self.areaz(self.t[j][0])
+
+        # create and invert a matrix B of left-hand sides of momentum conservation equations (self.njun) and 
         # mass conservation equations differentiated w.r.t. time (self.npipe-self.npipef)
         n = self.njun + sum(self.pipennodes)
         B = [[0]*n for i in range(n)]
         for j in range(self.njun):
-            B[j][j] = 1 # dmdot/dt
+            B[j][j] = l_over_a[j] # dmdot/dt
 
             i = self.njun + self.indx.index(self.f[j])
             B[j][i] = -1 # -P_from
@@ -212,7 +218,8 @@ class Fluid:
                 b[j] = self.mdoti[i]
                 i += 1
             elif self.juntype[j] == 'dependent':
-                b[j] = 0        # then multiply matrix by list: invA*mdot = b and convert to list
+                b[j] = 0        
+        # then multiply matrix by list: invA*mdot = b and convert to list
         self.mdot = self.invA.dot(b).tolist()
         # finally calculate flowrates in internal junctions
         for i in range(self.npipe):
