@@ -873,6 +873,10 @@ class Control:
                     y.append(reactor.fluid.mdoti[k])
                     k += 1
             for i in range(reactor.fluid.npipe):
+                if reactor.fluid.pipetype[i] == 'freelevel':
+                    # free-level-volume length
+                    y.append(reactor.fluid.len[i])
+            for i in range(reactor.fluid.npipe):
                 for j in range(reactor.fluid.pipennodes[i]):
                     # temperature in pipe nodes
                     y.append(reactor.fluid.temp[i][j])
@@ -929,6 +933,11 @@ class Control:
                         # flowrate in independent junctions
                         reactor.fluid.mdoti[k] = y[indx]
                     k += 1
+                    indx += 1
+            for i in range(reactor.fluid.npipe):
+                if reactor.fluid.pipetype[i] == 'freelevel':
+                    # free-level-volume length
+                    reactor.fluid.len[i] = y[indx]
                     indx += 1
             for i in range(reactor.fluid.npipe):
                 for j in range(reactor.fluid.pipennodes[i]):

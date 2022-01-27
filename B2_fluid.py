@@ -268,7 +268,8 @@ class Fluid:
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
                 b[j] = reactor.control.signal[self.junpumphead[j]]
         for i in range(sum(self.pipennodes)):
-            if self.pipetype[self.indx[i][0]] == 'freelevel': b[self.njun+i] = 1e5
+            n = self.indx[i][0]
+            if self.pipetype[n] == 'freelevel': b[self.njun+i] = self.prop[n]['rhol'][0]*9.81*self.len[n]
         invBb = self.invB.dot(b).tolist()
 
         # read from invBb: time derivatives of flowrate in independent junctions
@@ -286,6 +287,20 @@ class Fluid:
                 self.p[i][j] = invBb[self.njun+indx]
                 indx += 1
 
+        # TIME DERIVATIVES OF FREE-LEVEL-VOLUME LENGTH:
+        dlendt = []
+        n = 0
+        for i in range(self.npipe):
+            if self.pipetype[i] == 'freelevel':
+                dlendt.append(0)
+                rhoa = self.prop[i]['rhol'][0]*self.areaz[i]
+                for j in range(self.njun):
+                    if self.f[j][0] == i:
+                        dlendt[n] -= self.mdot[j]/rhoa
+                    if self.t[j][0] == i:
+                        dlendt[n] += self.mdot[j]/rhoa
+                n += 1
+        
         # TIME DERIVATIVES OF FLUID TEMPERATURES:
         dtempdt2d = [[0]*self.pipennodes[i] for i in range(self.npipe)]
         for j in range(self.njun):
@@ -336,5 +351,5 @@ class Fluid:
                     rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol
                     dtempdt.append(dtempdt2d[i][j] / rho_cp_vol)
 
-        rhs = dmdotdt + dtempdt
+        rhs = dmdotdt + dlendt + dtempdt
         return rhs
