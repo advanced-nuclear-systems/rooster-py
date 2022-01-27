@@ -620,6 +620,12 @@ class Control:
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
                 fid.append(open(path4results + os.sep + 'fluid-pe-' + reactor.fluid.pipeid[i] + '.dat', 'w'))
                 fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([str(j).zfill(4).ljust(13) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
+            fid.append(open(path4results + os.sep + 'fluid-len.dat', 'w'))
+            s = ''
+            for i in range(reactor.fluid.npipe):
+                if reactor.fluid.pipetype[i] == 'freelevel':
+                    s += str(reactor.fluid.pipeid[i]).ljust(13)
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + s + '\n')
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 fid.append(open(path4results + os.sep + 'fuelrod-hgap-' + [x['id'] for x in self.input['fuelrod']][i] + '.dat', 'w'))
@@ -691,6 +697,12 @@ class Control:
                 indx += 1
                 fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.fluid.pe[i][j]) for j in range(reactor.fluid.pipennodes[i])]) + '\n')
                 indx += 1
+            s = ''
+            for i in range(reactor.fluid.npipe):
+                if reactor.fluid.pipetype[i] == 'freelevel':
+                    s += '{0:12.5e} '.format(reactor.fluid.len[i])
+            fid[indx].write('{0:12.5e} '.format(time) + s + '\n')
+            indx += 1
         if 'fuelrod' in reactor.solve:
             for i in range(reactor.solid.nfuelrods):
                 # gas gap conductance

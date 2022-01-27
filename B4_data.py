@@ -78,6 +78,6 @@ class Data:
         elif re > 4000:
             # turbulent friction factor
             return 0.316/re**0.25
-        elif:
+        else:
             # transition friction factor
             return 0.032 + 0.0077*(re/2000 - 1)

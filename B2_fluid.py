@@ -129,10 +129,11 @@ class Fluid:
         self.invA = linalg.inv(A)
 
         # create list of geometrical parameters for every junction: l_over_a = 0.5*len(from)/areaz(from) + 0.5*len(to)/areaz(to)
-        l_over_a = []
+        l_over_a = [0]*self.njun
         for j in range(self.njun):
-            l_over_a[j] = 0.5*self.len(self.f[j][0])/self.pipennodes[self.f[j][0]]/self.areaz(self.f[j][0]) + \
-                          0.5*self.len(self.t[j][0])/self.pipennodes[self.t[j][0]]/self.areaz(self.t[j][0])
+            f = self.f[j][0]
+            t = self.t[j][0]
+            l_over_a[j] = 0.5*self.len[f]/self.pipennodes[f]/self.areaz[f] + 0.5*self.len[t]/self.pipennodes[t]/self.areaz[t]
 
         # create and invert a matrix B of left-hand sides of momentum conservation equations (self.njun) and 
         # mass conservation equations differentiated w.r.t. time (self.npipe-self.npipef)
@@ -260,8 +261,8 @@ class Fluid:
             if self.pipetype[t[0]] != 'freelevel': rhogh_t = abs(rhogh_t)
 
             #friction losses
-            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd(f[0]) * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd(t[0]) * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
             
             b[j] = -0.5*(rhogh_f + rhogh_t) - 0.5*(dpfric_f + dpfric_t)
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
