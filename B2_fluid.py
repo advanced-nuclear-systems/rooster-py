@@ -246,14 +246,24 @@ class Fluid:
         # construct right-hand side b of system invB*[dmdotdt, P] = b
         b = [0]*(self.njun + sum(self.pipennodes))
         for j in range(self.njun):
-            rho_f = self.prop[self.f[j][0]]['rhol'][self.f[j][1]]
-            rho_t = self.prop[self.t[j][0]]['rhol'][self.t[j][1]]
+            f = self.f[j]
+            t = self.t[j]
+            len_f = 0.5*self.len[f[0]]/self.pipennodes[f[0]]
+            len_t = 0.5*self.len[t[0]]/self.pipennodes[t[0]]
+            rho_f = self.prop[f[0]]['rhol'][f[1]]
+            rho_t = self.prop[f[0]]['rhol'][f[1]]
+
             # gravitational head
-            rhogh_f = 9.81*rho_f*self.len[self.f[j][0]]*self.dir[self.f[j][0]]/self.pipennodes[self.f[j][0]]
-            if self.pipetype[self.f[j][0]] != 'freelevel': rhogh_f = - abs(rhogh_f)
-            rhogh_t = 9.81*rho_t*self.len[self.t[j][0]]*self.dir[self.t[j][0]]/self.pipennodes[self.t[j][0]]
-            if self.pipetype[self.t[j][0]] != 'freelevel': rhogh_t = abs(rhogh_t)
-            b[j] = -0.5*(rhogh_f + rhogh_t) - self.mdot[j]*100
+            rhogh_f = 9.81*rho_f*len_f*self.dir[f[0]]
+            if self.pipetype[f[0]] != 'freelevel': rhogh_f = - abs(rhogh_f)
+            rhogh_t = 9.81*rho_t*len_t*self.dir[t[0]]
+            if self.pipetype[t[0]] != 'freelevel': rhogh_t = abs(rhogh_t)
+
+            #friction losses
+            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd(f[0]) * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd(t[0]) * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            
+            b[j] = -0.5*(rhogh_f + rhogh_t) - 0.5*(dpfric_f + dpfric_t)
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
                 b[j] = reactor.control.signal[self.junpumphead[j]]
         for i in range(sum(self.pipennodes)):

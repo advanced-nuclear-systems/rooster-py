@@ -65,3 +65,19 @@ class Data:
         else:
             # round tube
             return 4.8 + 0.025 * (pe)**0.8
+
+    #----------------------------------------------------------------------------------------------
+    # Friction factor: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
+    def fricfac(self, re):
+
+        if re == 0:
+            return 1e30
+        elif re <= 2000:
+            # laminar friction factor
+            return 64/re
+        elif re > 4000:
+            # turbulent friction factor
+            return 0.316/re**0.25
+        elif:
+            # transition friction factor
+            return 0.032 + 0.0077*(re/2000 - 1)
