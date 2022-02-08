@@ -437,7 +437,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic pipe with free level
                 elif key == 'pipe-f':
-                    inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':1, 'signaltemp':''} )
+                    inp['pipe'].append( {'id':word[1], 'type':'freelevel', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':0, 'areaz':word[5], 'nnodes':1, 'signaltemp':''} )
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic pipe without free level with temperature defined by signal
                 elif key == 'pipe-t':
