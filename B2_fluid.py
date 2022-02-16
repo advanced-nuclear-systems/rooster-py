@@ -133,7 +133,12 @@ class Fluid:
         for j in range(self.njun):
             f = self.f[j][0]
             t = self.t[j][0]
-            l_over_a[j] = 0.5*self.len[f]/self.pipennodes[f]/self.areaz[f] + 0.5*self.len[t]/self.pipennodes[t]/self.areaz[t]
+            len_f = 0.5*self.len[f]/self.pipennodes[f]
+            if self.pipetype[f] == 'freelevel': len_f *= 2
+            len_t = 0.5*self.len[t]/self.pipennodes[t]
+            if self.pipetype[t] == 'freelevel': len_t *= 2
+
+            l_over_a[j] = len_f/self.areaz[f] + len_t/self.areaz[t]
 
         # create and invert a matrix B of left-hand sides of momentum conservation equations (self.njun) and 
         # mass conservation equations differentiated w.r.t. time (self.npipe-self.npipef)
@@ -250,26 +255,35 @@ class Fluid:
             f = self.f[j]
             t = self.t[j]
             len_f = 0.5*self.len[f[0]]/self.pipennodes[f[0]]
+            if self.pipetype[f[0]] == 'freelevel': len_f *= 2
             len_t = 0.5*self.len[t[0]]/self.pipennodes[t[0]]
+            if self.pipetype[t[0]] == 'freelevel': len_t *= 2
             rho_f = self.prop[f[0]]['rhol'][f[1]]
-            rho_t = self.prop[f[0]]['rhol'][f[1]]
+            rho_t = self.prop[f[0]]['rhol'][t[1]]
 
             # gravitational head
-            rhogh_f = 9.81*rho_f*len_f*self.dir[f[0]]
-            if self.pipetype[f[0]] != 'freelevel': rhogh_f = - abs(rhogh_f)
-            rhogh_t = 9.81*rho_t*len_t*self.dir[t[0]]
-            if self.pipetype[t[0]] != 'freelevel': rhogh_t = abs(rhogh_t)
+            if self.pipetype[f[0]] != 'freelevel': 
+                rhogh_f = 9.81*rho_f*len_f*self.dir[f[0]]
+            else:
+                rhogh_f = 9.81*rho_f*len_f*self.dir[t[0]]
+            if self.pipetype[t[0]] != 'freelevel': 
+                rhogh_t = 9.81*rho_t*len_t*self.dir[t[0]]
+            else:
+                rhogh_t = 9.81*rho_t*len_t*self.dir[f[0]]
 
             #friction losses
-            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            dpfric_f = 0 #reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = 0 #reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
             
-            b[j] = -0.5*(rhogh_f + rhogh_t) - 0.5*(dpfric_f + dpfric_t)
+            b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
                 b[j] = reactor.control.signal[self.junpumphead[j]]
-        for i in range(sum(self.pipennodes)):
-            n = self.indx[i][0]
-            if self.pipetype[n] == 'freelevel': b[self.njun+i] = self.prop[n]['rhol'][0]*9.81*self.len[n]
+        for i in range(self.npipe):
+            for j in range(self.pipennodes[i]):
+                self.indx.append((i,j))
+        #for i in range(sum(self.pipennodes)):
+        #    n = self.indx[i][0]
+        #    if self.pipetype[n] == 'freelevel': b[self.njun+i] = 0.5*self.prop[n]['rhol'][0]*9.81*self.len[n]
         invBb = self.invB.dot(b).tolist()
 
         # read from invBb: time derivatives of flowrate in independent junctions
@@ -304,12 +318,19 @@ class Fluid:
         # TIME DERIVATIVES OF FLUID TEMPERATURES:
         dtempdt2d = [[0]*self.pipennodes[i] for i in range(self.npipe)]
         for j in range(self.njun):
+            f = self.f[j]
+            t = self.t[j]
             if self.mdot[j] > 0:
-                cp_temp_mdot = self.prop[self.f[j][0]]['cpl'][self.f[j][1]] *  self.temp[self.f[j][0]][self.f[j][1]] * self.mdot[j]
+                cp_temp_mdot = self.prop[f[0]]['cpl'][f[1]] *  self.temp[f[0]][f[1]] * self.mdot[j]
             else:
-                cp_temp_mdot = self.prop[self.t[j][0]]['cpl'][self.t[j][1]] *  self.temp[self.t[j][0]][self.t[j][1]] * self.mdot[j]
-            dtempdt2d[self.f[j][0]][self.f[j][1]] -= cp_temp_mdot
-            dtempdt2d[self.t[j][0]][self.t[j][1]] += cp_temp_mdot
+                cp_temp_mdot = self.prop[t[0]]['cpl'][t[1]] *  self.temp[t[0]][t[1]] * self.mdot[j]
+            dtempdt2d[f[0]][f[1]] -= cp_temp_mdot
+            dtempdt2d[t[0]][t[1]] += cp_temp_mdot
+        n = 0
+        for i in range(self.npipe):
+            if self.pipetype[i] == 'freelevel':
+                dtempdt2d[i][0] -= self.prop[i]['cpl'][0] *  self.temp[i][0] * dlendt[n] * self.prop[i]['rhol'][0] * self.areaz[i]
+                n += 1
 
         dtempdt = []
         for i in range(self.npipe):

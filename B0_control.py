@@ -240,6 +240,7 @@ class Control:
         inp['htstr'] = []
         inp['t0'] = 0
         inp['t_dt'] = []
+        inp['tol'] = (1.e-6,1e-6)
         inp['thermbc'] = []
     
         #read input file as a whole
@@ -548,6 +549,10 @@ class Control:
                 # prompt neutron lifetime
                 elif key == 'tlife':
                     inp['tlife'] = word[1]
+                #--------------------------------------------------------------------------------------
+                # tolerances (relative and absolute)
+                elif key == 'tol':
+                    inp['tol'] = (word[1],word[2])
     
         # verify that t_dt present
         if inp['t_dt'] == []:
