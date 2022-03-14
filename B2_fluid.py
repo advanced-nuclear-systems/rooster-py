@@ -35,6 +35,7 @@ class Fluid:
         self.signaltemp = [x['signaltemp'] for x in reactor.control.input['pipe']]
 
         # lists for pressure, temperature, type, velocity, reynolds, prandtl, peclet and thermal boundary condition id
+        self.p0 = []
         self.p = []
         self.temp = []
         self.type = []
@@ -58,6 +59,8 @@ class Fluid:
             self.type.append(type)
             # list of initial pressures in pipe nodes
             self.p.append([p0]*self.pipennodes[i])
+            for j in range(self.pipennodes[i]):
+                self.p0.append(p0)
             # list of initial temperatures in pipe nodes
             self.temp.append([temp0]*self.pipennodes[i])
             # list of initial velocities in pipe nodes
@@ -272,8 +275,8 @@ class Fluid:
                 rhogh_t = 9.81*rho_t*len_t*self.dir[f[0]]
 
             #friction losses
-            dpfric_f = 0 #reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            dpfric_t = 0 #reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
             
             b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
             if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
@@ -281,9 +284,9 @@ class Fluid:
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
                 self.indx.append((i,j))
-        #for i in range(sum(self.pipennodes)):
-        #    n = self.indx[i][0]
-        #    if self.pipetype[n] == 'freelevel': b[self.njun+i] = 0.5*self.prop[n]['rhol'][0]*9.81*self.len[n]
+        for i in range(sum(self.pipennodes)):
+            n = self.indx[i][0]
+            if self.pipetype[n] == 'freelevel': b[self.njun+i] = self.p0[i]
         invBb = self.invB.dot(b).tolist()
 
         # read from invBb: time derivatives of flowrate in independent junctions
