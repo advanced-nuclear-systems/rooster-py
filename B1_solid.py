@@ -37,5 +37,5 @@ class Solid:
 
         if 'htstr' in reactor.solve:
             for i in range(self.nhtstr):
-                rhs += self.htstr[i].calculate_rhs(reactor, t)
+                rhs += self.htstr[i].compose_rhs(reactor, t)
         return rhs

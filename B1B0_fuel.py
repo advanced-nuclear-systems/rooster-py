@@ -102,9 +102,9 @@ class Fuel:
         # fuel thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # list of heat flux (W/m**2) times heat transfer area per unit height at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
-        Q = [0] + [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        Q = [0] + [2*math.pi*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
-        Q += [(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
+        Q += [0.5*(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         rhocp = [self.prop['rho'][i]*self.prop['cp'][i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1] + reactor.core.qv_average)/rhocp[i] for i in range(self.nr)]
         rhs += dTdt

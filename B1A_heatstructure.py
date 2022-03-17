@@ -64,7 +64,7 @@ class HeatStructure:
 
     #----------------------------------------------------------------------------------------------
     # calculate right-hand side list: self is a 'htstr' object created in B1
-    def calculate_rhs(self, reactor, t):
+    def compose_rhs(self, reactor, t):
 
         # HEAT STRUCTURE PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}
@@ -88,7 +88,7 @@ class HeatStructure:
             Qleft = 2*self.r[0]*self.bcleft['alfa']*(self.bcleft['temp'] - self.temp[0])
         else: #self.bcleft['type'] == 2
             # pipe node indexes
-            jpipe = (reactor.fluid.pipeid.index(self.bcright['pipeid']), self.bcright['pipenode']-1)
+            jpipe = (reactor.fluid.pipeid.index(self.bcleft['pipeid']), self.bcleft['pipenode']-1)
             fluid = {}
             fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
             fluid['type'] = reactor.fluid.type[jpipe[0]]
@@ -99,7 +99,7 @@ class HeatStructure:
             # heat exchange coefficient
             fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
             # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
-            Qleft = 2*self.r[self.nr-1]*fluid['hex']*(self.temp[0] - fluid['t'])
+            Qleft = 2*self.r[0]*fluid['hex']*(self.temp[0] - fluid['t'])
 
         # right boundary condition
         if self.bcright['type'] == 0:
