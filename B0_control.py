@@ -334,7 +334,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # fuel
                 elif key == 'fuel':
-                     inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
+                     inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5]), 'kz':float(word[6])} )
                 #--------------------------------------------------------------------------------------
                 # fuel rod card
                 elif key == 'fuelrod':
@@ -345,14 +345,13 @@ class Control:
                                 x['fuelid'].append(word[2])
                                 x['hgap'].append(float(word[3]))
                                 x['cladid'].append(word[4])
-                                x['p2d'].append(word[5])
-                                x['mltpl'].append(word[6])
+                                x['p2d'].append(float(word[5]))
+                                x['mltpl'].append(float(word[6]))
                                 x['pipeid'].append(word[7])
                                 x['pipenode'].append(int(word[8]))
-                                x['kr'].append(int(word[9]))
-                                x['kz'].append(int(word[10]))
+                                x['kr'].append(float(word[9]))
                     else:
-                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[word[5]], 'mltpl':[word[6]], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[int(word[9])], 'kz':[int(word[10])]})
+                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[float(word[5])], 'mltpl':[float(word[6])], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[float(word[9])]})
                 #--------------------------------------------------------------------------------------
                 # heat structure card
                 elif key == 'htstr':

@@ -99,7 +99,7 @@ class HeatStructure:
             # heat exchange coefficient
             fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
             # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
-            Qleft = 2*self.r[0]*fluid['hex']*(fluid['t'] - self.temp[0])
+            Qleft = 2*self.r[0]*fluid['hex']*(fluid['t'] - self.temp[0]) * self.mltpl
         else:
             Qleft = 0
 
@@ -121,7 +121,7 @@ class HeatStructure:
             # heat exchange coefficient
             fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
             # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
-            Qright = -2*self.r[self.nr-1]*fluid['hex']*(fluid['t'] - self.temp[self.nr-1])
+            Qright = -2*self.r[self.nr-1]*fluid['hex']*(fluid['t'] - self.temp[self.nr-1]) * self.mltpl
         else:
             Qright = 0
 

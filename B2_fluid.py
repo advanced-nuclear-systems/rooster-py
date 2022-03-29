@@ -341,7 +341,8 @@ class Fluid:
                 for j in range(self.pipennodes[i]):
                     dtempdt.append(0)
             else:
-                vol = self.areaz[i] * abs(self.len[i])/self.pipennodes[i]
+                len = abs(self.len[i])/self.pipennodes[i]
+                vol = self.areaz[i] * len
                 for j in range(self.pipennodes[i]):
                     # check if there is a fuel rod cooled by the node
                     if ('fuelrod' in reactor.solve and self.pipeid[i],j) in self.map_th:
@@ -350,7 +351,7 @@ class Fluid:
                         tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
                         mltpl = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].mltpl
                         ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
-                        area_ht = 2 * math.pi * ro * mltpl
+                        area_ht = 2 * math.pi * ro * len * mltpl
                         p2d = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].p2d
                         nu = reactor.data.nu( {'pe':self.pe[i][j], 'p2d':p2d} )
                         hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
@@ -364,12 +365,14 @@ class Fluid:
                             if bcleft['type'] == 2 and bcleft['pipeid'] == self.pipeid[i] and bcleft['pipenode']-1 == j:
                                 nu = reactor.data.nu( {'pe':self.pe[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
-                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ri
+                                mltpl = reactor.solid.htstr[k].mltpl
+                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ri * len * mltpl
                                 dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[0] - self.temp[i][j]) * area_ht
                             if bcright['type'] == 2 and bcright['pipeid'] == self.pipeid[i] and bcright['pipenode']-1 == j:
                                 nu = reactor.data.nu( {'pe':self.pe[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
-                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ro
+                                mltpl = reactor.solid.htstr[k].mltpl
+                                area_ht = 2 * math.pi * reactor.solid.htstr[k].ro * len * mltpl
                                 dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[-1] - self.temp[i][j]) * area_ht
 
                     rho_cp_vol = self.prop[i]['rhol'][j] * self.prop[i]['cpl'][j] * vol

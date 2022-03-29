@@ -16,6 +16,8 @@ class Fuel:
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
         # current fuel id
         fuelid = dictfuelrod['fuelid'][indx]
+        # radial power peaking factor of fuel rod
+        self.kr = dictfuelrod['kr'][indx]
 
         # list of fuel dictionaries specified in input
         list = reactor.control.input['fuel']
@@ -28,6 +30,8 @@ class Fuel:
         self.ro = list[i]['ro']
         # number of fuel radial nodes
         self.nr = list[i]['nr']
+        # axial power peaking factor of fuel
+        self.kz = list[i]['kz']
 
         # fuel material id
         matid = list[i]['matid']
@@ -106,7 +110,9 @@ class Fuel:
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
         Q += [0.5*(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         rhocp = [self.prop['rho'][i]*self.prop['cp'][i] for i in range(self.nr)]
-        dTdt = [(Q[i] - Q[i+1] + reactor.core.qv_average)/rhocp[i] for i in range(self.nr)]
+        # power density
+        qv = reactor.core.qv_average * self.kr * self.kz
+        dTdt = [(Q[i] - Q[i+1] + qv)/rhocp[i] for i in range(self.nr)]
         rhs += dTdt
 
         return rhs
