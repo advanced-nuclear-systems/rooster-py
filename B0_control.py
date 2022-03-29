@@ -334,7 +334,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # fuel
                 elif key == 'fuel':
-                     inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5]), 'kz':float(word[6])} )
+                     inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5])} )
                 #--------------------------------------------------------------------------------------
                 # fuel rod card
                 elif key == 'fuelrod':
@@ -350,8 +350,9 @@ class Control:
                                 x['pipeid'].append(word[7])
                                 x['pipenode'].append(int(word[8]))
                                 x['kr'].append(float(word[9]))
+                                x['kz'].append(float(word[10]))
                     else:
-                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[float(word[5])], 'mltpl':[float(word[6])], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[float(word[9])]})
+                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[float(word[5])], 'mltpl':[float(word[6])], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[float(word[9])], 'kz':float(word[10])})
                 #--------------------------------------------------------------------------------------
                 # heat structure card
                 elif key == 'htstr':
