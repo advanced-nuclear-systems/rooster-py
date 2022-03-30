@@ -83,9 +83,9 @@ class HeatStructure:
 
         # left boundary condition
         if self.bcleft['type'] == 0:
-            Qleft = 2*self.r[0]*self.bcleft['qf']
+            Qleft = 2*self.r[0]*self.bcleft['qf'] * self.mltpl
         elif self.bcleft['type'] == 1:
-            Qleft = 2*self.r[0]*self.bcleft['alfa']*(self.bcleft['temp'] - self.temp[0])
+            Qleft = 2*self.r[0]*self.bcleft['alfa']*(self.bcleft['temp'] - self.temp[0]) * self.mltpl
         elif self.bcleft['type'] == 2:
             # pipe node indexes
             jpipe = (reactor.fluid.pipeid.index(self.bcleft['pipeid']), self.bcleft['pipenode']-1)
@@ -105,9 +105,9 @@ class HeatStructure:
 
         # right boundary condition
         if self.bcright['type'] == 0:
-            Qright = -2*self.r[self.nr-1]*self.bcright['qf']
+            Qright = -2*self.r[self.nr-1]*self.bcright['qf'] * self.mltpl
         elif self.bcright['type'] == 1:
-            Qright = -2*self.r[self.nr-1]*self.bcright['alfa']*(self.bcright['temp'] - self.temp[self.nr-1])
+            Qright = -2*self.r[self.nr-1]*self.bcright['alfa']*(self.bcright['temp'] - self.temp[self.nr-1]) * self.mltpl
         elif self.bcright['type'] == 2:
             # pipe node indexes
             jpipe = (reactor.fluid.pipeid.index(self.bcright['pipeid']), self.bcright['pipenode']-1)
