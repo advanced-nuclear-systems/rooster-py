@@ -352,7 +352,7 @@ class Control:
                                 x['kr'].append(float(word[9]))
                                 x['kz'].append(float(word[10]))
                     else:
-                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[float(word[5])], 'mltpl':[float(word[6])], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[float(word[9])], 'kz':float(word[10])})
+                        inp['fuelrod'].append({'id':id, 'fuelid':[word[2]], 'hgap':[float(word[3])], 'cladid':[word[4]], 'p2d':[float(word[5])], 'mltpl':[float(word[6])], 'pipeid':[word[7]], 'pipenode':[int(word[8])], 'kr':[float(word[9])], 'kz':[float(word[10])]})
                 #--------------------------------------------------------------------------------------
                 # heat structure card
                 elif key == 'htstr':
