@@ -31,7 +31,7 @@ class Fuel:
         # number of fuel radial nodes
         self.nr = list[i]['nr']
         # axial power peaking factor of fuel
-        self.kz = list[i]['kz']
+        self.kz = dictfuelrod['kz'][indx]
 
         # fuel material id
         matid = list[i]['matid']
