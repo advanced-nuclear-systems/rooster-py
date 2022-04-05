@@ -18,6 +18,8 @@ class Fuel:
         fuelid = dictfuelrod['fuelid'][indx]
         # radial power peaking factor of fuel rod
         self.kr = dictfuelrod['kr'][indx]
+        # axial power peaking factor of fuel
+        self.kz = dictfuelrod['kz'][indx]
 
         # list of fuel dictionaries specified in input
         list = reactor.control.input['fuel']
@@ -30,8 +32,6 @@ class Fuel:
         self.ro = list[i]['ro']
         # number of fuel radial nodes
         self.nr = list[i]['nr']
-        # axial power peaking factor of fuel
-        self.kz = list[i]['kz']
 
         # fuel material id
         matid = list[i]['matid']

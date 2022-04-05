@@ -324,9 +324,9 @@ class Fluid:
             f = self.f[j]
             t = self.t[j]
             if self.mdot[j] > 0:
-                cp_temp_mdot = self.prop[f[0]]['cpl'][f[1]] *  self.temp[f[0]][f[1]] * self.mdot[j]
+                cp_temp_mdot = self.prop[f[0]]['cpl'][f[1]] * self.temp[f[0]][f[1]] * self.mdot[j]
             else:
-                cp_temp_mdot = self.prop[t[0]]['cpl'][t[1]] *  self.temp[t[0]][t[1]] * self.mdot[j]
+                cp_temp_mdot = self.prop[t[0]]['cpl'][t[1]] * self.temp[t[0]][t[1]] * self.mdot[j]
             dtempdt2d[f[0]][f[1]] -= cp_temp_mdot
             dtempdt2d[t[0]][t[1]] += cp_temp_mdot
         n = 0
