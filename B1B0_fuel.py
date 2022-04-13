@@ -65,7 +65,6 @@ class Fuel:
         # list of node volume (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]       
         self.vol = [math.pi*vol*dz for vol in self.vol]
-
         if 'fuelgrain' in reactor.solve:
             # create an object fuel grain for every radial node of fuel
             self.fuelgrain = []
@@ -111,7 +110,10 @@ class Fuel:
         Q += [0.5*(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         rhocp = [self.prop['rho'][i]*self.prop['cp'][i] for i in range(self.nr)]
         # power density
-        qv = reactor.core.qv_average * self.kr * self.kz
+        if 'pointkinetics' in reactor.solve:
+            qv = reactor.core.qv_average * self.kr * self.kz
+        else:
+            qv = reactor.control.input['power0']/sum(self.vol) * self.kr * self.kz
         dTdt = [(Q[i] - Q[i+1] + qv)/rhocp[i] for i in range(self.nr)]
         rhs += dTdt
 
