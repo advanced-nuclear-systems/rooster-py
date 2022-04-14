@@ -923,6 +923,16 @@ class Control:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
                 y.append(reactor.core.cdnp[i])
+        if 'spatialkinetics' in reactor.solve:
+            for iz in range(self.nz):
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
+                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
+                            for it in range(self.nt):
+                                for ig in range(self.ng):
+                                    y.append(self.flux[iz][ix][iy][it][ig])
         return y
 
     #----------------------------------------------------------------------------------------------
@@ -998,3 +1008,14 @@ class Control:
             for i in range(reactor.core.ndnp):
                 reactor.core.cdnp[i] = y[indx]
                 indx += 1
+        if 'spatialkinetics' in reactor.solve:
+            for iz in range(self.nz):
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
+                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
+                            for it in range(self.nt):
+                                for ig in range(self.ng):
+                                    self.flux[iz][ix][iy][it][ig] = y[indx]
+                                    indx += 1

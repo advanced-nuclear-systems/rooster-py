@@ -311,6 +311,15 @@ class Core:
                     self.mix[i].update_xs = False
                     self.mix[i].print_xs = True
 
-            rhs += []
+            for iz in range(self.nz):
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
+                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
+                            for it in range(self.nt):
+                                for ig in range(self.ng):
+                                    dfidt = 0
+                                    rhs += [dfidt]
 
         return rhs
