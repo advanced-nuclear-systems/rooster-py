@@ -51,7 +51,7 @@ class Clad:
         self.r = [self.ri + i*self.dr for i in range(self.nr)]
         # list of node boundary radii (size = nr-1)
         self.rb = [self.r[i]+self.dr/2 for i in range(self.nr-1)]
-        # list of node volume per unit height (size = nr)
+        # list of node volume (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
 
     #----------------------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ class Clad:
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # heat flux (W/m**2) times heat transfer area per unit height divided by pi from fuel to clad 
         Q = [(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
-        # list of heat flux (W/m**2) times heat transfer area per unit height divided by pi at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
+        # heat flux (W/m**2) times heat transfer area per unit height divided by pi at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
         Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
 
         # dictionary of the fuel rod to which the clad belongs
