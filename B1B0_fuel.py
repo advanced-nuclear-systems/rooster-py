@@ -112,7 +112,7 @@ class Fuel:
         if 'pointkinetics' in reactor.solve:
             qv = reactor.core.qv_average * self.kr * self.kz
         else:
-            qv = reactor.control.input['power0']/sum(self.vol) * self.kr * self.kz
+            qv = reactor.control.input['power0']/(math.pi * sum(self.vol)) * self.kr * self.kz
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1] + qv*self.vol[i])/rhocpv[i] for i in range(self.nr)]
         rhs += dTdt
