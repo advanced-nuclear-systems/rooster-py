@@ -1,3 +1,4 @@
+import math
 import sys
 
 #--------------------------------------------------------------------------------------------------
@@ -53,6 +54,7 @@ class Clad:
         self.rb = [self.r[i]+self.dr/2 for i in range(self.nr-1)]
         # list of node volume (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]
+        self.vol = [self.vol[i]*math.pi for i in range(self.nr)]
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'clad' object created in B1B
@@ -83,9 +85,9 @@ class Clad:
         # clad thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
         # heat flux (W/m**2) times heat transfer area per unit height divided by pi from fuel to clad 
-        Q = [(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
+        Q = [math.pi*(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
         # heat flux (W/m**2) times heat transfer area per unit height divided by pi at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
-        Q += [2*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
+        Q += [2*math.pi*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
 
         # dictionary of the fuel rod to which the clad belongs
         dictfuelrod = reactor.control.input['fuelrod'][indxfuelrod]
@@ -101,7 +103,7 @@ class Clad:
         # heat exchange coefficient
         fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
         # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
-        Q += [2*self.ro * fluid['hex']*(self.temp[self.nr-1] - fluid['t'])]
+        Q += [2*math.pi*self.ro * fluid['hex']*(self.temp[self.nr-1] - fluid['t'])]
 
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1])/rhocpv[i] for i in range(self.nr)]

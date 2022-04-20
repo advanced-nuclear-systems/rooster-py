@@ -178,7 +178,7 @@ class Fluid:
         self.map_fr = []
         for i in range(nfuelrods):
             for j in range(len(indx_i[i])):
-                self.map_th.append((indx_i[i][j], indx_j[i][j]))
+                self.map_th.append((indx_i[i][j], indx_j[i][j]-1))
                 self.map_fr.append((i,j))
 
         # analyse thermal boundary conditions
@@ -345,7 +345,7 @@ class Fluid:
                 vol = self.areaz[i] * len
                 for j in range(self.pipennodes[i]):
                     # check if there is a fuel rod cooled by the node
-                    if ('fuelrod' in reactor.solve and self.pipeid[i],j) in self.map_th:
+                    if 'fuelrod' in reactor.solve and (self.pipeid[i],j) in self.map_th:
                         indx = self.map_th.index((self.pipeid[i],j))
                         tuple_fr = self.map_fr[indx]
                         tclad = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].temp[-1]
