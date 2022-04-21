@@ -14,6 +14,13 @@ class Core:
     def __init__(self, reactor):
 
         # INITIALIZATION
+        if 'fuelrod' in reactor.solve and 'power0' in reactor.control.input:
+            self.fuelvol = 0
+            for i in range(reactor.solid.nfuelrods):
+                for iz in range(reactor.solid.fuelrod[i].nz):
+                    self.fuelvol += sum(reactor.solid.fuelrod[i].fuel[iz].vol)*reactor.control.input['fuelrod'][i]['mltpl'][iz]
+            self.qv_average = reactor.control.input['power0']/self.fuelvol
+
         if 'pointkinetics' in reactor.solve:
             self.power = 1
             self.ndnp = len(reactor.control.input['betaeff'])
@@ -26,13 +33,8 @@ class Core:
             if 'power0' not in reactor.control.input:
                 print('***ERROR: there is no card power0 in the input.')
                 sys.exit()
-            self.fuelvol = 0
-            for i in range(reactor.solid.nfuelrods):
-                for iz in range(reactor.solid.fuelrod[i].nz):
-                    self.fuelvol += sum(reactor.solid.fuelrod[i].fuel[iz].vol)*reactor.control.input['fuelrod'][i]['mltpl'][iz]
-            self.qv_average = reactor.control.input['power0']/self.fuelvol
 
-        if 'spatialkinetics' in reactor.solve:
+        elif 'spatialkinetics' in reactor.solve:
 
             # neutronics method
             self.meth = reactor.control.input['nmeth']

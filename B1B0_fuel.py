@@ -110,10 +110,7 @@ class Fuel:
         # add heat flux (W/m**2) times heat transfer area per unit height from fuel to clad 
         Q += [math.pi*(self.ro + clad.ri) * hgap[indx] * (self.temp[self.nr-1] - clad.temp[0])]
         # power density
-        if 'pointkinetics' in reactor.solve:
-            qv = reactor.core.qv_average * self.kr * self.kz
-        else:
-            qv = reactor.control.input['power0']/sum(self.vol) * self.kr * self.kz
+        qv = reactor.core.qv_average * self.kr * self.kz
         rhocpv = [self.prop['rho'][i]*self.prop['cp'][i]*self.vol[i] for i in range(self.nr)]
         dTdt = [(Q[i] - Q[i+1] + qv*self.vol[i])/rhocpv[i] for i in range(self.nr)]
         rhs += dTdt
