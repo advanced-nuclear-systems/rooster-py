@@ -924,15 +924,15 @@ class Control:
             for i in range(reactor.core.ndnp):
                 y.append(reactor.core.cdnp[i])
         if 'spatialkinetics' in reactor.solve:
-            for iz in range(self.nz):
-                for ix in range(self.nx):
-                    for iy in range(self.ny):
+            for iz in range(reactor.core.nz):
+                for ix in range(reactor.core.nx):
+                    for iy in range(reactor.core.ny):
                         # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-                        imix = self.map['imix'][iz][ix][iy]
-                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
-                            for it in range(self.nt):
-                                for ig in range(self.ng):
-                                    y.append(self.flux[iz][ix][iy][it][ig])
+                        imix = reactor.core.map['imix'][iz][ix][iy]
+                        if imix >= 0 and any(reactor.core.mix[imix].sigf) > 0:
+                            for it in range(reactor.core.nt):
+                                for ig in range(reactor.core.ng):
+                                    y.append(reactor.core.flux[iz][ix][iy][it][ig])
         return y
 
     #----------------------------------------------------------------------------------------------
@@ -1009,13 +1009,13 @@ class Control:
                 reactor.core.cdnp[i] = y[indx]
                 indx += 1
         if 'spatialkinetics' in reactor.solve:
-            for iz in range(self.nz):
-                for ix in range(self.nx):
-                    for iy in range(self.ny):
+            for iz in range(reactor.core.nz):
+                for ix in range(reactor.core.nx):
+                    for iy in range(reactor.core.ny):
                         # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-                        imix = self.map['imix'][iz][ix][iy]
-                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
-                            for it in range(self.nt):
-                                for ig in range(self.ng):
-                                    self.flux[iz][ix][iy][it][ig] = y[indx]
+                        imix = reactor.core.map['imix'][iz][ix][iy]
+                        if imix >= 0 and any(reactor.core.mix[imix].sigf) > 0:
+                            for it in range(reactor.core.nt):
+                                for ig in range(reactor.core.ng):
+                                    reactor.core.flux[iz][ix][iy][it][ig] = y[indx]
                                     indx += 1
