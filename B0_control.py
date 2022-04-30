@@ -185,9 +185,17 @@ class Control:
             k = 0
             for j in range(reactor.fluid.njun):
                 if reactor.fluid.juntype[j] == 'independent':
-                    if reactor.fluid.junflowrate[j] != '':
+                    f = reactor.fluid.f[j][0]
+                    t = reactor.fluid.t[j][0]
+                    # tuple of from-to pipe id's
+                    f_t = (reactor.fluid.pipeid[f],reactor.fluid.pipeid[t])
+                    try:
+                        # check if the current junction j is present in junflowrate list
+                        indx = reactor.fluid.junflowrate['jun'].index(f_t)
                         # impose flowrate from the look-up table
-                        reactor.fluid.mdoti[k] = self.signal[reactor.fluid.junflowrate[j]]
+                        reactor.fluid.mdoti[k] = self.signal[reactor.fluid.junflowrate['flowrate'][indx]]
+                    except ValueError:
+                        pass
                     k += 1
         
         # signal-dependent pipe: impose temperature
@@ -227,7 +235,10 @@ class Control:
         inp['fuel'] = []
         inp['fuelrod'] = []
         inp['innergas'] = []
-        inp['junction'] = {'from':[], 'to':[], 'type':[], 'pumphead':[], 'flowrate':[]}
+        inp['junction'] = {'from':[], 'to':[], 'type':[]}
+        inp['junpumphead'] = {'jun':[], 'pumphead':[]}
+        inp['junflowrate'] = {'jun':[], 'flowrate':[]}
+        inp['junkfac'] = {'jun':[], 'kfac':[]}
         inp['lookup'] = []
         inp['mat'] = []
         inp['mix'] = []
@@ -278,7 +289,7 @@ class Control:
             word = line.split()
             word = list(map(convert_to_float, word))
             if len(word) > 0:
-                
+
                 key = word[0].lower()
                 #--------------------------------------------------------------------------------------
                 # just placeholder
@@ -291,7 +302,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # cladding
                 elif key == 'clad':
-                     inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
+                    inp['clad'].append( {'id':word[1], 'matid':word[2], 'ri':word[3], 'ro':word[4], 'nr':int(word[5])} )
                 #--------------------------------------------------------------------------------------
                 # core geometry
                 elif key == 'coregeom':
@@ -334,7 +345,7 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # fuel
                 elif key == 'fuel':
-                     inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5])} )
+                    inp['fuel'].append( {'id':word[1], 'matid':word[2], 'ri':float(word[3]), 'ro':float(word[4]), 'nr':int(word[5])} )
                 #--------------------------------------------------------------------------------------
                 # fuel rod card
                 elif key == 'fuelrod':
@@ -360,39 +371,46 @@ class Control:
                 #--------------------------------------------------------------------------------------
                 # inner gas
                 elif key == 'innergas':
-                     inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
+                    inp['innergas'].append( {'fuelrodid':word[1], 'matid':word[2], 'plenv':word[3]} )
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic junction (dependent)
                 elif key == 'jun':
-                     inp['junction']['from'].append(word[1])
-                     inp['junction']['to'].append(word[2])
-                     inp['junction']['type'].append('dependent')
-                     inp['junction']['pumphead'].append('')
-                     inp['junction']['flowrate'].append('')
+                    inp['junction']['from'].append(word[1])
+                    inp['junction']['to'].append(word[2])
+                    inp['junction']['type'].append('dependent')
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic junction (independent)
                 elif key == 'jun-i':
-                     inp['junction']['from'].append(word[1])
-                     inp['junction']['to'].append(word[2])
-                     inp['junction']['type'].append('independent')
-                     inp['junction']['pumphead'].append('')
-                     inp['junction']['flowrate'].append('')
+                    inp['junction']['from'].append(word[1])
+                    inp['junction']['to'].append(word[2])
+                    inp['junction']['type'].append('independent')
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic junction (independent + signal for flowrate)
                 elif key == 'jun-i-f':
-                     inp['junction']['from'].append(word[1])
-                     inp['junction']['to'].append(word[2])
-                     inp['junction']['type'].append('independent')
-                     inp['junction']['pumphead'].append('')
-                     inp['junction']['flowrate'].append(word[3])
+                    inp['junction']['from'].append(word[1])
+                    inp['junction']['to'].append(word[2])
+                    inp['junction']['type'].append('independent')
+                    inp['junflowrate']['jun'].append((word[1],word[2]))
+                    inp['junflowrate']['flowrate'].append(word[3])
                 #--------------------------------------------------------------------------------------
                 # thermal-hydraulic junction (independent + signal for pump head)
                 elif key == 'jun-i-p':
-                     inp['junction']['from'].append(word[1])
-                     inp['junction']['to'].append(word[2])
-                     inp['junction']['type'].append('independent')
-                     inp['junction']['pumphead'].append(word[3])
-                     inp['junction']['flowrate'].append('')
+                    inp['junction']['from'].append(word[1])
+                    inp['junction']['to'].append(word[2])
+                    inp['junction']['type'].append('independent')
+                    inp['junpumphead']['jun'].append((word[1],word[2]))
+                    inp['junpumphead']['pumphead'].append(word[3])
+                #--------------------------------------------------------------------------------------
+                # k-factor at thermal-hydraulic junction
+                elif key == 'jun-kfac':
+                    try:
+                        # make list of tuples (from,to) and find index of the (word[1],word[2]) tuple 
+                        j = list(zip(inp['junction']['from'],inp['junction']['to'])).index((word[1],word[2]))
+                    except ValueError:
+                        print('****ERROR: from and to of \'jun-kfac\' card (word 3) are not specified in any junction card (should appear before): ', word[1], word[2])
+                        sys.exit()
+                    inp['junkfac']['jun'].append((word[1],word[2]))
+                    inp['junkfac']['kfac'].append(word[3])
                 #--------------------------------------------------------------------------------------
                 # lookup table
                 elif key == 'lookup':
@@ -944,7 +962,16 @@ class Control:
             k = 0
             for j in range(reactor.fluid.njun):
                 if reactor.fluid.juntype[j] == 'independent':
-                    if reactor.fluid.junflowrate[j] == '':
+                    f = reactor.fluid.f[j][0]
+                    t = reactor.fluid.t[j][0]
+                    # tuple of from-to pipe id's
+                    f_t = (reactor.fluid.pipeid[f],reactor.fluid.pipeid[t])
+                    try:
+                        # check if the current junction j is present in junflowrate list
+                        reactor.fluid.junflowrate['jun'].index(f_t)
+                        # if yes...
+                        pass
+                    except ValueError:
                         # flowrate in independent junctions
                         reactor.fluid.mdoti[k] = y[indx]
                     k += 1

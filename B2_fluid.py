@@ -110,9 +110,11 @@ class Fluid:
             self.t += [(i,j) for j in range(1,self.pipennodes[i])]
         self.njun = len(self.f)
         # user-specified junction pump head signal
-        self.junpumphead = reactor.control.input['junction']['pumphead']
+        self.junpumphead = reactor.control.input['junpumphead']
         # user-specified junction flowrate signal
-        self.junflowrate = reactor.control.input['junction']['flowrate']
+        self.junflowrate = reactor.control.input['junflowrate']
+        # user-specified junction k-factor signal
+        self.junkfac = reactor.control.input['junkfac']
 
         # create and inverse a matrix A linking dependent and independent junctions
         A = [[0]*(self.njuni+self.njund) for i in range(self.njuni+self.njund)]
@@ -131,7 +133,7 @@ class Fluid:
                 i += 1
         self.invA = linalg.inv(A)
 
-        # create list of geometrical parameters for every junction: l_over_a = 0.5*len(from)/areaz(from) + 0.5*len(to)/areaz(to)
+        # create list of geometrical parameters for every junction: l_over_a = 0.5*length(from)/areaz(from) + 0.5*length(to)/areaz(to)
         l_over_a = [0]*self.njun
         for j in range(self.njun):
             f = self.f[j][0]
@@ -274,13 +276,33 @@ class Fluid:
             else:
                 rhogh_t = 9.81*rho_t*len_t*self.dir[f[0]]
 
-            #friction losses
-            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5*len_f/self.dhyd[f[0]] * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5*len_t/self.dhyd[t[0]] * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            # friction losses
+            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
             
             b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
-            if self.juntype[j] == 'independent' and self.junpumphead[j] != '':
-                b[j] = reactor.control.signal[self.junpumphead[j]]
+            try:
+                # check if the current junction j is present in junkfac list
+                indx = reactor.fluid.junkfac['jun'].index((self.pipeid[f[0]],self.pipeid[t[0]]))
+                # if yes...
+                kfac = reactor.control.signal[self.junkfac['kfac'][indx]]
+                # local (singular) pressure losses
+                if self.mdot[j] > 0:
+                    b[j] -= kfac * rho_f * self.vel[f[0]][f[1]]**2 / 2.0
+                else:
+                    b[j] += kfac * rho_t * self.vel[t[0]][t[1]]**2 / 2.0
+                
+            except ValueError:
+                pass
+            if self.juntype[j] == 'independent':
+                try:
+                    # check if the current junction j is present in junpumphead list
+                    indx = reactor.fluid.junpumphead['jun'].index((f,t))
+                    # if yes...
+                    b[j] += reactor.control.signal[self.junpumphead['pumphead'][indx]]
+                except ValueError:
+                    pass
+
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
                 self.indx.append((i,j))
@@ -293,9 +315,16 @@ class Fluid:
         dmdotdt = []
         for j in range(self.njun):
             if self.juntype[j] == 'independent':
-                if self.junflowrate[j] != '':
+                f = reactor.fluid.f[j][0]
+                t = reactor.fluid.t[j][0]
+                # tuple of from-to pipe id's
+                f_t = (reactor.fluid.pipeid[f],reactor.fluid.pipeid[t])
+                try:
+                    # check if the current junction j is present in junflowrate list
+                    indx = reactor.fluid.junflowrate['jun'].index(f_t)
+                    # if yes...
                     dmdotdt.append(0)
-                else:
+                except ValueError:
                     dmdotdt.append(invBb[j])
         # read from invBb: pressures in pipe nodes
         indx = 0
