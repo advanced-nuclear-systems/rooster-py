@@ -250,7 +250,7 @@ class Control:
         inp['stack'] = []
         inp['htstr'] = []
         inp['t0'] = 0
-        inp['t_dt'] = []
+        inp['tend'] = []
         inp['tol'] = (1.e-6,1e-6)
         inp['thermbc'] = []
     
@@ -527,8 +527,8 @@ class Control:
                     inp['t0'] = word[1]
                 #--------------------------------------------------------------------------------------
                 # end of time interval and output time step for this interval
-                elif key == 't_dt':
-                    inp['t_dt'].append([word[1], word[2]])
+                elif key == 'tend':
+                    inp['tend'].append(word[1])
                 #--------------------------------------------------------------------------------------
                 # thermal boundary conditions]
                 elif key == 'thermbc':
@@ -572,9 +572,9 @@ class Control:
                 elif key == 'tol':
                     inp['tol'] = (word[1],word[2])
     
-        # verify that t_dt present
-        if inp['t_dt'] == []:
-            sys.exit('****ERROR: obligatory card t_dt specifying time_end and dtime_out is absent.')
+        # verify that tout present
+        if inp['tend'] == []:
+            sys.exit('****ERROR: obligatory card tend specifying time_end is absent.')
             sys.exit()
     
         # verify that there is at least one solve card
@@ -697,6 +697,7 @@ class Control:
     #----------------------------------------------------------------------------------------------
     def print_output_files(self, reactor, fid, time, flag):
 
+        print('{0:12.5e} '.format(time))
         # print output files
         indx = 0
         if 'signal' in self.input:

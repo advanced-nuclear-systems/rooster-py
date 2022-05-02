@@ -87,15 +87,16 @@ class Reactor:
         solver.set_integrator
 
         # main integration loop
-        for t_dt in self.control.input['t_dt'] :
-            tend = t_dt[0]
-            dtout = t_dt[1]
-            # solve the whole system of ODEs
+        dtout = 1e-6
+        for tend in self.control.input['tend'] :
             while solver.successful() and solver.t < tend:
-                t = solver.t + dtout
-                print(t)
+                t = min(tend, solver.t + dtout)
                 y = solver.integrate(t)
-
+                # next step recommended by the solver
+                dtout = solver._integrator.rwork[11]
+            
+                # evaluate signals            
+                self.control.evaluate_signals(self, t)
                 # print to output files
                 self.control.print_output_files(self, fid, t, 1)
 
