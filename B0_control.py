@@ -234,25 +234,6 @@ class Control:
             elif s['type'] == 'time':
                 self.signal[s['id']] = t
 
-        #evaluate boolean signals
-        for x in self.input['boolean']:
-            self.signal[x['sigid']] = False
-            if isinstance(x['sigid1'], float) or isinstance(x['sigid1'], int):
-                sigid1 = x['sigid1']
-            else:
-                sigid1 = self.signal[x['sigid1']]
-            if isinstance(x['sigid2'], float) or isinstance(x['sigid1'], int):
-                sigid2 = x['sigid2']
-            else:
-                sigid2 = self.signal[x['sigid1']]
-            operator = x['operator']
-            if operator == 'eq' and sigid1 == sigid2: self.signal[x['sigid']] = True
-            if operator == 'ne' and sigid1 != sigid2: self.signal[x['sigid']] = True
-            if operator == 'gt' and sigid1 > sigid2: self.signal[x['sigid']] = True
-            if operator == 'ge' and sigid1 >= sigid2: self.signal[x['sigid']] = True
-            if operator == 'lt' and sigid1 < sigid2: self.signal[x['sigid']] = True
-            if operator == 'le' and sigid1 <= sigid2: self.signal[x['sigid']] = True
-
         # signal-dependent junction: impose flowrate
         if 'fluid' in reactor.solve:
             k = 0
