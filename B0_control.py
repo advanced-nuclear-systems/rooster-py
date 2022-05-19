@@ -3,6 +3,7 @@ from sympy import *
 
 import datetime
 import json
+import math
 import os
 import shutil
 import sys
@@ -90,6 +91,16 @@ class Control:
                     except:
                         print('****ERROR: \'signal\' card ' + s['id'] + ' most likely contains a not-defined signal.')
                         sys.exit()
+
+            # function: analytical function
+            elif s['type'] == 'function':
+                function = s['value'][0]
+                id = s['value'][1]
+                if function == 'ln':
+                    if self.signal[id] <= 0:
+                        print('****ERROR: \'signal\' ' + s['id'] + ' fails to calculate natural logarythm of non-positive value.')
+                        sys.exit()
+                    self.signal[s['id']] = math.log(self.signal[id])
 
             # if: conditional if
             elif s['type'] == 'if':
