@@ -47,13 +47,13 @@ class Reactor:
         # create object solid
         self.solid = Solid(self)
 
-        # evaluate signals
-        self.control.evaluate_signals(self, self.control.input['t0'])
-
         # create object core
         self.core = Core(self)
         # create object data
         self.data = Data(self)
+
+        # evaluate signals
+        self.control.evaluate_signals(self, self.control.input['t0'])
 
         # write list of unknowns from self to y0
         y0 = self.control.write_to_y(self)
