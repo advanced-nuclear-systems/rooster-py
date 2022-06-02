@@ -14,7 +14,10 @@ class Core:
     def __init__(self, reactor):
 
         # INITIALIZATION
-        if 'fuelrod' in reactor.solve and 'power0' in reactor.control.input:
+        if 'fuelrod' in reactor.solve:
+            if 'power0' not in reactor.control.input:
+                print('***ERROR: there is no card power0 in the input.')
+                sys.exit()
             self.fuelvol = 0
             for i in range(reactor.solid.nfuelrods):
                 for iz in range(reactor.solid.fuelrod[i].nz):
@@ -22,7 +25,10 @@ class Core:
             self.qv_average = reactor.control.input['power0']/self.fuelvol
 
         if 'pointkinetics' in reactor.solve:
-            self.power = 1
+            if 'power0' not in reactor.control.input:
+                print('***ERROR: there is no card power0 in the input.')
+                sys.exit()
+            self.power = reactor.control.input['power0']
             self.ndnp = len(reactor.control.input['betaeff'])
             self.tlife = reactor.control.input['tlife']
             self.dnplmb = reactor.control.input['dnplmb']
@@ -30,11 +36,11 @@ class Core:
             self.cdnp = [0] * self.ndnp
             for i in range(self.ndnp) :
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
+
+        elif 'spatialkinetics' in reactor.solve:
             if 'power0' not in reactor.control.input:
                 print('***ERROR: there is no card power0 in the input.')
                 sys.exit()
-
-        elif 'spatialkinetics' in reactor.solve:
 
             # neutronics method
             self.meth = reactor.control.input['nmeth']
@@ -65,9 +71,6 @@ class Core:
                 if len(reactor.control.input['coremap'][i]) != self.ny:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
                     sys.exit()
-            if 'power0' not in reactor.control.input:
-                print('***ERROR: there is no card power0 in the input.')
-                sys.exit()
 
             # initialize flux
             self.flux = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
@@ -290,6 +293,7 @@ class Core:
         # construct right-hand side list
         rhs = []
         if 'pointkinetics' in reactor.solve:
+            self.qv_average = self.power/self.fuelvol
             # read input parameters
             rho = reactor.control.signal['RHO_INS']
             dpowerdt = self.power * (rho - sum(self.betaeff)) / self.tlife

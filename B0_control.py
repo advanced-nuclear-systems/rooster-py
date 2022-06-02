@@ -297,7 +297,7 @@ class Control:
         inp['htstr'] = []
         inp['t0'] = 0
         inp['tend'] = []
-        inp['tol'] = (1.e-6,1e-6)
+        inp['tol'] = (1e-6,1e-6)
         inp['thermbc'] = []
     
         #read input file as a whole
