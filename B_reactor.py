@@ -82,9 +82,9 @@ class Reactor:
         self.control.print_output_files(self, fid, t0, 0)
 
         # create ODE solver, initialize and set integrator
-        solver = ode(compose_rhs, jac = None).set_integrator('lsoda', method = 'adams', rtol = self.control.input['tol'][0], atol = self.control.input['tol'][1])
+        solver = ode(compose_rhs, jac = None).set_integrator('lsoda', method = 'bdf', rtol = self.control.input['tol'][0], atol = self.control.input['tol'][1])
         solver.set_initial_value(y0, t0)
-        solver.set_integrator
+        #solver.set_integrator
 
         # main integration loop
         dtout = 1e-6

@@ -10,6 +10,8 @@ class Mix:
     # constructor: self is a 'mix' object created in B3
     def __init__(self, indx, core, reactor):
 
+        reactor.control.evaluate_signals(reactor, reactor.control.input['t0'])
+
         # INITIALIZATION
         # number of energy groups
         self.ng = reactor.control.input['ng']

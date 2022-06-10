@@ -642,11 +642,26 @@ else
 
    ! DIFFUSION SOLVER
 
+   ! verification test homogeneous cube
+   ng = 2
+   sigtra(1,1) = 0.2468
+   sigtra(1,2) = 0.3084
+   nsigsn(1) = 1
+   fsigsn(1,1,1) = 0
+   tsigsn(1,1,1) = 1
+   sigsn(1,1,1) = 2.3e-3
+   nsign2n(1) = 0
+   sigp(1,1) = 2.41*2.42e-4
+   sigp(1,2) = 2.41*4.08e-3
+   sigt(1,1) = 1.382e-3 + sigsn(1,1,1)
+   sigt(1,2) = 5.4869e-3
+   chi(1,1) = 1
+   chi(1,2) = 0 
+
    ! relative tolerance
    rtol = 1.0e-8
    ! absolute tolerance
    atol = 1.0e-8
-   
    ! initialize fission source
    qf = 1.
    
@@ -664,7 +679,7 @@ else
    ! eigenvalue keff equal to ratio of total fission source at two iterations. 
    ! flux is normalise to total fission source = 1 at previous iteration 
    keff = 1.
-   
+
    ! convergence flag
    converge_k = .false.
    ! outer iteration counter
@@ -1058,7 +1073,7 @@ real*8 db, D
 imix_n = imap(jz,jy,jx)
 if(imix_n == 0)then
    ! neighbour is vacuum
-   db = 0.5*p + 0.71/sigtra(imix, ig)
+   db = 0.5*p !+ 0.71/sigtra(imix, ig)
    D = 1./(3.*sigtra(imix, ig))
    mlt = mlt + D * a_over_v / db
 else if(imix_n .ne. -1)then
@@ -1087,7 +1102,7 @@ real*8 db, D
 imix_n = imap(jz,jy,jx)
 if(imix_n == 0)then
    ! neighbour is vacuum
-   db = 0.5*dz(iz-1) + 0.71/sigtra(imix, ig)
+   db = 0.5*dz(iz-1) !+ 0.71/sigtra(imix, ig)
    D = 1./(3.*sigtra(imix, ig))
    mlt = mlt + D * a_over_v / db
 else if(imix_n .ne. -1)then
