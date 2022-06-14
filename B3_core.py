@@ -51,6 +51,15 @@ class Core:
             # number of energy groups
             self.ng = reactor.control.input['ng']
 
+            # number of delayed neutron precursor groups
+            self.ndnp = len(reactor.control.input['betaeff'])
+
+            # delayed neutron precursor decay constants
+            self.dnplmb = reactor.control.input['dnplmb']
+
+            # delayed neutron fractions
+            self.betaeff = reactor.control.input['betaeff']
+
             # core mesh
             self.nz = len(reactor.control.input['stack'][0]['mixid'])
             for i in range(len(reactor.control.input['stack'])):
@@ -72,8 +81,13 @@ class Core:
                     print('****ERROR: all coremap cards should have the same number of nodes.')
                     sys.exit()
 
-            # initialize flux
+            # initialize flux and flux derivative
             self.flux = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
+            self.dfidt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
+
+            # initialize delayed neutron precursor concentration and its derivative
+            self.cdnp = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
+            self.dcdnpdt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -176,21 +190,8 @@ class Core:
             # core assembly pitch
             self.pitch = 100*reactor.control.input['coregeom']['pitch']
 
-            #f = open('tmp_map.txt', 'w')
-            #for iz in range(self.nz):
-            #    for ix in range(self.nx):
-            #        if ix % 2 == 0:
-            #            pass
-            #        else:
-            #            f.write(' ')
-            #        for iy in range(self.ny):
-            #            f.write(str(self.map['imix'][iz][ix][iy]+1) + ' ')
-            #        f.write('\n')
-            #    f.write('\niz = '+str(iz)+'\n')
-            #f.close()
-
             # initialize multiplication factor
-            self.k = numpy.array([1.])
+            self.keff = numpy.ones(shape=(1), order='F')
 
             # prepare arrays for Fortran solver of eigenvalue problem             
             # total cross section
@@ -243,7 +244,7 @@ class Core:
                                               self.flux, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigsn, fsigsn, tsigsn, sigsn, \
                                               nsign2n, fsign2n, tsign2n, sign2n, chi, \
-                                              self.pitch, dz)
+                                              self.pitch, dz, self.keff)
             tac = time.time()
             print('{0:.3f}'.format(tac - reactor.tic), ' s | eigenvalue problem done.')
 
@@ -317,15 +318,76 @@ class Core:
                     self.mix[i].update_xs = False
                     self.mix[i].print_xs = True
 
+
+            # prepare arrays for Fortran solver of eigenvalue problem             
+            # total cross section
+            sigt = numpy.array([[self.mix[imix].sigt[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            # production cross section
+            sigp = numpy.array([[self.mix[imix].sigp[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            # number of elements in full scattering matrix
+            nsigsn = numpy.array([len(self.mix[imix].sigsn[0]) for imix in range(self.nmix)], order='F')
+            # full scattering matrix
+            sigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), order='F')
+            # 'from' index of full scattering matrix elements
+            fsigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), dtype=int, order='F')
+            # 'to' index of full scattering matrix elements
+            tsigsn = numpy.zeros(shape=(8, self.nmix, max(nsigsn)), dtype=int, order='F')
+            # number of elements in n2n matrix
+            nsign2n = numpy.array([len(self.mix[imix].sign2n) for imix in range(self.nmix)], order='F')
+            # n2n matrix )1D_
+            sign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), order='F')
+            # 'from' index of n2n matrix elements
+            fsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
+            # 'to' index of n2n matrix elements
+            tsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
+            # fission source
+            chi = numpy.array([[self.mix[imix].chi[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+            # axial nodalization (cm)
+            dz = numpy.array(self.map['dz'], order='F')*100.
+
+            # fill out scattering arrays
+            for imix in range(self.nmix):
+                for nlgndr in range(2):
+                    for indx in range(nsigsn[imix]):
+                        fsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][0]
+                        tsigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][0][1]
+                        sigsn[nlgndr][imix][indx] = self.mix[imix].sigsn[nlgndr][indx][1]
+
+            # fill out n2n arrays
+            for imix in range(self.nmix):
+                for indx in range(nsign2n[imix]):
+                    fsign2n[imix][indx] = self.mix[imix].sign2n[indx][0][0]
+                    tsign2n[imix][indx] = self.mix[imix].sign2n[indx][0][1]            
+                    sign2n[imix][indx] = self.mix[imix].sign2n[indx][1]
+
+            # transport cross section = total cross section - first Legendre component of elastic out-scattering cross section 
+            sigtra = numpy.array([[self.mix[imix].sigtra[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
+
+            B3_coreF.solve_kinetic_problem(self.keff, self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
+                                           self.flux, self.dfidt, self.map['imix'], sigt, sigtra, sigp, \
+                                           nsigsn, fsigsn, tsigsn, sigsn, \
+                                           nsign2n, fsign2n, tsign2n, sign2n, chi, \
+                                           self.pitch, dz, self.cdnp, self.dcdnpdt, self.betaeff, \
+                                           self.dnplmb, self.ndnp)
+
             for iz in range(self.nz):
                 for ix in range(self.nx):
                     for iy in range(self.ny):
                         # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
                         imix = self.map['imix'][iz][ix][iy]
-                        if imix >= 0 and any(self.mix[imix].sigf) > 0:
+                        if imix >= 0:
                             for it in range(self.nt):
                                 for ig in range(self.ng):
-                                    dfidt = 0
-                                    rhs += [dfidt]
+                                    rhs += [self.dfidt[iz][ix][iy][it][ig]]
+
+            for iz in range(self.nz):
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
+                        if imix >= 0:
+                            for it in range(self.nt):
+                                for im in range(self.ndnp):
+                                    rhs += [self.dcdnpdt[iz][ix][iy][it][im]]
 
         return rhs

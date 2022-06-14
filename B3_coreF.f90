@@ -5,7 +5,7 @@ subroutine solve_eigenvalue_problem(meth, geom, nz, nx, ny, nt, ng, nmix, flux, 
                                   & sigt, sigtra, sigp, &
                                   & nsigsn, fsigsn, tsigsn, sigsn, &
                                   & nsign2n, fsign2n, tsign2n, sign2n, &
-                                  & chi, pitch, dz)
+                                  & chi, pitch, dz, keff)
 
 use omp_lib
  
@@ -75,7 +75,7 @@ real*8 dif
 ! flux for evaluating the difference from the previous iteration
 real*8 fluxnew
 ! multiplication factor: keff
-real*8 keff
+real*8 keff(:)
 ! multiplication factor for evaluating the difference from the previous iteration
 real*8 knew
 ! multiplier at flux
@@ -678,7 +678,7 @@ else
    
    ! eigenvalue keff equal to ratio of total fission source at two iterations. 
    ! flux is normalise to total fission source = 1 at previous iteration 
-   keff = 1.
+   keff(1) = 1.
 
    ! convergence flag
    converge_k = .false.
@@ -746,7 +746,7 @@ else
                            end do
                         
                            ! fission source
-                           qfis = chi(imix,ig)*qf(iz,ix,iy,it)/keff
+                           qfis = chi(imix,ig)*qf(iz,ix,iy,it)/keff(1)
                         
                            ! neutron flux
                            fluxnew = (dif + qs + qn2n + qfis)/mlt
@@ -801,17 +801,17 @@ else
    
       ! new k-effective is the ratio of total fission sources at the current (tfs) and previous (1.0) iterations
       knew = tfs
-      converge_k = abs(knew - keff) < rtol*abs(knew) + atol
-      keff = knew
+      converge_k = abs(knew - keff(1)) < rtol*abs(knew) + atol
+      keff(1) = knew
    
       if(nthreads == 0)then
          write(*,'("keff: ",f13.6, " | niteri: ", i3, " | nitero: ", i3, " | ")') &
-               keff,niteri,nitero
+               keff(1),niteri,nitero
       else
          write(*,'("keff: ",f13.6, " | niteri: ", i3, " | nitero: ", i3, " | OMPthreads: ", i3, " | ")') &
-               keff,niteri,nitero,nthreads
+               keff(1),niteri,nitero,nthreads
       end if
-      if(isnan(keff)) stop
+      if(isnan(keff(1))) stop
    
    end do
 end if
@@ -821,6 +821,213 @@ imap = imap - 1
 
 end subroutine
 
+!--------------------------------------------------------------------------------------------------
+! Fortran 95 solver of reactor kinetics problem
+
+subroutine solve_kinetic_problem(keff, geom, nz, nx, ny, nt, ng, nmix, flux, dfidt, imap, &
+                                  & sigt, sigtra, sigp, &
+                                  & nsigsn, fsigsn, tsigsn, sigsn, &
+                                  & nsign2n, fsign2n, tsign2n, sign2n, &
+                                  & chi, pitch, dz, cdnp, dcdnpdt, betaeff, dnplmb, ndnp)
+
+use omp_lib
+
+implicit none
+
+! geometry flag ('squar', 'hex01', 'hex06', 'hex24')
+character*5 geom
+! number of nodes in z, y, x dimensions and number of triangles per hexagon, number of groups and number of mixes
+integer nz, nx, ny, nt, ng, nmix
+! map of material indexes: imap(nz,nx,ny)
+integer imap(:,:,:)
+! subassembly pitch
+real*8 pitch
+! axial nodalization: dz(nz-2)
+real*8 dz(:)
+! for do loop
+integer iy, ix, iz, it, ig, indx, i, j, im
+! index of mix in the node
+integer imix
+! node axial area-to-volume ratio
+real*8 az_over_v
+! node side area-to-volume ratio
+real*8 aside_over_v
+! neutron flux array: flux(nz,nx,ny,nt,ng)
+real*8 flux(:,:,:,:,:)
+! neutron flux derivative array: dfidt(nz,nx,ny,nt,ng)
+real*8 dfidt(:,:,:,:,:)
+! delayed neutron precursor concentration map (nz,nx,ny,nt,ndnp)
+real*8 cdnp(:,:,:,:,:)
+! delayed neutron precursor derivative concentration map (nz,nx,ny,nt,ndnp)
+real*8 dcdnpdt(:,:,:,:,:)
+! cross-sections
+! total cross section: sigt(nmix,ng)
+real*8 sigt(:,:)
+! transport cross section: sigtra(nmix,ng)
+real*8 sigtra(:,:)
+! removal cross section
+real*8 sigr
+! production cross section: sigp(nmix,ng)
+real*8 sigp(:,:)
+! number of entries in full scattering cross section matrix: nsigsn(nmix)
+integer nsigsn(:)
+! index of energy group from which scattering occurs: fsigsn(nlgndr,nmix,max(nsigsn))
+integer fsigsn(:,:,:)
+! index of energy group to which scattering occurs: tsigsn(nlgndr,nmix,max(nsigsn))
+integer tsigsn(:,:,:)
+! full scattering cross section matrix: sigsn(nlgndr,nmix,max(nsigsn)))
+real*8 sigsn(:,:,:)
+! number of entries in n2n cross section matrix: sign2n(nmix)
+integer nsign2n(:)
+! index of energy group from which n2n occurs: fsign2n(nmix,max(nsign2n))
+integer fsign2n(:,:)
+! index of energy group to which n2n occurs: tsign2n(nmix,max(nsign2n))
+integer tsign2n(:,:)
+! n2n cross section matrix: sign2n(nmix,max(nsign2n)))
+real*8 sign2n(:,:)
+! from and to indices for scattering matrix
+integer f, t
+! fission spectrum: chi(nmix,ng)
+real*8 chi(:,:)
+! sum of contributions from diffusion terms from neighbouring nodes
+real*8 dif
+! Beta effective for delayed neutron precursors
+real*8 betaeff(:)
+! Lambda values for precursors (1/s)
+real*8 dnplmb(:)
+! number of precursors
+integer ndnp
+! Term for precursor derivative calculation
+real*8 prec_term
+! multiplication factor: keff
+real*8 keff(:)
+! multiplier at flux
+real*8 mlt
+! fission source
+real*8 qf(nz,nx,ny,nt)
+! total fission source
+real*8 tfs
+! fission source
+real*8 qfis
+!diffusion term
+real*8 qdif
+! Delayed neutron source
+real*8 q_delay
+! n2n source
+real*8 qn2n
+! scattering source
+real*8 qs
+! removal rate
+real*8 qr
+
+! side area to volume ratio of control volume
+if(geom == 'squar')then
+  aside_over_v = 1./pitch
+else if(geom == 'hex01')then
+  aside_over_v = 2./(3.*pitch)
+else if(geom == 'hex06')then
+  aside_over_v = 4./pitch
+else ! geom == 'hex24'
+  aside_over_v = 8./pitch
+end if
+
+! change from python style to fortran style
+imap = imap + 1
+
+! fission source
+do iz = 1,nz
+   do ix = 1,nx
+      do iy = 1,ny
+         ! if (iz, ix, iy) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+         imix = imap(iz,ix,iy)
+         if(imix > 0)then
+            do it = 1,nt
+               qf(iz,ix,iy,it) = 0.
+               do ig = 1,ng
+                  qf(iz,ix,iy,it) = qf(iz,ix,iy,it) + sigp(imix,ig)*flux(iz,ix,iy,it,ig)
+               end do
+            end do
+         end if
+      end do
+   end do
+end do
+
+do iz = 1,nz
+   do ix = 1,nx
+      do iy = 1,ny
+         ! if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+         imix = imap(iz,ix,iy)
+         if(imix > 0)then
+            ! node axial area-to-volume ratio
+            az_over_v = 1./dz(iz-1)
+            do it = 1,nt
+               do ig = 1,ng
+                  mlt = 0.
+                  dif = 0.
+                  ! diffusion terms (mlt and dif) in different nodalizations and different directions
+                  call mltdif(mlt, dif, iz, ix, iy, it, ig, imix, imap, nz, nx, ny, nt, ng, nmix, &
+                              pitch, dz, sigtra, flux, aside_over_v, az_over_v, geom)
+                  qdif = dif - mlt * flux(iz,ix,iy,it,ig)
+
+                  ! removal xs
+                  sigr = sigt(imix,ig)
+                  do indx = 1,nsigsn(imix)
+                     f = fsigsn(1,imix,indx)+1
+                     t = tsigsn(1,imix,indx)+1
+                     if(f == ig .and. t == ig)then
+                        sigr = sigr - sigsn(1,imix,indx)
+                     end if
+                  end do
+
+                  ! multiply by flux to obtain qr for removal rate
+                  qr = sigr * flux(iz,ix,iy,it,ig)
+
+                  ! scattering source
+                  qs = 0.
+                  do indx = 1,nsigsn(imix)
+                     f = fsigsn(1,imix,indx)+1
+                     t = tsigsn(1,imix,indx)+1
+                     if(f .ne. ig .and. t == ig)then
+                        qs = qs + sigsn(1,imix,indx) * flux(iz,ix,iy,it,f)
+                     end if
+                  end do
+
+                  ! n2n source
+                  qn2n = 0.
+                  do indx = 1,nsign2n(imix)
+                     f = fsign2n(imix,indx)+1
+                     t = tsign2n(imix,indx)+1
+                     if(f .ne. ig .and. t == ig)then
+                        qn2n = qn2n + 2.*sign2n(imix,indx)*flux(iz,ix,iy,it,f)
+                     end if
+                  end do
+
+                  ! fission source
+                  qfis = (1 - sum(betaeff))*chi(imix,ig)*qf(iz,ix,iy,it)/keff(1)
+
+                  ! Delayed neutron source
+                  q_delay = 0.
+                  do im = 1,ndnp
+                     q_delay = q_delay + chi(imix,ig)*dnplmb(im)*cdnp(iz,ix,iy,it,im)
+                  end do
+
+                  dfidt(iz,ix,iy,it,ig) = qdif + qs + qn2n - qr + qfis + q_delay
+               end do
+
+               do im = 1,ndnp
+                  dcdnpdt(iz,ix,iy,it,im) = betaeff(im)*qf(iz,ix,iy,it)/keff(1) - dnplmb(im)*cdnp(iz,ix,iy,it,im)
+               end do
+
+            end do
+         end if
+      end do
+   end do
+end do
+
+! change from fortran style to python style
+imap = imap - 1
+
+end subroutine
 !--------------------------------------------------------------------------------------------------
 ! Diffusion terms (mlt and dif) in different nodalizations and different directions
 !

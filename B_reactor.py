@@ -98,7 +98,7 @@ class Reactor:
                 # evaluate signals            
                 self.control.evaluate_signals(self, t)
                 # print to output files
-                self.control.print_output_files(self, fid, t, 1)
+                self.control.print_output_files(self, fid, t, 0)
 
         # close all output files
         for f in fid:
