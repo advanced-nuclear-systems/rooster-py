@@ -761,7 +761,8 @@ class Control:
     #----------------------------------------------------------------------------------------------
     def print_output_files(self, reactor, fid, time, flag):
 
-        print('{0:12.5e} '.format(time))
+        iz, ix, iy, it, ig, idnp = 5, 5, 5, 0, 1, 0
+        print('time(s): ' + '{0:12.5e} '.format(time) + 'flux(-): ' + '{0:12.5e} '.format(reactor.core.flux[iz][ix][iy][it][ig]) + 'dfidt(-): ' + '{0:12.5e} '.format(reactor.core.dfidt[iz][ix][iy][it][ig]) + 'dcdnpdt(-): ' + '{0:12.5e} '.format(reactor.core.dcdnpdt[iz][ix][iy][it][idnp]))
         # print output files
         indx = 0
         if 'signal' in self.input:

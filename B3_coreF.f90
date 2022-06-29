@@ -676,8 +676,6 @@ else
       aside_over_v = 8./pitch
    end if
    
-   ! eigenvalue keff equal to ratio of total fission source at two iterations. 
-   ! flux is normalise to total fission source = 1 at previous iteration 
    keff(1) = 1.
 
    ! convergence flag
@@ -763,7 +761,7 @@ else
          !$omp end parallel do
       end do
    
-      ! calculate node-wise fission source qf and total fission source tfs
+      ! calculate node-wise fission source qf
       !$omp parallel do default(shared) private(imix)
       do iz = 1,nz
          do ix = 1,nx
@@ -825,10 +823,10 @@ end subroutine
 ! Fortran 95 solver of reactor kinetics problem
 
 subroutine solve_kinetic_problem(keff, geom, nz, nx, ny, nt, ng, nmix, flux, dfidt, imap, &
-                                  & sigt, sigtra, sigp, &
-                                  & nsigsn, fsigsn, tsigsn, sigsn, &
-                                  & nsign2n, fsign2n, tsign2n, sign2n, &
-                                  & chi, pitch, dz, cdnp, dcdnpdt, betaeff, dnplmb, ndnp)
+                               & sigt, sigtra, sigp, &
+                               & nsigsn, fsigsn, tsigsn, sigsn, &
+                               & nsign2n, fsign2n, tsign2n, sign2n, &
+                               & chi, pitch, dz, cdnp, dcdnpdt, betaeff, dnplmb, ndnp)
 
 use omp_lib
 
@@ -919,6 +917,26 @@ real*8 qn2n
 real*8 qs
 ! removal rate
 real*8 qr
+! neutron velocities
+real*8 vel(2)
+
+! verification test homogeneous cube
+ng = 2
+sigtra(1,1) = 0.2468
+sigtra(1,2) = 0.3084
+nsigsn(1) = 1
+fsigsn(1,1,1) = 0
+tsigsn(1,1,1) = 1
+sigsn(1,1,1) = 2.3e-3
+nsign2n(1) = 0
+sigp(1,1) = 2.41*2.42e-4
+sigp(1,2) = 2.41*4.08e-3
+sigt(1,1) = 1.382e-3 + sigsn(1,1,1)
+sigt(1,2) = 5.4869e-3 - 0.369e-4 ! perturbation
+chi(1,1) = 1
+chi(1,2) = 0
+vel(1) = 3.0e7
+vel(2) = 2.2e5
 
 ! side area to volume ratio of control volume
 if(geom == 'squar')then
@@ -934,24 +952,6 @@ end if
 ! change from python style to fortran style
 imap = imap + 1
 
-! fission source
-do iz = 1,nz
-   do ix = 1,nx
-      do iy = 1,ny
-         ! if (iz, ix, iy) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
-         imix = imap(iz,ix,iy)
-         if(imix > 0)then
-            do it = 1,nt
-               qf(iz,ix,iy,it) = 0.
-               do ig = 1,ng
-                  qf(iz,ix,iy,it) = qf(iz,ix,iy,it) + sigp(imix,ig)*flux(iz,ix,iy,it,ig)
-               end do
-            end do
-         end if
-      end do
-   end do
-end do
-
 do iz = 1,nz
    do ix = 1,nx
       do iy = 1,ny
@@ -961,6 +961,11 @@ do iz = 1,nz
             ! node axial area-to-volume ratio
             az_over_v = 1./dz(iz-1)
             do it = 1,nt
+               ! fission source
+               qf(iz,ix,iy,it) = 0.
+               do ig = 1,ng
+                  qf(iz,ix,iy,it) = qf(iz,ix,iy,it) + sigp(imix,ig)*flux(iz,ix,iy,it,ig)
+               end do
                do ig = 1,ng
                   mlt = 0.
                   dif = 0.
@@ -1008,10 +1013,11 @@ do iz = 1,nz
                   ! Delayed neutron source
                   q_delay = 0.
                   do im = 1,ndnp
-                     q_delay = q_delay + chi(imix,ig)*dnplmb(im)*cdnp(iz,ix,iy,it,im)
+                     q_delay = q_delay + dnplmb(im)*cdnp(iz,ix,iy,it,im)
                   end do
+                  q_delay = q_delay*chi(imix,ig)
 
-                  dfidt(iz,ix,iy,it,ig) = qdif + qs + qn2n - qr + qfis + q_delay
+                  dfidt(iz,ix,iy,it,ig) = vel(ig)*(qdif + qs + qn2n - qr + qfis + q_delay)
                end do
 
                do im = 1,ndnp

@@ -85,10 +85,6 @@ class Core:
             self.flux = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
             self.dfidt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
 
-            # initialize delayed neutron precursor concentration and its derivative
-            self.cdnp = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
-            self.dcdnpdt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
-
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
             #remove duplicates
@@ -214,7 +210,7 @@ class Core:
             fsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
             # 'to' index of n2n matrix elements
             tsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
-            # fission source
+            # fission spectrum
             chi = numpy.array([[self.mix[imix].chi[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # axial nodalization (cm)
             dz = numpy.array(self.map['dz'], order='F')*100.
@@ -287,6 +283,27 @@ class Core:
                 for iy in range(self.ny):
                     self.powxy[ix][iy] *= factor
 
+            # verification test homogeneous cube
+            self.ng = 2
+            self.mix[0].sigp[0] = 2.41*2.42e-4
+            self.mix[0].sigp[1] = 2.41*4.08e-3
+            # initialize delayed neutron precursor concentration and its derivative
+            self.cdnp = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
+            self.dcdnpdt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ndnp), order='F')
+            for iz in range(self.nz):
+                for ix in range(self.nx):
+                    for iy in range(self.ny):
+                        # if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                        imix = self.map['imix'][iz][ix][iy]
+                        if imix >= 0:
+                            for it in range(self.nt):
+                                # fission source
+                                qf = 0
+                                for ig in range(self.ng):
+                                    qf += self.mix[imix].sigp[ig]*self.flux[iz][ix][iy][it][ig]
+                                for im in range(self.ndnp):
+                                    self.cdnp[iz][ix][iy][it][im] = self.betaeff[im]*qf/self.keff[0]/self.dnplmb[im]
+
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'core' object created in B
     def calculate_rhs(self, reactor, t):
@@ -340,7 +357,7 @@ class Core:
             fsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
             # 'to' index of n2n matrix elements
             tsign2n = numpy.zeros(shape=(self.nmix, max(nsign2n)), dtype=int, order='F')
-            # fission source
+            # fission spectrum
             chi = numpy.array([[self.mix[imix].chi[ig] for ig in range(self.ng)] for imix in range(self.nmix)], order='F')
             # axial nodalization (cm)
             dz = numpy.array(self.map['dz'], order='F')*100.

@@ -84,7 +84,7 @@ class Clad:
 
         # clad thermal conductivity between nodes
         kb = [0.5*(self.prop['k'][i] + self.prop['k'][i+1]) for i in range(self.nr-1)]
-        # heat flux (W/m**2) times heat transfer area per unit height divided by pi from fuel to clad 
+        # heat flux (W/m**2) times heat transfer area per unit height from fuel to clad
         Q = [math.pi*(fuel.ro + self.ri) * hgap[indx] * (fuel.temp[fuel.nr-1] - self.temp[0])]
         # heat flux (W/m**2) times heat transfer area per unit height divided by pi at node boundaries: 2*rb * kb * dT/dr (size = nr-1)
         Q += [2*math.pi*self.rb[i]*kb[i]*(self.temp[i] - self.temp[i+1])/self.dr for i in range(self.nr-1)]
