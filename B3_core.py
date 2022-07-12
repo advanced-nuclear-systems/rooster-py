@@ -149,6 +149,7 @@ class Core:
                             id = reactor.control.input['coremap'][ix][iy]
                             if isinstance(id, float):
                                 self.map['imix'][iz][ix].append(bc[int(id)])
+                                print(bc[int(id)])
                             else:
                                 if id not in stackid_list:
                                     print('****ERROR: stack id (' + id + ') in coremap card not specified in stack card.')

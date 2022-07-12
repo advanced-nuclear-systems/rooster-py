@@ -373,11 +373,11 @@ class Control:
                     if not isinstance(word[2],int) and not isinstance(word[2],float):
                         print('****ERROR: node pitch (m) of \'coregeom\' card (word 3) is not numeric: ', word[2])
                         sys.exit()
-                    if word[3] != 0 and word[3] != 1:
-                        print('****ERROR: bottom boundary condition flag of \'coregeom\' card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
+                    if word[3] != 0 and word[3] != -1:
+                        print('****ERROR: bottom boundary condition flag of \'coregeom\' card (word 4) is wrong: ', word[3], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
                         sys.exit()
-                    if word[4] != 0 and word[4] != 1:
-                        print('****ERROR: top boundary condition flag of \'coregeom\' card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n1 (reflective)')
+                    if word[4] != 0 and word[4] != -1:
+                        print('****ERROR: top boundary condition flag of \'coregeom\' card (word 5) is wrong: ', word[4], '\nCorrect values are:\n0 (vacuum)\n-1 (reflective)')
                         sys.exit()
                     inp['coregeom'] = {'geom':word[1], 'pitch':word[2], 'botBC':int(word[3]), 'topBC':int(word[4])}
                 #--------------------------------------------------------------------------------------
@@ -761,8 +761,7 @@ class Control:
     #----------------------------------------------------------------------------------------------
     def print_output_files(self, reactor, fid, time, flag):
 
-        iz, ix, iy, it, ig, idnp = 5, 5, 5, 0, 1, 0
-        print('time(s): ' + '{0:12.5e} '.format(time) + 'flux(-): ' + '{0:12.5e} '.format(reactor.core.flux[iz][ix][iy][it][ig]) + 'dfidt(-): ' + '{0:12.5e} '.format(reactor.core.dfidt[iz][ix][iy][it][ig]) + 'dcdnpdt(-): ' + '{0:12.5e} '.format(reactor.core.dcdnpdt[iz][ix][iy][it][idnp]))
+        print('time(s): ' + '{0:12.5e} '.format(time))
         # print output files
         indx = 0
         if 'signal' in self.input:
