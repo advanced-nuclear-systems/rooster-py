@@ -749,9 +749,11 @@ class Control:
             for i in range(reactor.core.nmix):
                 fid.append(open(path4results + os.sep + 'core-mix-macroxs-' + reactor.core.mix[i].mixid + '.dat', 'w'))
             fid.append(open(path4results + os.sep + 'core-k.dat', 'w'))
-            fid[-1].write(' ' + 'niter'.ljust(13) + 'k'.ljust(13) + '\n')
+            fid[-1].write(' ' + 'k-direct'.ljust(13) + 'k-adjoint'.ljust(13) + '\n')
             fid.append(open(path4results + os.sep + 'core-flux.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'ix'.ljust(13) + 'iy'.ljust(13) + 'flux'.ljust(13) + '\n')
+            fid.append(open(path4results + os.sep + 'core-flux_a.dat', 'w'))
+            fid[-1].write(' ' + 'time(s)'.ljust(13) + 'igroup'.ljust(13) + 'iz'.ljust(13) + 'ix'.ljust(13) + 'iy'.ljust(13) + 'flux_a'.ljust(13) + '\n')
             fid.append(open(path4results + os.sep + 'core-pow.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'iz'.ljust(13) + 'ix'.ljust(13) + 'iy'.ljust(13) + 'pow'.ljust(13) + '\n')
             fid.append(open(path4results + os.sep + 'core-powxy.dat', 'w'))
@@ -759,7 +761,7 @@ class Control:
         return fid
 
     #----------------------------------------------------------------------------------------------
-    def print_output_files(self, reactor, fid, time, flag):
+    def print_output_files(self, reactor, fid, time):
 
         print('time(s): ' + '{0:12.5e} '.format(time))
         # print output files
@@ -918,12 +920,10 @@ class Control:
 
                 else:
                     indx += 1
-            # multiplication factor
-            #if flag == 0 : 
-            fid[indx].write(''.join([(' '+str(niter)).ljust(13) + '{0:12.5e} '.format(reactor.core.keff[niter]) + '\n' for niter in range(len(reactor.core.keff))]))
+            # multiplication factors
+            fid[indx].write('{0:12.5e} '.format(reactor.core.keff[0]) + '{0:12.5e} '.format(reactor.core.keff_a[0]))
             indx += 1
             # neutron flux
-            #if flag == 0 : 
             for iz in range(reactor.core.nz):
                 for ix in range(reactor.core.nx):
                     for iy in range(reactor.core.ny):
@@ -934,8 +934,18 @@ class Control:
                                 flux = sum([reactor.core.flux[iz][ix][iy][it][ig] for it in range(reactor.core.nt)])
                                 fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig+1).ljust(13) + str(iz).ljust(13) + str(ix).ljust(13) + str(iy).ljust(12) + '{0:12.5e} '.format(flux) + '\n')
             indx += 1
+            # adjoint flux
+            for iz in range(reactor.core.nz):
+                for ix in range(reactor.core.nx):
+                    for iy in range(reactor.core.ny):
+                        imix = reactor.core.map['imix'][iz][ix][iy]
+                        # if (iz, ix, iy) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref')
+                        if imix >= 0:
+                            for ig in range(reactor.core.ng):
+                                flux_a = sum([reactor.core.flux_a[iz][ix][iy][it][ig] for it in range(reactor.core.nt)])
+                                fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(ig+1).ljust(13) + str(iz).ljust(13) + str(ix).ljust(13) + str(iy).ljust(12) + '{0:12.5e} '.format(flux_a) + '\n')
+            indx += 1
             # power
-            #if flag == 0 : 
             for iz in range(reactor.core.nz):
                 for ix in range(reactor.core.nx):
                     for iy in range(reactor.core.ny):
@@ -944,7 +954,6 @@ class Control:
                         if imix >= 0 and reactor.core.pow[iz][ix][iy] > 0:
                             fid[indx].write('{0:12.5e} '.format(time) + ' ' + str(iz).ljust(13) + str(ix).ljust(13) + str(iy).ljust(12) + '{0:12.5e} '.format(reactor.core.pow[iz][ix][iy]) + '\n')
             indx += 1
-            #if flag == 0 : 
             for ix in range(reactor.core.nx):
                 for iy in range(reactor.core.ny):
                     if reactor.core.powxy[ix][iy] > 0:

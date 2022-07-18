@@ -84,6 +84,8 @@ class Core:
             # initialize flux and flux derivative
             self.flux = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
             self.dfidt = numpy.zeros(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
+            # initialize adjoint flux
+            self.flux_a = numpy.ones(shape=(self.nz, self.nx, self.ny, self.nt, self.ng), order='F')
 
             # create a list of all isotopes
             self.isoname = [x['isoid'][i] for x in reactor.control.input['mix'] for i in range(len(x['isoid']))]
@@ -149,7 +151,6 @@ class Core:
                             id = reactor.control.input['coremap'][ix][iy]
                             if isinstance(id, float):
                                 self.map['imix'][iz][ix].append(bc[int(id)])
-                                print(bc[int(id)])
                             else:
                                 if id not in stackid_list:
                                     print('****ERROR: stack id (' + id + ') in coremap card not specified in stack card.')
@@ -187,8 +188,9 @@ class Core:
             # core assembly pitch
             self.pitch = 100*reactor.control.input['coregeom']['pitch']
 
-            # initialize multiplication factor
+            # initialize direct and adjoint multiplication factors
             self.keff = numpy.ones(shape=(1), order='F')
+            self.keff_a = numpy.ones(shape=(1), order='F')
 
             # prepare arrays for Fortran solver of eigenvalue problem             
             # total cross section
@@ -238,10 +240,10 @@ class Core:
 
             # call the Fortran eigenvalue problem solver
             B3_coreF.solve_eigenvalue_problem(self.meth, self.geom, self.nz, self.nx, self.ny, self.nt, self.ng, self.nmix, \
-                                              self.flux, self.map['imix'], sigt, sigtra, sigp, \
+                                              self.flux, self.flux_a, self.map['imix'], sigt, sigtra, sigp, \
                                               nsigsn, fsigsn, tsigsn, sigsn, \
                                               nsign2n, fsign2n, tsign2n, sign2n, chi, \
-                                              self.pitch, dz, self.keff)
+                                              self.pitch, dz, self.keff, self.keff_a)
             tac = time.time()
             print('{0:.3f}'.format(tac - reactor.tic), ' s | eigenvalue problem done.')
 
@@ -272,7 +274,7 @@ class Core:
                                 self.powxy[ix][iy] += self.pow[iz][ix][iy]
                                 factor += self.pow[iz][ix][iy]
             factor = reactor.control.input['power0'] / factor
-            # normalize flux and power to power0
+            # normalize flux, adjoint flux and power to power0
             for iz in range(self.nz):
                 for ix in range(self.nx):
                     for iy in range(self.ny):
@@ -280,6 +282,7 @@ class Core:
                         for it in range(self.nt):
                             for ig in range(self.ng):
                                 self.flux[iz][ix][iy][it][ig] *= factor
+                                self.flux_a[iz][ix][iy][it][ig] *= factor
             for ix in range(self.nx):
                 for iy in range(self.ny):
                     self.powxy[ix][iy] *= factor

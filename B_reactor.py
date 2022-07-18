@@ -79,7 +79,7 @@ class Reactor:
         # prepare an output folder, copy input and open output files
         fid = self.control.open_output_files(self)
         t0 = self.control.input['t0']
-        self.control.print_output_files(self, fid, t0, 0)
+        self.control.print_output_files(self, fid, t0)
 
         # create ODE solver, initialize and set integrator
         solver = ode(compose_rhs, jac = None).set_integrator('vode', method = 'bdf', rtol = self.control.input['tol'][0], atol = self.control.input['tol'][1])
@@ -98,7 +98,7 @@ class Reactor:
                 # evaluate signals            
                 self.control.evaluate_signals(self, t)
                 # print to output files
-                self.control.print_output_files(self, fid, t, 0)
+                self.control.print_output_files(self, fid, t)
 
         # close all output files
         for f in fid:
