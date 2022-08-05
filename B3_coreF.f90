@@ -1476,7 +1476,7 @@ else if(imix_n .ne. -1)then
    db = 0.5*(dz(iz) + dz(jz))
    D = 2.*db/(3.*sigtra(imix, ig)*dz(iz) + 3.*sigtra(imix_n, ig)*dz(jz))
    mlt = mlt + D * a_over_v / db
-   dif = dif + D * flux(jz,jy,jx,jt,ig) * a_over_v / db
+   dif = dif + D * flux(jz,jx,jy,jt,ig) * a_over_v / db
 end if
 
 end subroutine
