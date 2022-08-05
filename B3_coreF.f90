@@ -697,7 +697,7 @@ else
       converge_flux = .false.
       ! inner iteration counter
       niteri = 0
-      do while(.not. converge_flux .and. niteri < 5)
+      do while(.not. converge_flux)
          niteri = niteri + 1
          converge_flux = .true.
          !$omp parallel do default(shared) &
@@ -707,7 +707,7 @@ else
                do iy = 1,ny
                   !$ if(omp_get_thread_num() == 0 .and. iz == 1 .and. ix == 1 .and. iy == 1) nthreads = OMP_get_num_threads()
                
-                  ! if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                  ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                   imix = imap(iz,ix,iy)
                   if(imix > 0)then
                      ! node axial area-to-volume ratio
@@ -775,7 +775,7 @@ else
       do iz = 1,nz
          do ix = 1,nx
             do iy = 1,ny
-               ! if (iz, ix, iy) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+               ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                imix = imap(iz,ix,iy)
                if(imix > 0)then
                   do it = 1,nt
@@ -795,7 +795,7 @@ else
       do iz = 1,nz
          do ix = 1,nx
             do iy = 1,ny
-               ! if (iz, iy, ix) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+               ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                imix = imap(iz,ix,iy)
                if(imix > 0)then
                   do it = 1,nt
@@ -838,7 +838,7 @@ else
       converge_flux = .false.
       ! inner iteration counter
       niteri = 0
-      do while(.not. converge_flux .and. niteri < 5)
+      do while(.not. converge_flux)
          niteri = niteri + 1
          converge_flux = .true.
          !$omp parallel do default(shared) &
@@ -848,7 +848,7 @@ else
                do iy = 1,ny
                   !$ if(omp_get_thread_num() == 0 .and. iz == 1 .and. ix == 1 .and. iy == 1) nthreads = OMP_get_num_threads()
 
-                  ! if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+                  ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                   imix = imap(iz,ix,iy)
                   if(imix > 0)then
                      ! node axial area-to-volume ratio
@@ -916,7 +916,7 @@ else
       do iz = 1,nz
          do ix = 1,nx
             do iy = 1,ny
-               ! if (iz, ix, iy) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+               ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                imix = imap(iz,ix,iy)
                if(imix > 0)then
                   do it = 1,nt
@@ -939,7 +939,7 @@ else
       do iz = 1,nz
          do ix = 1,nx
             do iy = 1,ny
-               ! if (iz, iy, ix) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+               ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
                imix = imap(iz,ix,iy)
                if(imix > 0)then
                   do it = 1,nt
@@ -1108,11 +1108,11 @@ imap = imap + 1
 do iz = 1,nz
    do ix = 1,nx
       do iy = 1,ny
-         ! if (iy, ix, iz) is not a boundary condition node, i.e. not -1 (vac) and not -2 (ref)
+         ! if (iz, ix, iy) is not a boundary condition node, i.e. not 0 (vac) and not -1 (ref)
          imix = imap(iz,ix,iy)
          if(imix > 0)then
             ! node axial area-to-volume ratio
-            az_over_v = 1./dz(iz-1)
+            az_over_v = 1./dz(iz)
             do it = 1,nt
                ! fission source
                qf(iz,ix,iy,it) = 0.
@@ -1195,7 +1195,7 @@ subroutine mltdif(mlt, dif, iz, ix, iy, it, ig, imix, imap, nz, nx, ny, nt, ng, 
 
 implicit none
 integer iz, ix, iy, it, ig, imix, nz, nx, ny, nt, ng, nmix, imap(nz,nx,ny)
-real*8 mlt, dif, pitch, dz(nz-2), sigtra(nmix,ng), flux(nz,nx,ny,nt,ng), aside_over_v, az_over_v
+real*8 mlt, dif, pitch, dz(nz), sigtra(nmix,ng), flux(nz,nx,ny,nt,ng), aside_over_v, az_over_v
 character*5 geom
 
 real*8 db
@@ -1426,7 +1426,7 @@ end subroutine
 !--------------------------------------------------------------------------------------------------
 ! Diffusion terms (mlt and dif) in xy directions
 !
-subroutine difxy(mlt, dif, jz, jy, jx, jt, ig, imix, imap, nz, nx, ny, nt, ng, nmix, p, sigtra, flux, a_over_v)
+subroutine difxy(mlt, dif, jz, jx, jy, jt, ig, imix, imap, nz, nx, ny, nt, ng, nmix, p, sigtra, flux, a_over_v)
 
 implicit none
 
@@ -1436,7 +1436,7 @@ real*8 mlt, dif, p, sigtra(nmix,ng), flux(nz,nx,ny,nt,ng), a_over_v
 integer imix_n
 real*8 db, D
 
-imix_n = imap(jz,jy,jx)
+imix_n = imap(jz,jx,jy)
 if(imix_n == 0)then
    ! neighbour is vacuum
    db = 0.5*p !+ 0.71/sigtra(imix, ig)
@@ -1446,7 +1446,7 @@ else if(imix_n .ne. -1)then
    ! neighbour is normal node (neither vacuum nor reflective)
    D = 2./(3.*sigtra(imix, ig) + 3.*sigtra(imix_n, ig))
    mlt = mlt + D * a_over_v / p
-   dif = dif + D * flux(jz,jy,jx,jt,ig) * a_over_v / p
+   dif = dif + D * flux(jz,jx,jy,jt,ig) * a_over_v / p
 end if
 
 end subroutine
@@ -1454,27 +1454,27 @@ end subroutine
 !--------------------------------------------------------------------------------------------------
 ! Diffusion terms (mlt and dif) in z directions
 !
-subroutine difz(mlt, dif, iz, jz, jy, jx, jt, ig, imix, imap, nz, nx, ny, nt, ng, nmix, dz, sigtra, flux, a_over_v)
+subroutine difz(mlt, dif, iz, jz, jx, jy, jt, ig, imix, imap, nz, nx, ny, nt, ng, nmix, dz, sigtra, flux, a_over_v)
 
 implicit none
 
 integer iz, jz, jy, jx, jt, ig, imix, nz, nx, ny, nt, ng, nmix, imap(nz,nx,ny)
-real*8 mlt, dif, dz(nz-2), sigtra(nmix,ng), flux(nz,nx,ny,nt,ng), a_over_v
+real*8 mlt, dif, dz(nz), sigtra(nmix,ng), flux(nz,nx,ny,nt,ng), a_over_v
 
 ! index of mix in the neighbouring node
 integer imix_n
 real*8 db, D
 
-imix_n = imap(jz,jy,jx)
+imix_n = imap(jz,jx,jy)
 if(imix_n == 0)then
    ! neighbour is vacuum
-   db = 0.5*dz(iz-1) !+ 0.71/sigtra(imix, ig)
+   db = 0.5*dz(iz) !+ 0.71/sigtra(imix, ig)
    D = 1./(3.*sigtra(imix, ig))
    mlt = mlt + D * a_over_v / db
 else if(imix_n .ne. -1)then
    ! neighbour is normal node (neither vacuum nor reflective)
-   db = 0.5*(dz(iz-1) + dz(jz-1))
-   D = 2.*db/(3.*sigtra(imix, ig)*dz(iz-1) + 3.*sigtra(imix_n, ig)*dz(jz-1))
+   db = 0.5*(dz(iz) + dz(jz))
+   D = 2.*db/(3.*sigtra(imix, ig)*dz(iz) + 3.*sigtra(imix_n, ig)*dz(jz))
    mlt = mlt + D * a_over_v / db
    dif = dif + D * flux(jz,jy,jx,jt,ig) * a_over_v / db
 end if

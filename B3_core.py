@@ -182,9 +182,12 @@ class Core:
                                             sys.exit()
                                         else:
                                             self.map['ipipe'][iz][ix].append((ipipe,pipenode))
-                                # node height
-                                if len(self.map['dz']) < iz:
-                                    self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
+                # node height
+                if iz == 0 or iz == self.nz-1:
+                    self.map['dz'].append(0)
+                else:
+                    self.map['dz'].append(reactor.control.input['pipe'][ipipe]['len']/reactor.control.input['pipe'][ipipe]['nnodes'])
+
             # core assembly pitch
             self.pitch = 100*reactor.control.input['coregeom']['pitch']
 
