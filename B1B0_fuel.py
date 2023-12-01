@@ -46,13 +46,25 @@ class Fuel:
         # material type of fuel
         self.type = mat['type']
         # list of Pu content in fuel radial nodes
-        self.pu = [mat['pu']]*self.nr
+        if 'pu' in mat:
+            self.pu = [mat['pu']]*self.nr
+        else:
+            self.pu = [0]*self.nr
         # list of fuel burnup in fuel radial nodes
-        self.b = [mat['b']]*self.nr
+        if 'b' in mat:
+            self.b = [mat['b']]*self.nr
+        else:
+            self.b = [0]*self.nr
         # list of deviation from stoechiometry in fuel radial nodes
-        self.x = [mat['x']]*self.nr
+        if 'x' in mat:
+            self.x = [mat['x']]*self.nr
+        else:
+            self.x = [0]*self.nr
         # list of porosity in fuel radial nodes
-        self.por = [mat['por']]*self.nr
+        if 'por' in mat:
+            self.por = [mat['por']]*self.nr
+        else:
+            self.por = [0]*self.nr
         # list of initial temperatures in fuel radial nodes
         self.temp = [mat['temp0']]*self.nr
 

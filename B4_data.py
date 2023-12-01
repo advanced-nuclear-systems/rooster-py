@@ -40,6 +40,28 @@ class Data:
             cpl = 1646.97 - 0.831587*t + 4.31182e-04*t**2
             return {'rhol':rhol, 'visl':visl, 'kl':kl, 'cpl':cpl}
 
+        # lbe: liquid lead and bismuth (55%wt Bi, 45%wt Pb)
+        elif inp['type'] == 'lbe':
+            t = inp['t']
+            # OECD, Nuclear Energy Agency, Handbook on Lead-bismuth Eutectic Alloy and Lead Properties, Materials Compatibility, Thermalhydraulics and Technologies, OECD, 2015. https://doi.org/10.1787/42dcd531-en.
+            # density (kg/m3): @400K-1300K equation from "Handbook on Lead-bismuth Eutectic Alloy and Lead Properties", p.130, same as the following ones
+            rhol = 11065-1.293*t
+            # dynamic viscosity (Pa·s): @400K-1200K 
+            visl = 4.94e-4*math.exp(754.1/t)
+            # specific heat (J/kg-K): @400K-1100K 
+            cpl = 164.8-3.94e-2*t+1.25e-5*t*t-4.56e5/t/t
+            # thermal conductivity (W/m-K): @400K-1300K
+            kl = 3.284 + 1.617e-2*t-2.305e-6*t*t
+            return {'rhol':rhol, 'visl':visl, 'kl':kl, 'cpl':cpl}
+
+        elif inp['type'] == 'h2o':
+            t = inp['t']
+            rhol = 864.70
+            visl = 0.0001343
+            cpl = 4493.74
+            kl = 0.6634
+            return {'rhol':rhol, 'visl':visl, 'kl':kl, 'cpl':cpl}
+
         # ss316: stainless steel type of 316
         elif inp['type'] == 'ss316':
             t = inp['t']
@@ -49,6 +71,29 @@ class Data:
             cp = (6.181 + 1.788e-3*t)*10.165*4.184
             # thermal conductivity (W/m-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.100.
             k = 9.248 + 1.571e-2*t
+            return {'rho':rho, 'cp':cp, 'k':k}
+
+        # bn: boron nitide
+        elif inp['type'] == 'bn':
+            t = inp['t']
+            tc = t -273.15
+            # density (kg/m3): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            rho = 2000.
+            # specific heat (J/kg-K): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            cp = 800.
+            # thermal conductivity (W/m-K): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            k = 25.578 - 2.416*math.log(tc)
+            return {'rho':rho, 'cp':cp, 'k':k}
+
+        # cu: copper
+        elif inp['type'] == 'cu':
+            t = inp['t']
+            # density (kg/m3): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            rho = 8933.
+            # specific heat (J/kg-K): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            cp = 385.
+            # thermal conductivity (W/m-K): I.Di Piazza, et al., Benchmark specifications for NACIE-UP facility: non-uniform power distribution tests, ENEA Report, NA-I-R-542, Feb. 2023
+            k = 401
             return {'rho':rho, 'cp':cp, 'k':k}
 
     #----------------------------------------------------------------------------------------------

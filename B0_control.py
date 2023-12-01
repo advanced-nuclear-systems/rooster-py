@@ -482,7 +482,15 @@ class Control:
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'pu':word[3], 'b':word[4], 'x':word[5], 'por':word[6], 'temp0':word[7]} )
                      elif word[2] == 'na':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
+                     elif word[2] == 'lbe':
+                         inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
+                     elif word[2] == 'h2o':
+                         inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
                      elif word[2] == 'ss316':
+                         inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
+                     elif word[2] == 'bn':
+                         inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
+                     elif word[2] == 'cu':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
                 #--------------------------------------------------------------------------------------
                 # mixture of isotopes
