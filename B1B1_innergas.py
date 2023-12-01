@@ -4,7 +4,7 @@ import sys
 class InnerGas:
 
     #----------------------------------------------------------------------------------------------
-    # constructor: self is a 'innergas' object created in B1B
+    # constructor: self is an 'innergas' object created in B1B
     # indxfuelrod is the index of the fuel rod this object belongs to
     def __init__(self, indxfuelrod, reactor):
 
