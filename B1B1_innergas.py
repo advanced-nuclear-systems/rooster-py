@@ -14,22 +14,24 @@ class InnerGas:
         nz = len(dictfuelrod['fuelid'])
         self.hgap0 = dictfuelrod['hgap']
         self.hgap = self.hgap0
-        indx = [x['fuelrodid'] for x in reactor.control.input['innergas']].index(dictfuelrod['id'])
-        matid = [x['matid'] for x in reactor.control.input['innergas']][indx]
-        # find the gas material id in the list of materials
-        try:
-            igas = [x['id'] for x in reactor.control.input['mat']].index(matid)
-        except:
-            print('****ERROR: gas material id ' + matid + ' is not specified in the \'mat\' card of input.')
-            sys.exit()
-        # dictionary of material properties of the current inner gas
-        mat = reactor.control.input['mat'][igas]
-        # material type of gas
-        self.type = mat['type']
-        # initial pressure of gas
-        self.p = mat['p0']
-        # initial temperature of gas
-        self.temp = [mat['temp0']]*nz
+        list = [x['fuelrodid'] for x in reactor.control.input['innergas']]
+        if dictfuelrod['id'] in list:
+            indx = list.index(dictfuelrod['id'])
+            matid = [x['matid'] for x in reactor.control.input['innergas']][indx]
+            # find the gas material id in the list of materials
+            try:
+                igas = [x['id'] for x in reactor.control.input['mat']].index(matid)
+            except:
+                print('****ERROR: gas material id ' + matid + ' is not specified in the \'mat\' card of input.')
+                sys.exit()
+            # dictionary of material properties of the current inner gas
+            mat = reactor.control.input['mat'][igas]
+            # material type of gas
+            self.type = mat['type']
+            # initial pressure of gas
+            self.p = mat['p0']
+            # initial temperature of gas
+            self.temp = [mat['temp0']]*nz
 
     #----------------------------------------------------------------------------------------------
     # calculate gap conductance: self is an 'innergas' object created in B1B
