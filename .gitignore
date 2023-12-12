@@ -12,3 +12,6 @@ output
 gitignore
 *.so
 DATA*
+build
+dist
+*.spec
