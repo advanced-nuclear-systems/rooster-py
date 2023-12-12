@@ -113,16 +113,45 @@ class Data:
 
     #----------------------------------------------------------------------------------------------
     # Friction factor: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
-    def fricfac(self, re):
+    def fricfac(self, inp):
 
-        if re == 0:
-            return 1e30
-        elif re <= 2000:
-            # laminar friction factor
-            return 64/re
-        elif re > 4000:
-            # turbulent friction factor
-            return 0.316/re**0.25
+
+
+        if 'p2d' in inp and 'h2d' in inp:
+            
+            p2d = inp['p2d']
+            h2d = inp['h2d']
+            re = inp['re']
+            #Chen, S. K., et al. (2018). "The upgraded Cheng and Todreas correlation for pressure drop 
+            #in hexagonal wire-wrapped rod bundles." Nuclear Engineering and Design 335: 356-373.
+            CfbL = (-974.6 + 1612.0*p2d - 598.5*p2d**2)*math.pow(h2d, 0.06-0.085*p2d)
+            CfbT = (0.8063 - 0.9022*math.log10(h2d) + 0.3526*(math.log10(h2d)**2))*p2d**9.7*math.pow(h2d, 1.78-2.0*p2d)
+
+            RebL = 320*(10**(p2d-1.0))
+            RebT = 10000*(10**(0.7*(p2d-1.0)))
+
+            if re == 0:
+                return 1e30
+            elif re <= RebL:
+                # laminar friction factor
+                return CfbL/re
+            elif re <= RebT:
+                # transition friction factor
+                phi = math.log10(re/RebL)/math.log10(RebT/RebL)
+                return CfbL/RebL*(1 - phi)**(1/3)*(1 - phi**7) + (CfbT/RebT**0.18)*phi**(1/3)
+            else:
+                # turbulent friction factor
+                return CfbT/RebT**0.18
         else:
-            # transition friction factor
-            return 0.032 + 0.0077*(re/2000 - 1)
+            re = inp['re']
+            if re == 0:
+                return 1e30
+            elif re <= 2000:
+                # laminar friction factor
+                return 64/re
+            elif re > 4000:
+                # turbulent friction factor
+                return 0.316/re**0.25
+            else:
+                # transition friction factor
+                return 0.032 + 0.0077*(re/2000 - 1)

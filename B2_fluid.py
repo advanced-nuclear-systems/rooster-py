@@ -276,10 +276,26 @@ class Fluid:
             else:
                 rhogh_t = 9.81*rho_t*len_t*self.dir[f[0]]
 
-            # friction losses
-            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
-            
+            # friction losses for from
+            if self.pipetype[f[0]] == "wirewrapped":
+                p2d = reactor.control.input['pipe'][f[0]]["p2d"]
+                h2d = reactor.control.input['pipe'][f[0]]["h2d"]
+                inp = {'p2d':p2d,'h2d':h2d,'re':self.re[f[0]][f[1]]}
+                dpfric_f = reactor.data.fricfac(inp) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            else:
+                inp = {'re':self.re[f[0]][f[1]]}
+                dpfric_f = reactor.data.fricfac(inp) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+
+            # friction losses for to
+            if self.pipetype[t[0]] == "wirewrapped":
+                p2d = reactor.control.input['pipe'][t[0]]["p2d"]
+                h2d = reactor.control.input['pipe'][t[0]]["h2d"]
+                inp = {'p2d':p2d,'h2d':h2d,'re':self.re[t[0]][t[1]]}
+                dpfric_t = reactor.data.fricfac(inp) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])            
+            else:
+                inp = {'re':self.re[t[0]][t[1]]}
+                dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+
             b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
             try:
                 # check if the current junction j is present in junkfac list

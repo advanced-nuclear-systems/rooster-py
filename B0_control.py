@@ -524,6 +524,13 @@ class Control:
                 # thermal-hydraulic pipe without free level with temperature defined by signal
                 elif key == 'pipe-t':
                     inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
+                
+                # wire-wrapped subassemblies
+                elif key == 'pipe-w':
+                    inp['pipe'].append( {'id':word[1], 'type':'wirewrapped', 'matid':word[2], 'dhyd':word[3], 'len':word[4], \
+                                         'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':'', \
+                                            'p2d':word[8], 'h2d':word[9]} )
+
                 #--------------------------------------------------------------------------------------
                 # initial reactor power
                 elif key == 'power0':
