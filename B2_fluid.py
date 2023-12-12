@@ -294,7 +294,7 @@ class Fluid:
                 dpfric_t = reactor.data.fricfac(inp) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])            
             else:
                 inp = {'re':self.re[t[0]][t[1]]}
-                dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+                dpfric_t = reactor.data.fricfac(inp) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
 
             b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
             try:
