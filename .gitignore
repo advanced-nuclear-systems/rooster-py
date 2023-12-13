@@ -15,3 +15,5 @@ DATA*
 build
 dist
 *.spec
+
+.vscode
