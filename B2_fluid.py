@@ -295,13 +295,14 @@ class Fluid:
             except ValueError:
                 pass
             if self.juntype[j] == 'independent':
-                try:
-                    # check if the current junction j is present in junpumphead list
-                    indx = reactor.fluid.junpumphead['jun'].index((f,t))
-                    # if yes...
+                f = reactor.fluid.f[j][0]
+                t = reactor.fluid.t[j][0]
+                # tuple of from-to pipe id's
+                f_t = (reactor.fluid.pipeid[f],reactor.fluid.pipeid[t])
+                # check if the current junction j is present in junpumphead list
+                if f_t in reactor.control.input['junpumphead']['jun']:
+                    indx = reactor.control.input['junpumphead']['jun'].index(f_t)
                     b[j] += reactor.control.signal[self.junpumphead['pumphead'][indx]]
-                except ValueError:
-                    pass
 
         for i in range(self.npipe):
             for j in range(self.pipennodes[i]):
