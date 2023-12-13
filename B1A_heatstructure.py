@@ -91,9 +91,10 @@ class HeatStructure:
             jpipe = (reactor.fluid.pipeid.index(self.bcleft['pipeid']), self.bcleft['pipenode']-1)
             fluid = {}
             fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
+            fluid['p'] = reactor.fluid.p[jpipe[0]][jpipe[1]]
             fluid['type'] = reactor.fluid.type[jpipe[0]]
             # call material property function
-            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t']} )
+            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t'], 'p':fluid['p']} )
             fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
             fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
             # heat exchange coefficient
@@ -113,9 +114,10 @@ class HeatStructure:
             jpipe = (reactor.fluid.pipeid.index(self.bcright['pipeid']), self.bcright['pipenode']-1)
             fluid = {}
             fluid['t'] = reactor.fluid.temp[jpipe[0]][jpipe[1]]
+            fluid['p'] = reactor.fluid.p[jpipe[0]][jpipe[1]]
             fluid['type'] = reactor.fluid.type[jpipe[0]]
             # call material property function
-            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t']} )
+            pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t'], 'p':fluid['p']} )
             fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
             fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
             # heat exchange coefficient

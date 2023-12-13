@@ -213,7 +213,7 @@ class Fluid:
             dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
             for j in range(self.pipennodes[i]):
                 # call material property function
-                pro = reactor.data.matpro( {'type':self.type[i], 't':self.temp[i][j]} )
+                pro = reactor.data.matpro( {'type':self.type[i], 't':self.temp[i][j], 'p':self.p[i][j]} )
                 dict['rhol'].append(pro['rhol'])
                 dict['visl'].append(pro['visl'])
                 dict['kl'].append(pro['kl'])

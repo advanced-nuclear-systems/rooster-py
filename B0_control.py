@@ -56,7 +56,7 @@ class Control:
                         davg = 0.0
                         for i in range(reactor.fluid.pipennodes[indx]):
                             # call material property function
-                            pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][i]} )
+                            pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][i], 'p':reactor.fluid.p[indx][i]} )
                             davg += pro['rhol']
                         davg /= reactor.fluid.pipennodes[indx]
                         self.signal[s['id']] = davg
@@ -66,7 +66,7 @@ class Control:
                             print('****ERROR: \'signal\' card ' + s['id'] + ' refers to node (' + str(int(s['value'][1])) + ') that does not exist in pipe ' + id)
                             sys.exit()
                         # call material property function
-                        pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][int(s['value'][1])-1]} )
+                        pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][int(s['value'][1])-1],'p':reactor.fluid.p[indx][int(s['value'][1])-1]} )
                         self.signal[s['id']] = pro['rhol']
                 else:
                     print('****ERROR: \'signal\' card ' + s['id'] + ' refers to pipe that does not exist or there is no \'solve fluid\' card.')

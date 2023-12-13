@@ -1,4 +1,5 @@
 import math
+import CoolProp.CoolProp as CP
 
 #--------------------------------------------------------------------------------------------------
 class Data:
@@ -56,10 +57,19 @@ class Data:
 
         elif inp['type'] == 'h2o':
             t = inp['t']
-            rhol = 864.70
-            visl = 0.0001343
-            cpl = 4493.74
-            kl = 0.6634
+            p = inp['p']
+            fluid = 'IF97::Water'
+            if (CP.PropsSI('T','Q',0.0,'P',p,fluid) < t):
+                rhol = CP.PropsSI('D', 'T', t, 'P', p, fluid)
+                visl = CP.PropsSI('V', 'T', t, 'P', p, fluid)
+                cpl  = CP.PropsSI('C', 'T', t, 'P', p, fluid)
+                kl   = CP.PropsSI('L', 'T', t, 'P', p, fluid)
+            else:
+                print("Warning, two phase for h2o, using default constant value.")
+                rhol = 864.70
+                visl = 0.0001343
+                cpl = 4493.74
+                kl = 0.6634
             return {'rhol':rhol, 'visl':visl, 'kl':kl, 'cpl':cpl}
 
         # ss316: stainless steel type of 316
