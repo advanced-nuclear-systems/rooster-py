@@ -268,7 +268,7 @@ class Control:
             for i in range(reactor.fluid.npipe):
                 if reactor.fluid.pipetype[i] == 'normal' and reactor.fluid.signaltemp[i] != '':
                     # impose temperature from the look-up table
-                    reactor.fluid.temp[i] = [self.signal[reactor.fluid.signaltemp[i]]] * reactor.fluid.pipennodes[i]
+                    reactor.fluid.temp[i] = [self.signal[reactor.fluid.signaltemp[i]] * reactor.fluid.pipennodes[i]]
     #----------------------------------------------------------------------------------------------
     def construct_input(self):
         #create dictionary inp where all input data will be stored
