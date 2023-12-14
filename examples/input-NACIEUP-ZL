@@ -1,0 +1,190 @@
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# ROOSTER input: Free-Levels-Oscillation
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     tstart(s)
+t0        0.0
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     tend(s)   dtout(s)
+tend      1000.0      1
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# TOLERANCES
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     rtol      atol
+tol       1e-10      1e-10
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# SOLVERS
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+solve     fluid
+solve     htstr
+solve     fuelrod
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# MATERIALS
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        type      p0(Pa)    temp0(K)
+mat       LBE       lbe       1e5       473
+mat       H2O       h2o       1.6E6     443
+#
+#####     id        type      temp0(K)
+mat       SS1       ss316     473.
+mat       BN        bn        473.
+mat       COPPER    cu        473.
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# COOLING SYSTEMS
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+pipe-f    EXP LBE       0.25451   0.4       0.050874
+## Pipe without free level
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     dhyd(m)   len(m)    dir       areaz(m2)     nnodes  
+jun       EXP       CONEXP
+pipe      CONEXP    LBE       0.06268   0.2       -1         0.003085658  2
+jun-i-p   CONEXP    CONUPP    PMPHEAD_VS_T
+pipe      CONUPP    LBE       0.06268   0.2       -1         0.003085658  2
+jun       CONUPP    UPP    
+pipe      UPP       LBE       0.06268   2.4       0          0.003085658   30
+jun       UPP       PREHX     
+pipe      PREHX     LBE       0.06268   0.22     -1          0.003085658   3
+jun       PREHX     LOWERHX   
+pipe      LOWERHX   LBE       0.08954   0.3      -1          0.070599      3
+jun       LOWERHX   HIGHHX
+pipe      HIGHHX    LBE       0.08954   2.1      -1          0.070599      15
+jun       HIGHHX    DOWN
+pipe      DOWN      LBE       0.06268   5.235     -1         0.003085658   45
+jun       DOWN      LOWER
+pipe      LOWER     LBE       0.06268   2.4       0          0.003085658   30         
+jun       LOWER     PREFPS 
+pipe      PREFPS    LBE       0.1       0.8       1          0.00785       4
+jun       PREFPS    FPS
+pipe-w    FPS       LBE       0.41387   1.33      1          0.0006542     20    1.28244275  40
+jun       FPS       POSTFPS
+pipe      POSTFPS   LBE       0.06268   0.547     1          0.003085658   2
+jun       POSTFPS   RISER     
+pipe      RISER     LBE       0.06268   5.578     1          0.003085658   50
+jun       RISER     EXP
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# SECONDARY SYSTEM
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+pipe      SECHX      H2O       0.0627   2.1       1         0.0030876      15
+jun       SECHX      SECHXTOP
+pipe-f    SECHXTOP   H2O       0.0627   0.1      0.0030876
+jun       SECHXTOP   SECHXINLET 
+pipe-t    SECHXINLET H2O       0.0627   2.1       -1         0.0030876     15    TEMP_VS_T
+jun-i-f   SECHXINLET SECHX     MDOT_VS_T
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# HEATER
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Initial reactor power
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+power0    30000
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Heater
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     ri(m)     ro(m)     nr
+fuel      HT        COPPER    0.0       1.155E-3  12
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Cladding
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     ri(m)     ro(m)     nr
+clad      CLD       BN        1.155e-3  3.275e-3  3
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# HEATER axial levels
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        fuelid    hgap      cladid    p2d       mltpl     pipeid    pipenode  kr        kz
+fuelrod   HT01      HT        2.8E5      CLD       1.282       19        FPS     1         1.0       1.0
+fuelrod   HT02      HT        2.8E5      CLD       1.282       19        FPS     2         1.0       1.0
+fuelrod   HT03      HT        2.8E5      CLD       1.282       19        FPS     3         1.0       1.0
+fuelrod   HT04      HT        2.8E5      CLD       1.282       19        FPS     4         1.0       1.0
+fuelrod   HT05      HT        2.8E5      CLD       1.282       19        FPS     5         1.0       1.0
+fuelrod   HT06      HT        2.8E5      CLD       1.282       19        FPS     6         1.0       1.0
+fuelrod   HT07      HT        2.8E5      CLD       1.282       19        FPS     7         1.0       1.0
+fuelrod   HT08      HT        2.8E5      CLD       1.282       19        FPS     8         1.0       1.0
+fuelrod   HT09      HT        2.8E5      CLD       1.282       19        FPS     9         1.0       1.0
+fuelrod   HT10      HT        2.8E5      CLD       1.282       19        FPS     10        1.0       1.0
+fuelrod   HT11      HT        2.8E5      CLD       1.282       19        FPS     11        1.0       1.0
+fuelrod   HT12      HT        2.8E5      CLD       1.282       19        FPS     12        1.0       1.0
+fuelrod   HT13      HT        2.8E5      CLD       1.282       19        FPS     13        1.0       1.0
+fuelrod   HT14      HT        2.8E5      CLD       1.282       19        FPS     14        1.0       1.0
+fuelrod   HT15      HT        2.8E5      CLD       1.282       19        FPS     15        1.0       1.0
+fuelrod   HT16      HT        2.8E5      CLD       1.282       19        FPS     16        1.0       1.0
+fuelrod   HT17      HT        2.8E5      CLD       1.282       19        FPS     17        1.0       1.0
+fuelrod   HT18      HT        2.8E5      CLD       1.282       19        FPS     18        1.0       1.0
+fuelrod   HT19      HT        2.8E5      CLD       1.282       19        FPS     19        1.0       1.0
+fuelrod   HT20      HT        2.8E5      CLD       1.282       19        FPS     20        1.0       1.0
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Heat structure
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     ri(m)     ro(m)     nr        BCLeft    bcright   mltpl
+htstr     HS701     SS1       0.03135   0.0365    3         BCL701     BCR701     7
+htstr     HS702     SS1       0.03135   0.0365    3         BCL702     BCR702     7
+htstr     HS703     SS1       0.03135   0.0365    3         BCL703     BCR703     7
+htstr     HS704     SS1       0.03135   0.0365    3         BCL704     BCR704     7
+htstr     HS705     SS1       0.03135   0.0365    3         BCL705     BCR705     7
+htstr     HS706     SS1       0.03135   0.0365    3         BCL706     BCR706     7
+htstr     HS707     SS1       0.03135   0.0365    3         BCL707     BCR707     7
+htstr     HS708     SS1       0.03135   0.0365    3         BCL708     BCR708     7
+htstr     HS709     SS1       0.03135   0.0365    3         BCL709     BCR709     7
+htstr     HS710     SS1       0.03135   0.0365    3         BCL710     BCR710     7
+htstr     HS711     SS1       0.03135   0.0365    3         BCL711     BCR711     7
+htstr     HS712     SS1       0.03135   0.0365    3         BCL712     BCR712     7
+htstr     HS713     SS1       0.03135   0.0365    3         BCL713     BCR713     7
+htstr     HS714     SS1       0.03135   0.0365    3         BCL714     BCR714     7
+htstr     HS715     SS1       0.03135   0.0365    3         BCL715     BCR715     7
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# thermal boundary conditions
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        type      pipeid    pipenode  
+thermbc   BCL701     2         SECHX     1
+thermbc   BCL702     2         SECHX     2
+thermbc   BCL703     2         SECHX     3
+thermbc   BCL704     2         SECHX     4
+thermbc   BCL705     2         SECHX     5
+thermbc   BCL706     2         SECHX     6
+thermbc   BCL707     2         SECHX     7
+thermbc   BCL708     2         SECHX     8
+thermbc   BCL709     2         SECHX     9
+thermbc   BCL710     2         SECHX     10
+thermbc   BCL711     2         SECHX     11
+thermbc   BCL712     2         SECHX     12
+thermbc   BCL713     2         SECHX     13
+thermbc   BCL714     2         SECHX     14
+thermbc   BCL715     2         SECHX     15
+#
+thermbc   BCR701     2         HIGHHX     1
+thermbc   BCR702     2         HIGHHX     2
+thermbc   BCR703     2         HIGHHX     3
+thermbc   BCR704     2         HIGHHX     4
+thermbc   BCR705     2         HIGHHX     5
+thermbc   BCR706     2         HIGHHX     6
+thermbc   BCR707     2         HIGHHX     7
+thermbc   BCR708     2         HIGHHX     8
+thermbc   BCR709     2         HIGHHX     9
+thermbc   BCR710     2         HIGHHX     10
+thermbc   BCR711     2         HIGHHX     11
+thermbc   BCR712     2         HIGHHX     12
+thermbc   BCR713     2         HIGHHX     13
+thermbc   BCR714     2         HIGHHX     14
+thermbc   BCR715     2         HIGHHX     15
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Signals
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        type      value
+signal    TIME      time
+signal    PMPHEAD_VS_T    lookup TIME &
+          1e5        0 &    
+          1e5      1000
+signal    TEMP_VS_T       lookup TIME &
+          443.15        0 &    
+          443.15      1000
+signal    MDOT_VS_T       lookup TIME &
+          0.356349143        0 &    
+          0.356349143      1000
