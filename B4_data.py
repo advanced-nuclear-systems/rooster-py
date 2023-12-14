@@ -48,7 +48,7 @@ class Data:
             # density (kg/m3): @400K-1300K equation from "Handbook on Lead-bismuth Eutectic Alloy and Lead Properties", p.130, same as the following ones
             rhol = 11065-1.293*t
             # dynamic viscosity (Pa·s): @400K-1200K 
-            visl = 4.94e-4*math.exp(754.1/t)
+            visl = (4.94e-4*math.exp(754.1/t))/rhol
             # specific heat (J/kg-K): @400K-1100K 
             cpl = 164.8-3.94e-2*t+1.25e-5*t*t-4.56e5/t/t
             # thermal conductivity (W/m-K): @400K-1300K
@@ -61,11 +61,11 @@ class Data:
             fluid = 'IF97::Water'
             if (CP.PropsSI('T','Q',0.0,'P',p,fluid) > t):
                 rhol = CP.PropsSI('D', 'T', t, 'P', p, fluid)
-                visl = CP.PropsSI('V', 'T', t, 'P', p, fluid)
+                visl = CP.PropsSI('V', 'T', t, 'P', p, fluid)/rhol
                 cpl  = CP.PropsSI('C', 'T', t, 'P', p, fluid)
                 kl   = CP.PropsSI('L', 'T', t, 'P', p, fluid)
             else:
-                print("Warning, two phase for h2o, using default constant value.")
+                print("Warning, two phase state for h2o, using default constant value.")
                 rhol = 864.70
                 visl = 0.0001343
                 cpl = 4493.74
