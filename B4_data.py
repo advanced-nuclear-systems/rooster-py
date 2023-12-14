@@ -59,7 +59,7 @@ class Data:
             t = inp['t']
             p = inp['p']
             fluid = 'IF97::Water'
-            if (CP.PropsSI('T','Q',0.0,'P',p,fluid) < t):
+            if (CP.PropsSI('T','Q',0.0,'P',p,fluid) > t):
                 rhol = CP.PropsSI('D', 'T', t, 'P', p, fluid)
                 visl = CP.PropsSI('V', 'T', t, 'P', p, fluid)
                 cpl  = CP.PropsSI('C', 'T', t, 'P', p, fluid)
