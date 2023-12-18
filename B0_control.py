@@ -489,6 +489,8 @@ class Control:
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
                      elif word[2] == 'ss316':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
+                     elif word[2] == 'powder':
+                         inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
                      elif word[2] == 'bn':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
                      elif word[2] == 'cu':

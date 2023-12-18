@@ -95,8 +95,9 @@ class HeatStructure:
             fluid['type'] = reactor.fluid.type[jpipe[0]]
             # call material property function
             pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t'], 'p':fluid['p']} )
-            fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
-            fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
+            fluid['re'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] / pro['visl']
+            fluid['pr'] = pro['rhol'] * pro['visl'] * pro['cpl'] / pro['kl']
+            fluid['nu'] = reactor.data.nu( {'type':fluid['type'],'re':fluid['re'], 'pr':fluid['pr']} )
             # heat exchange coefficient
             fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
             # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant
@@ -118,8 +119,9 @@ class HeatStructure:
             fluid['type'] = reactor.fluid.type[jpipe[0]]
             # call material property function
             pro = reactor.data.matpro( {'type':fluid['type'], 't':fluid['t'], 'p':fluid['p']} )
-            fluid['pe'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] * pro['rhol'] * pro['cpl'] / pro['kl']
-            fluid['nu'] = reactor.data.nu( {'pe':fluid['pe']} )
+            fluid['re'] = abs(reactor.fluid.vel[jpipe[0]][jpipe[1]]) * reactor.fluid.dhyd[jpipe[0]] / pro['visl']
+            fluid['pr'] = pro['rhol'] * pro['visl'] * pro['cpl'] / pro['kl']
+            fluid['nu'] = reactor.data.nu( {'type':fluid['type'],'re':fluid['re'], 'pr':fluid['pr']} )
             # heat exchange coefficient
             fluid['hex'] = fluid['nu'] * pro['kl'] / reactor.fluid.dhyd[jpipe[0]]
             # heat flux (W/m**2) times heat transfer area per unit height divided by pi from clad to coolant

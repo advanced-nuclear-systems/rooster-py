@@ -15,5 +15,6 @@ DATA*
 build
 dist
 *.spec
-
+slurm-*
+/log
 .vscode

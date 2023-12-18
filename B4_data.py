@@ -118,17 +118,25 @@ class Data:
     #----------------------------------------------------------------------------------------------
     # Nusselt number: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
     def nu(self, inp):
+        material_type = inp['type']
+        Re = inp['re']
+        Pr = inp['pr']
+        if material_type == 'h2o':
+            nuLam = 4.36
+            f = (1.58*math.log(Re) - 3.28)**(-2)
+            nuTurb = ((f/2)*(Re - 1000)*Pr)/(1+12.7*(f/2)**0.5*(Pr**(2/3)-1))
+            return max(nuLam, nuTurb)
 
-        pe = inp['pe']
-        if 'p2d' in inp:
-            # pin bundle
-            p2d = inp['p2d']
-            # forced convection in a pin bundle (Mikityuk, NED 2008)
-            return 0.047*(1.0-math.exp(-3.8*(p2d-1.0))) * ((pe)**0.77 + 250.0)
-            
-        else:
-            # round tube
-            return 4.8 + 0.025 * (pe)**0.8
+        elif material_type == 'na' or material_type == 'lbe' :
+            pe = Re*Pr
+            if 'p2d' in inp:
+                # pin bundle
+                p2d = inp['p2d']
+                # forced convection in a pin bundle (Mikityuk, NED 2008)
+                return 0.047*(1.0-math.exp(-3.8*(p2d-1.0))) * ((pe)**0.77 + 250.0)
+            else:
+                # round tube
+                return 4.8 + 0.025 * (pe)**0.8
 
     #----------------------------------------------------------------------------------------------
     # Friction factor: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case

@@ -400,7 +400,7 @@ class Fluid:
                         ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
                         area_ht = 2 * math.pi * ro * len * mltpl
                         p2d = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].p2d
-                        nu = reactor.data.nu( {'pe':self.pe[i][j], 'p2d':p2d} )
+                        nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j],'p2d':p2d} )
                         hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                         dtempdt2d[i][j] += hex*(tclad - self.temp[i][j]) * area_ht
 
@@ -410,13 +410,13 @@ class Fluid:
                             bcleft = reactor.solid.htstr[k].bcleft
                             bcright = reactor.solid.htstr[k].bcright
                             if bcleft['type'] == 2 and bcleft['pipeid'] == self.pipeid[i] and bcleft['pipenode']-1 == j:
-                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
+                                nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                                 mltpl = reactor.solid.htstr[k].mltpl
                                 area_ht = 2 * math.pi * reactor.solid.htstr[k].ri * len * mltpl
                                 dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[0] - self.temp[i][j]) * area_ht
                             if bcright['type'] == 2 and bcright['pipeid'] == self.pipeid[i] and bcright['pipenode']-1 == j:
-                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
+                                nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                                 mltpl = reactor.solid.htstr[k].mltpl
                                 area_ht = 2 * math.pi * reactor.solid.htstr[k].ro * len * mltpl
