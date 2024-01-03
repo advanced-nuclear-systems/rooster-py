@@ -83,12 +83,12 @@ class Data:
             k = 9.248 + 1.571e-2*t
             return {'rho':rho, 'cp':cp, 'k':k}
 
-        # powder: This material properties is only NACIE-UP benchmark
-        elif inp['type'] == 'powder':
+        # AISI316_powder: This material properties is only NACIE-UP benchmark
+        elif inp['type'] == 'AISI316_powder':
             t = inp['t']
             rho = 7954.
             cp = (6.181 + 1.788e-3*t)*10.165*4.184
-            # This material perporty is from NACIE-UP benchmark spec
+            # This material prporety is from NACIE-UP benchmark spec
             k = 0.3 + 0.005*(t - 273.15 - 200) 
             return {'rho':rho, 'cp':cp, 'k':k}
 
