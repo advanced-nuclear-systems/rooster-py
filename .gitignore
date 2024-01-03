@@ -5,16 +5,10 @@ _f2py
 *.o
 *.exe
 *.pdf
-/input*
+input*
 lsodes
 output
 *.zip
 gitignore
 *.so
 DATA*
-build
-dist
-*.spec
-slurm-*
-/log
-.vscode

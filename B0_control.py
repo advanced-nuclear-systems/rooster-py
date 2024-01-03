@@ -56,7 +56,7 @@ class Control:
                         davg = 0.0
                         for i in range(reactor.fluid.pipennodes[indx]):
                             # call material property function
-                            pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][i], 'p':reactor.fluid.p[indx][i]} )
+                            pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][i]} )
                             davg += pro['rhol']
                         davg /= reactor.fluid.pipennodes[indx]
                         self.signal[s['id']] = davg
@@ -66,7 +66,7 @@ class Control:
                             print('****ERROR: \'signal\' card ' + s['id'] + ' refers to node (' + str(int(s['value'][1])) + ') that does not exist in pipe ' + id)
                             sys.exit()
                         # call material property function
-                        pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][int(s['value'][1])-1],'p':reactor.fluid.p[indx][int(s['value'][1])-1]} )
+                        pro = reactor.data.matpro( {'type':reactor.fluid.type[indx], 't':reactor.fluid.temp[indx][int(s['value'][1])-1]} )
                         self.signal[s['id']] = pro['rhol']
                 else:
                     print('****ERROR: \'signal\' card ' + s['id'] + ' refers to pipe that does not exist or there is no \'solve fluid\' card.')
@@ -268,8 +268,7 @@ class Control:
             for i in range(reactor.fluid.npipe):
                 if reactor.fluid.pipetype[i] == 'normal' and reactor.fluid.signaltemp[i] != '':
                     # impose temperature from the look-up table
-                    t = self.signal[reactor.fluid.signaltemp[i]] * 1.0
-                    reactor.fluid.temp[i] = [t] * reactor.fluid.pipennodes[i]
+                    reactor.fluid.temp[i] = [self.signal[reactor.fluid.signaltemp[i]]] * reactor.fluid.pipennodes[i]
     #----------------------------------------------------------------------------------------------
     def construct_input(self):
         #create dictionary inp where all input data will be stored
@@ -489,8 +488,6 @@ class Control:
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'p0':word[3], 'temp0':word[4]} )
                      elif word[2] == 'ss316':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
-                     elif word[2] == 'powder':
-                         inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
                      elif word[2] == 'bn':
                          inp['mat'].append( {'id':word[1], 'type':word[2], 'temp0':word[3]} )
                      elif word[2] == 'cu':
@@ -527,13 +524,6 @@ class Control:
                 # thermal-hydraulic pipe without free level with temperature defined by signal
                 elif key == 'pipe-t':
                     inp['pipe'].append( {'id':word[1], 'type':'normal', 'matid':word[2], 'dhyd':word[3], 'len':word[4], 'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':word[8]} )
-                
-                # wire-wrapped subassemblies
-                elif key == 'pipe-w':
-                    inp['pipe'].append( {'id':word[1], 'type':'wirewrapped', 'matid':word[2], 'dhyd':word[3], 'len':word[4], \
-                                         'dir':word[5], 'areaz':word[6], 'nnodes':int(word[7]), 'signaltemp':'', \
-                                            'p2d':word[8], 'h2d':word[9]} )
-
                 #--------------------------------------------------------------------------------------
                 # initial reactor power
                 elif key == 'power0':

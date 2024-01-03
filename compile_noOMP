@@ -1,15 +1,2 @@
-#!/bin/bash
-
 python3 -m numpy.f2py -c --build-dir _f2py B3_coreF.f90 -m B3_coreF
 mv B3_coreF.*.so B3_coreF.so
-
-# if you want to package this code into a executable, please pip3 install pyinstaller and uncomment following 
-# if you want to package this code into a executable, please pip3 install pyinstaller and uncomment following 
-commit_id=$(git rev-parse HEAD)
-export ROOSTER_COMMIT_ID=$commit_id
-pyinstaller -F A_rooster.py
-short_commit_id=$(echo $commit_id | cut -c 1-6)
-old_exe_name="./dist/A_rooster"
-new_exe_name="./dist/A_rooster-"$short_commit_id
-mv $old_exe_name $new_exe_name
-unset ROOSTER_COMMIT_ID

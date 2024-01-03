@@ -1,5 +1,4 @@
 import math
-import CoolProp.CoolProp as CP
 
 #--------------------------------------------------------------------------------------------------
 class Data:
@@ -48,7 +47,7 @@ class Data:
             # density (kg/m3): @400K-1300K equation from "Handbook on Lead-bismuth Eutectic Alloy and Lead Properties", p.130, same as the following ones
             rhol = 11065-1.293*t
             # dynamic viscosity (Pa·s): @400K-1200K 
-            visl = (4.94e-4*math.exp(754.1/t))/rhol
+            visl = 4.94e-4*math.exp(754.1/t)
             # specific heat (J/kg-K): @400K-1100K 
             cpl = 164.8-3.94e-2*t+1.25e-5*t*t-4.56e5/t/t
             # thermal conductivity (W/m-K): @400K-1300K
@@ -57,19 +56,10 @@ class Data:
 
         elif inp['type'] == 'h2o':
             t = inp['t']
-            p = inp['p']
-            fluid = 'IF97::Water'
-            if (CP.PropsSI('T','Q',0.0,'P',p,fluid) > t):
-                rhol = CP.PropsSI('D', 'T', t, 'P', p, fluid)
-                visl = CP.PropsSI('V', 'T', t, 'P', p, fluid)/rhol
-                cpl  = CP.PropsSI('C', 'T', t, 'P', p, fluid)
-                kl   = CP.PropsSI('L', 'T', t, 'P', p, fluid)
-            else:
-                print("Warning, two phase state for h2o, using default constant value.")
-                rhol = 864.70
-                visl = 0.0001343
-                cpl = 4493.74
-                kl = 0.6634
+            rhol = 864.70
+            visl = 0.0001343
+            cpl = 4493.74
+            kl = 0.6634
             return {'rhol':rhol, 'visl':visl, 'kl':kl, 'cpl':cpl}
 
         # ss316: stainless steel type of 316
@@ -81,15 +71,6 @@ class Data:
             cp = (6.181 + 1.788e-3*t)*10.165*4.184
             # thermal conductivity (W/m-K): Leibowitz, et al, "Properties for LMFBR safety analysis", ANL-CEN-RSD-76-1 (1976), p.100.
             k = 9.248 + 1.571e-2*t
-            return {'rho':rho, 'cp':cp, 'k':k}
-
-        # powder: This material properties is only NACIE-UP benchmark
-        elif inp['type'] == 'powder':
-            t = inp['t']
-            rho = 7954.
-            cp = (6.181 + 1.788e-3*t)*10.165*4.184
-            # This material perporty is from NACIE-UP benchmark spec
-            k = 0.3 + 0.005*(t - 273.15 - 200) 
             return {'rho':rho, 'cp':cp, 'k':k}
 
         # bn: boron nitide
@@ -118,67 +99,30 @@ class Data:
     #----------------------------------------------------------------------------------------------
     # Nusselt number: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
     def nu(self, inp):
-        material_type = inp['type']
-        Re = inp['re']
-        Pr = inp['pr']
-        if material_type == 'h2o':
-            nuLam = 4.36
-            f = (1.58*math.log(Re) - 3.28)**(-2)
-            nuTurb = ((f/2)*(Re - 1000)*Pr)/(1+12.7*(f/2)**0.5*(Pr**(2/3)-1))
-            return max(nuLam, nuTurb)
 
-        elif material_type == 'na' or material_type == 'lbe' :
-            pe = Re*Pr
-            if 'p2d' in inp:
-                # pin bundle
-                p2d = inp['p2d']
-                # forced convection in a pin bundle (Mikityuk, NED 2008)
-                return 0.047*(1.0-math.exp(-3.8*(p2d-1.0))) * ((pe)**0.77 + 250.0)
-            else:
-                # round tube
-                return 4.8 + 0.025 * (pe)**0.8
+        pe = inp['pe']
+        if 'p2d' in inp:
+            # pin bundle
+            p2d = inp['p2d']
+            # forced convection in a pin bundle (Mikityuk, NED 2008)
+            return 0.047*(1.0-math.exp(-3.8*(p2d-1.0))) * ((pe)**0.77 + 250.0)
+            
+        else:
+            # round tube
+            return 4.8 + 0.025 * (pe)**0.8
 
     #----------------------------------------------------------------------------------------------
     # Friction factor: self is a 'data' object created in B, inp is a dictionary of input data dependent on the case
-    def fricfac(self, inp):
+    def fricfac(self, re):
 
-
-
-        if 'p2d' in inp and 'h2d' in inp:
-            
-            p2d = inp['p2d']
-            h2d = inp['h2d']
-            re = inp['re']
-            #Chen, S. K., et al. (2018). "The upgraded Cheng and Todreas correlation for pressure drop 
-            #in hexagonal wire-wrapped rod bundles." Nuclear Engineering and Design 335: 356-373.
-            CfbL = (-974.6 + 1612.0*p2d - 598.5*p2d**2)*math.pow(h2d, 0.06-0.085*p2d)
-            CfbT = (0.8063 - 0.9022*math.log10(h2d) + 0.3526*(math.log10(h2d)**2))*p2d**9.7*math.pow(h2d, 1.78-2.0*p2d)
-
-            RebL = 320*(10**(p2d-1.0))
-            RebT = 10000*(10**(0.7*(p2d-1.0)))
-
-            if re == 0:
-                return 1e30
-            elif re <= RebL:
-                # laminar friction factor
-                return CfbL/re
-            elif re <= RebT:
-                # transition friction factor
-                phi = math.log10(re/RebL)/math.log10(RebT/RebL)
-                return CfbL/RebL*(1 - phi)**(1/3)*(1 - phi**7) + (CfbT/RebT**0.18)*phi**(1/3)
-            else:
-                # turbulent friction factor
-                return CfbT/RebT**0.18
+        if re == 0:
+            return 1e30
+        elif re <= 2000:
+            # laminar friction factor
+            return 64/re
+        elif re > 4000:
+            # turbulent friction factor
+            return 0.316/re**0.25
         else:
-            re = inp['re']
-            if re == 0:
-                return 1e30
-            elif re <= 2000:
-                # laminar friction factor
-                return 64/re
-            elif re > 4000:
-                # turbulent friction factor
-                return 0.316/re**0.25
-            else:
-                # transition friction factor
-                return 0.032 + 0.0077*(re/2000 - 1)
+            # transition friction factor
+            return 0.032 + 0.0077*(re/2000 - 1)

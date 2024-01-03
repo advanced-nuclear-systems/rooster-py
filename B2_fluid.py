@@ -213,7 +213,7 @@ class Fluid:
             dict = {'rhol':[], 'visl':[], 'kl':[], 'cpl':[]}
             for j in range(self.pipennodes[i]):
                 # call material property function
-                pro = reactor.data.matpro( {'type':self.type[i], 't':self.temp[i][j], 'p':self.p[i][j]} )
+                pro = reactor.data.matpro( {'type':self.type[i], 't':self.temp[i][j]} )
                 dict['rhol'].append(pro['rhol'])
                 dict['visl'].append(pro['visl'])
                 dict['kl'].append(pro['kl'])
@@ -276,26 +276,10 @@ class Fluid:
             else:
                 rhogh_t = 9.81*rho_t*len_t*self.dir[f[0]]
 
-            # friction losses for from
-            if self.pipetype[f[0]] == "wirewrapped":
-                p2d = reactor.control.input['pipe'][f[0]]["p2d"]
-                h2d = reactor.control.input['pipe'][f[0]]["h2d"]
-                inp = {'p2d':p2d,'h2d':h2d,'re':self.re[f[0]][f[1]]}
-                dpfric_f = reactor.data.fricfac(inp) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-            else:
-                inp = {'re':self.re[f[0]][f[1]]}
-                dpfric_f = reactor.data.fricfac(inp) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
-
-            # friction losses for to
-            if self.pipetype[t[0]] == "wirewrapped":
-                p2d = reactor.control.input['pipe'][t[0]]["p2d"]
-                h2d = reactor.control.input['pipe'][t[0]]["h2d"]
-                inp = {'p2d':p2d,'h2d':h2d,'re':self.re[t[0]][t[1]]}
-                dpfric_t = reactor.data.fricfac(inp) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])            
-            else:
-                inp = {'re':self.re[t[0]][t[1]]}
-                dpfric_t = reactor.data.fricfac(inp) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
-
+            # friction losses
+            dpfric_f = reactor.data.fricfac(self.re[f[0]][f[1]]) * 0.5 * rho_f * self.vel[f[0]][f[1]] * abs(self.vel[f[0]][f[1]])
+            dpfric_t = reactor.data.fricfac(self.re[t[0]][t[1]]) * 0.5 * rho_t * self.vel[t[0]][t[1]] * abs(self.vel[t[0]][t[1]])
+            
             b[j] = -(rhogh_f + rhogh_t) - (dpfric_f + dpfric_t)
             try:
                 # check if the current junction j is present in junkfac list
@@ -310,7 +294,6 @@ class Fluid:
                 
             except ValueError:
                 pass
-            
             if self.juntype[j] == 'independent':
                 f = reactor.fluid.f[j][0]
                 t = reactor.fluid.t[j][0]
@@ -400,7 +383,7 @@ class Fluid:
                         ro = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].r[-1]
                         area_ht = 2 * math.pi * ro * len * mltpl
                         p2d = reactor.solid.fuelrod[tuple_fr[0]].clad[tuple_fr[1]].p2d
-                        nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j],'p2d':p2d} )
+                        nu = reactor.data.nu( {'pe':self.pe[i][j], 'p2d':p2d} )
                         hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                         dtempdt2d[i][j] += hex*(tclad - self.temp[i][j]) * area_ht
 
@@ -410,13 +393,13 @@ class Fluid:
                             bcleft = reactor.solid.htstr[k].bcleft
                             bcright = reactor.solid.htstr[k].bcright
                             if bcleft['type'] == 2 and bcleft['pipeid'] == self.pipeid[i] and bcleft['pipenode']-1 == j:
-                                nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j]} )
+                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                                 mltpl = reactor.solid.htstr[k].mltpl
                                 area_ht = 2 * math.pi * reactor.solid.htstr[k].ri * len * mltpl
                                 dtempdt2d[i][j] += hex*(reactor.solid.htstr[k].temp[0] - self.temp[i][j]) * area_ht
                             if bcright['type'] == 2 and bcright['pipeid'] == self.pipeid[i] and bcright['pipenode']-1 == j:
-                                nu = reactor.data.nu( {'type':self.type[i],'re':self.re[i][j], 'pr':self.pr[i][j]} )
+                                nu = reactor.data.nu( {'pe':self.pe[i][j]} )
                                 hex = nu * self.prop[i]['kl'][j] / self.dhyd[i]
                                 mltpl = reactor.solid.htstr[k].mltpl
                                 area_ht = 2 * math.pi * reactor.solid.htstr[k].ro * len * mltpl

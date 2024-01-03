@@ -11,8 +11,6 @@ The ROOSTER projects aims at developing a software for multi-physics modeling of
 
 4. Find the results in the `output` directory.
 
-5. if you want to package this source code into a executable code, please install pyinstaller and uncomment corresponding lines in the `compile`
-
 ROOSTER has not yet been tested for Windows.
 
 More details are at https://armstrong-dev.github.io/index.html#rooster.
