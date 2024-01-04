@@ -4,8 +4,9 @@ The ROOSTER projects aims at developing a software for multi-physics modeling of
 
 ## How to install and execute on Linux
 1. Install dependencies:
-
-pip install CoolProp
+- pip install CoolProp
+- pip install Sphinx
+- pip install sphinx-rtd-theme
 
 2. Clone the code: `git clone https://github.com/armstrong-dev/rooster.git` or download and unpack ZIP.
 
