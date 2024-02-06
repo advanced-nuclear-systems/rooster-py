@@ -550,7 +550,7 @@ class Control:
                 elif key == 'solve':
                     inp['solve'].append(word[1])
                     # verify that solve card has correct value
-                    correct_values = {'fluid','fuelrod','htstr','pointkinetics','spatialkinetics'}
+                    correct_values = {'fluid','fuelrod','htstr','pointkinetics','eigenvalueproblem'}
                     value = set([word[1]])
                     diff = value.difference(correct_values)
                     if diff != set():
@@ -560,21 +560,21 @@ class Control:
                         for v in sorted:
                             print('solve', v)
                         sys.exit()
-                    if word[1] == 'spatialkinetics':
+                    if word[1] == 'eigenvalueproblem':
                         # check that there are two additional values
                         if len(word)-1 < 3:
-                            print('****ERROR: solve spatialkinetics card should have two value after the keyword: number of energy groups (integer) and method indicator (DIF or MC), e.g.:\nsolve spatialkinetics 25 MC')
+                            print('****ERROR: solve eigenvalueproblem card should have two value after the keyword: number of energy groups (integer) and method indicator (DIF or MC), e.g.:\nsolve eigenvalueproblem 25 MC')
                             sys.exit()
                         # check that the second value is integer
                         try:
                             # number of energy groups
                             inp['ng'] = int(word[2])
                         except:
-                            print('****ERROR: the second value after the keyword of solve spatialkinetics card should be integer (number of energy groups), e.g.:\nsolve spatialkinetics 25')
+                            print('****ERROR: the second value after the keyword of solve eigenvalueproblem card should be integer (number of energy groups), e.g.:\nsolve eigenvalueproblem 25')
                             sys.exit()
                         # check that the thrid value is DIF or MC
                         if word[3] != 'DIF' and word[3] != 'MC':
-                            print('****ERROR: solve spatialkinetics card should have the third value of method indicator either DIF (neutron diffusion solver) or MC (Monte Carlo method)')
+                            print('****ERROR: solve eigenvalueproblem card should have the third value of method indicator either DIF (neutron diffusion solver) or MC (Monte Carlo method)')
                             sys.exit()
                         # method indicator
                         inp['nmeth'] = word[3]
@@ -744,7 +744,7 @@ class Control:
             fid[-1].write(' ' + 'time(s)'.ljust(13) + 'power(-)\n')
             fid.append(open(path4results + os.sep + 'core-cdnp.dat', 'w'))
             fid[-1].write(' ' + 'time(s)'.ljust(13) + ''.join([('cdnp-' + str(i)).ljust(13) for i in range(reactor.core.ndnp)]) + '\n')
-        if 'spatialkinetics' in reactor.solve:
+        if 'eigenvalueproblem' in reactor.solve:
             for i in range(reactor.core.niso):
                 fid.append(open(path4results + os.sep + 'core-iso-microxs-' + reactor.core.isoname[i] + '.dat', 'w'))
             for i in range(reactor.core.nmix):
@@ -814,7 +814,7 @@ class Control:
             # point kinetics cdnp
             fid[indx].write('{0:12.5e} '.format(time) + ''.join(['{0:12.5e} '.format(reactor.core.cdnp[i]) for i in range(reactor.core.ndnp)]) + '\n')
             indx += 1
-        if 'spatialkinetics' in reactor.solve:
+        if 'eigenvalueproblem' in reactor.solve:
             for i in range(reactor.core.niso):
                 if reactor.core.iso[i].print_xs:
                     fid[indx].write('time: ' + '{0:12.5e} '.format(time) + ' s\n')
@@ -985,7 +985,7 @@ class Control:
             y.append(reactor.core.power)
             for i in range(reactor.core.ndnp):
                 y.append(reactor.core.cdnp[i])
-        if 'spatialkinetics' in reactor.solve:
+        if 'eigenvalueproblem' in reactor.solve:
             for iz in range(reactor.core.nz):
                 for ix in range(reactor.core.nx):
                     for iy in range(reactor.core.ny):
@@ -1062,7 +1062,7 @@ class Control:
             for i in range(reactor.core.ndnp):
                 reactor.core.cdnp[i] = y[indx]
                 indx += 1
-        if 'spatialkinetics' in reactor.solve:
+        if 'eigenvalueproblem' in reactor.solve:
             for iz in range(reactor.core.nz):
                 for ix in range(reactor.core.nx):
                     for iy in range(reactor.core.ny):

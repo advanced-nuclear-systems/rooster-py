@@ -37,7 +37,7 @@ class Core:
             for i in range(self.ndnp) :
                 self.cdnp[i] = self.betaeff[i]*self.power/(self.dnplmb[i]*self.tlife)
 
-        elif 'spatialkinetics' in reactor.solve:
+        elif 'eigenvalueproblem' in reactor.solve:
             if 'power0' not in reactor.control.input:
                 print('***ERROR: there is no card power0 in the input.')
                 sys.exit()
@@ -328,7 +328,7 @@ class Core:
                 dcdnpdt[i] = self.betaeff[i]*self.power/self.tlife - self.dnplmb[i]*self.cdnp[i]
             rhs = [dpowerdt] + dcdnpdt
 
-        if 'spatialkinetics' in reactor.solve:
+        if 'eigenvalueproblem' in reactor.solve:
             for i in range(self.nmix):
                 if self.mix[i].update_xs:
                     self.mix[i].calculate_sig0(self, reactor)

@@ -45,7 +45,7 @@ class Isotope:
         # number of energy groups
         ng = cards[1][2]
         if ng != reactor.control.input['ng']:
-            print('****ERROR: number of energy group (' + str(ng) + ') in ' + nddir + os.sep + self.isoid + ' not equal to number of energy group specified in input card solve spatialkinetics (' + str(reactor.control.input['ng']) + ').')
+            print('****ERROR: number of energy group (' + str(ng) + ') in ' + nddir + os.sep + self.isoid + ' not equal to number of energy group specified in input card solve eigenvalueproblem (' + str(reactor.control.input['ng']) + ').')
             sys.exit()
 
         # find number of base temperatures and values of base temperatures using mf=1 and mt=451
