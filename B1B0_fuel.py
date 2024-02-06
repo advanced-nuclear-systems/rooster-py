@@ -1,5 +1,3 @@
-from B1B0A_fuelgrain import FuelGrain
-
 import math
 import sys
 
@@ -77,11 +75,6 @@ class Fuel:
         # list of node volume (size = nr)
         self.vol = [self.rb[0]**2 - self.r[0]**2] + [self.rb[i]**2 - self.rb[i-1]**2 for i in range(1, self.nr-1)] + [self.r[self.nr-1]**2 - self.rb[self.nr-2]**2]       
         self.vol = [self.vol[i]*math.pi for i in range(self.nr)]
-        if 'fuelgrain' in reactor.solve:
-            # create an object fuel grain for every radial node of fuel
-            self.fuelgrain = []
-            for i in range(self.nr):
-                self.fuelgrain.append(FuelGrain(i, indx, indxfuelrod, reactor))
 
     #----------------------------------------------------------------------------------------------
     # create right-hand side list: self is a 'fuel' object created in B1B
@@ -90,10 +83,6 @@ class Fuel:
 
         # construct right-hand side list
         rhs = []
-        if 'fuelgrain' in reactor.solve and indx == 0 and indxfuelrod == 0:
-            for i in range(self.nr):
-                if i == 0:
-                    rhs += self.fuelgrain[indx].calculate_rhs(reactor, t)
 
         # FUEL PROPERTIES:
         self.prop = {'rho':[], 'cp':[], 'k':[]}

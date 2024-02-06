@@ -6,7 +6,6 @@
 #             Structure
 #             FuelRod
 #                Fuel
-#                   FuelGrain
 #                InnerGas
 #                Clad
 #         Fluid
