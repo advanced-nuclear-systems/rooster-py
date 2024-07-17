@@ -7,11 +7,11 @@ The ROOSTER projects aims at developing a software for multi-physics modeling of
 - pip3 install CoolProp
 - pip3 install pyinstaller
 
-2. Clone the code: `git clone https://github.com/armstrong-dev/rooster.git` or download and unpack ZIP.
+2. Clone the code: `git clone https://github.com/rooster-code/rooster.git or download and unpack ZIP.
 
 3. Compile Fortran source to the `.so` library by running `compile` or `compile_noOMP` batch file. Note that `gfortran` compiler should be installed.
 
-4. Launch ROOSTER by entering `python3 A_rooster.py`.
+4. Launch ROOSTER by `python rooster.py`.
 
 5. Find the results in the `output` directory.
 
@@ -19,7 +19,4 @@ The ROOSTER projects aims at developing a software for multi-physics modeling of
 
 ROOSTER has not yet been tested for Windows.
 
-More details are at https://armstrong-dev.github.io/index.html#rooster.
-
-## How to push to armstrong-dev
-git push rooster main
+More details are at https://rooster-code.github.io/.
