@@ -1,7 +1,7 @@
-from B3A_isotope import Isotope
-from B3B_mix import Mix
+from A3A_isotope import Isotope
+from A3B_mix import Mix
 
-import B3_coreF
+import A3_coreF
 import numpy
 import sys
 import time

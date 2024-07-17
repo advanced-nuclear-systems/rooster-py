@@ -1,5 +1,5 @@
-from B1A_heatstructure import HeatStructure
-from B1B_fuelrod import FuelRod
+from A1A_heatstructure import HeatStructure
+from A1B_fuelrod import FuelRod
 
 #--------------------------------------------------------------------------------------------------
 class Solid:

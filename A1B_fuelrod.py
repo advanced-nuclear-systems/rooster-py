@@ -1,8 +1,8 @@
 import sys
 
-from B1B0_fuel import Fuel
-from B1B1_innergas import InnerGas
-from B1B2_clad import Clad
+from A1B0_fuel import Fuel
+from A1B1_innergas import InnerGas
+from A1B2_clad import Clad
 
 #--------------------------------------------------------------------------------------------------
 class FuelRod:

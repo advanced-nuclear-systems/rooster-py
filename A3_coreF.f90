@@ -1187,6 +1187,7 @@ end do
 imap = imap - 1
 
 end subroutine
+
 !--------------------------------------------------------------------------------------------------
 ! Diffusion terms (mlt and dif) in different nodalizations and different directions
 !
