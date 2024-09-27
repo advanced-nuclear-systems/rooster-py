@@ -1,0 +1,20 @@
+<<<<<<< HEAD
+__pycache__
+_f2py
+*.pyc
+*.o
+*.exe
+*.pdf
+/input*
+lsodes
+output
+*.zip
+gitignore
+*.so
+DATA*
+build
+dist
+*.spec
+slurm-*
+/log
+.vscode

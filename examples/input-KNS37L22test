@@ -1,0 +1,446 @@
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# ROOSTER input: KNS-37 bundle - L22 Test
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     tstart(s)
+t0        -40.
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     tend(s)   dtout(s)
+tend      20.00      0.100
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# TOLERANCES
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     rtol      atol
+tol       1e-4      1e-4
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# SOLVERS
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+solve     fluid
+solve     fuelrod
+solve     htstr
+solve     powertable
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# MATERIALS
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        type      p0(Pa)    temp0(K)
+mat       NA       na        1.045e5    653.15
+#
+#####     id        type          temp0(K)
+mat       SS316     ss316         653.15
+mat       NICR      NiCr          653.15
+mat       MGO       MgO           653.15
+mat       BN        bn            653.15
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# SECONDARY WATER SYSTEM
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     dhyd(m)     len(m)   dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    UNHEATED-L  NA      0.00536    0.200      1      1.17000e-3     4      1.317    0.79915
+#####     from        to          signal
+jun-i     UNHEATED-L  HEATED-i01
+#####     from        to          signal
+jun       UNHEATED-L  HEATED-e01
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i01  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e01  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i01 GRID01
+#####     from        to          signal
+jun       HEATED-e01 GRID01
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    GRID01      NA      0.00536    0.016      1      1.17000e-3     1      1.317    0.79915
+#####     from        to          signal
+jun-i     GRID01  HEATED-i02
+#####     from        to          signal
+jun       GRID01  HEATED-e02
+
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i02  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e02  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i02 GRID02
+#####     from        to          signal
+jun       HEATED-e02 GRID02
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    GRID02      NA      0.00536    0.016      1      1.17000e-3     1      1.317    0.79915
+#####     from        to          signal
+jun-i     GRID02  HEATED-i03
+#####     from        to          signal
+jun       GRID02  HEATED-e03
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i03  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e03  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i03 GRID03
+#####     from        to          signal
+jun       HEATED-e03 GRID03
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    GRID03      NA      0.00536    0.016      1      1.17000e-3     1      1.317    0.79915
+#####     from        to          signal
+jun-i     GRID03  HEATED-i04
+#####     from        to          signal
+jun       GRID03  HEATED-e04
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i04  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e04  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i04 GRID04
+#####     from        to          signal
+jun       HEATED-e04 GRID04
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    GRID04      NA      0.00536    0.016      1      1.17000e-3     1      1.317    0.79915
+#####     from        to          signal
+jun-i     GRID04  HEATED-i05
+#####     from        to          signal
+jun       GRID04  HEATED-e05
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i05  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e05  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i05 GRID05
+#####     from        to          signal
+jun       HEATED-e05 GRID05
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    GRID05      NA      0.00536    0.016      1      1.17000e-3     1      1.317    0.79915
+#####     from        to          signal
+jun-i     GRID05  HEATED-i06
+#####     from        to          signal
+jun       GRID05  HEATED-e06
+
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-i06  NA      0.00547    0.144      1      0.69590e-3    3      1.317     1.00000
+#####     id        matid     dhyd(m)    len(m)    dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    HEATED-e06  NA      0.00521    0.144      1      0.47410e-3    3      1.317     0.51816
+#####     from        to          signal
+jun       HEATED-i06 UNHEATED-U
+#####     from        to          signal
+jun       HEATED-e06 UNHEATED-U
+#####     id        matid     dhyd(m)     len(m)   dir     areaz(m2)   nnodes     p2d     sb2st
+pipe-b    UNHEATED-U  NA      0.00536    0.450      1      1.17000e-3     9      1.317    0.79915
+
+#####     from        to          signal
+jun       UNHEATED-U  LOOPTOP
+#####     id         matid     dhyd(m)   len(m)    areaz(m2)   signal
+pipe-f    LOOPTOP     NA       0.05068    0.550     2.22e-3    PNATAB
+#####     from      to          signal
+jun-i-f   LOOPTOP    DOWNCOME   MDOT_NA
+#####     id         matid     dhyd(m)   len(m)    dir      areaz(m2)    nnodes    signal
+pipe-t    DOWNCOME   NA       0.05068    1.550     -1      2.22000e-3     1      TEMP_NA
+#####     from        to        signal
+jun       DOWNCOME   UNHEATED-L
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Initial reactor power
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+power0    720.0e+03
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Heater
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid matid matid  rx      rx      rx      rx  nrx  nrx  nrx  frx  frx  frx
+fuel      F37       MGO   NICR  BN    0.0 1.46e-3 1.75e-3 2.35e-3   3    1    3    0.   1.   0.
+fuel      F37-d     MGO   NICR  BN    0.0 1.46e-3 1.75e-3 2.35e-3   3    1    3    0.   0.   0. # Dummy rod
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Cladding
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     ri(m)      ro(m)       nr
+clad      CSTL      SS316     2.40e-3    3.00e-3      3   # CLADDING
+#
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# HEATER
+##---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+## FUEL AT GRID
+######      id      fuelid      hgap      cladid      p2d        mltpl     pipeid    pipenode    kr       kz
+fuelrod    ROD_GD01   F37      5.00e5      CSTL       1.30        37       GRID01      1        1.0     0.956241428
+fuelrod    ROD_GD02   F37      5.00e5      CSTL       1.30        37       GRID02      1        1.0     1.232106915
+fuelrod    ROD_GD03   F37      5.00e5      CSTL       1.30        37       GRID03      1        1.0     1.282929531
+fuelrod    ROD_GD04   F37      5.00e5      CSTL       1.30        37       GRID04      1        1.0     1.093264089
+fuelrod    ROD_GD05   F37      5.00e5      CSTL       1.30        37       GRID05      1        1.0     0.720750639
+## FUEL OF INNER CORE
+######      id      fuelid      hgap      cladid      p2d        mltpl     pipeid    pipenode    kr       kz
+fuelrod    PINI01     F37      5.00e5      CSTL       1.30        27       HEATED-i01    1        1.0     0.628125039
+fuelrod    PINI02     F37      5.00e5      CSTL       1.30        27       HEATED-i01    2        1.0     0.758026444
+fuelrod    PINI03     F37      5.00e5      CSTL       1.30        27       HEATED-i01    3        1.0     0.880465796
+fuelrod    PINI04     F37      5.00e5      CSTL       1.30        27       HEATED-i02    1        1.0     1.026225694
+fuelrod    PINI05     F37      5.00e5      CSTL       1.30        27       HEATED-i02    2        1.0     1.118457571
+fuelrod    PINI06     F37      5.00e5      CSTL       1.30        27       HEATED-i02    3        1.0     1.193132467
+fuelrod    PINI07     F37      5.00e5      CSTL       1.30        27       HEATED-i03    1        1.0     1.261851565
+fuelrod    PINI08     F37      5.00e5      CSTL       1.30        27       HEATED-i03    2        1.0     1.288384295
+fuelrod    PINI09     F37      5.00e5      CSTL       1.30        27       HEATED-i03    3        1.0     1.292600750
+fuelrod    PINI10     F37      5.00e5      CSTL       1.30        27       HEATED-i04    1        1.0     1.263395053
+fuelrod    PINI11     F37      5.00e5      CSTL       1.30        27       HEATED-i04    2        1.0     1.216165238
+fuelrod    PINI12     F37      5.00e5      CSTL       1.30        27       HEATED-i04    3        1.0     1.148641855
+fuelrod    PINI13     F37      5.00e5      CSTL       1.30        27       HEATED-i05    1        1.0     1.030387085
+fuelrod    PINI14     F37      5.00e5      CSTL       1.30        27       HEATED-i05    2        1.0     0.923748047
+fuelrod    PINI15     F37      5.00e5      CSTL       1.30        27       HEATED-i05    3        1.0     0.805005438
+fuelrod    PINI16     F37      5.00e5      CSTL       1.30        27       HEATED-i06    1        1.0     0.630883203
+fuelrod    PINI17     F37      5.00e5      CSTL       1.30        27       HEATED-i06    2        1.0     0.491600000
+
+
+## FUEL OF EDGE CORE
+######      id      fuelid      hgap      cladid      p2d        mltpl     pipeid    pipenode    kr       kz
+fuelrod    PINO01     F37      5.00e5      CSTL       1.30        10       HEATED-e01    1        1.0     0.628125039
+fuelrod    PINO02     F37      5.00e5      CSTL       1.30        10       HEATED-e01    2        1.0     0.758026444
+fuelrod    PINO03     F37      5.00e5      CSTL       1.30        10       HEATED-e01    3        1.0     0.880465796
+fuelrod    PINO04     F37      5.00e5      CSTL       1.30        10       HEATED-e02    1        1.0     1.026225694
+fuelrod    PINO05     F37      5.00e5      CSTL       1.30        10       HEATED-e02    2        1.0     1.118457571
+fuelrod    PINO06     F37      5.00e5      CSTL       1.30        10       HEATED-e02    3        1.0     1.193132467
+fuelrod    PINO07     F37      5.00e5      CSTL       1.30        10       HEATED-e03    1        1.0     1.261851565
+fuelrod    PINO08     F37      5.00e5      CSTL       1.30        10       HEATED-e03    2        1.0     1.288384295
+fuelrod    PINO09     F37      5.00e5      CSTL       1.30        10       HEATED-e03    3        1.0     1.292600750
+fuelrod    PINO10     F37      5.00e5      CSTL       1.30        10       HEATED-e04    1        1.0     1.263395053
+fuelrod    PINO11     F37      5.00e5      CSTL       1.30        10       HEATED-e04    2        1.0     1.216165238
+fuelrod    PINO12     F37      5.00e5      CSTL       1.30        10       HEATED-e04    3        1.0     1.148641855
+fuelrod    PINO13     F37      5.00e5      CSTL       1.30        10       HEATED-e05    1        1.0     1.030387085
+fuelrod    PINO14     F37      5.00e5      CSTL       1.30        10       HEATED-e05    2        1.0     0.923748047
+fuelrod    PINO15     F37      5.00e5      CSTL       1.30        10       HEATED-e05    3        1.0     0.805005438
+fuelrod    PINO16     F37      5.00e5      CSTL       1.30        10       HEATED-e06    1        1.0     0.630883203
+fuelrod    PINO17     F37      5.00e5      CSTL       1.30        10       HEATED-e06    2        1.0     0.491600000
+## FUEL OF UPPER UNHEATED SECTION
+######      id      fuelid      hgap      cladid      p2d        mltpl     pipeid    pipenode    kr       kz
+fuelrod    ROD_51     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    1        0.0     0.000000000
+fuelrod    ROD_52     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    2        0.0     0.000000000
+fuelrod    ROD_53     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    3        0.0     0.000000000
+fuelrod    ROD_54     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    4        0.0     0.000000000
+fuelrod    ROD_55     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    5        0.0     0.000000000
+fuelrod    ROD_56     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    6        0.0     0.000000000
+fuelrod    ROD_57     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    7        0.0     0.000000000
+fuelrod    ROD_58     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    8        0.0     0.000000000
+fuelrod    ROD_59     F37-d    5.00e5      CSTL       1.30        37       UNHEATED-U    9        0.0     0.000000000
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Heat structure
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id        matid     ri(m)     ro(m)      nr        bcleft    bcright   mltpl
+htstr     DW101     SS316     0.0253    0.0280     3         DI101     DO101       1
+htstr     DW102     SS316     0.0253    0.0280     3         DI102     DO102       1
+htstr     DW103     SS316     0.0253    0.0280     3         DI103     DO103       1
+htstr     DW104     SS316     0.0253    0.0280     3         DI104     DO104       1
+htstr     DW105     SS316     0.0253    0.0280     3         DI105     DO105       1
+htstr     DW106     SS316     0.0253    0.0280     3         DI106     DO106       1
+htstr     DW107     SS316     0.0253    0.0280     3         DI107     DO107       1
+htstr     DW108     SS316     0.0253    0.0280     3         DI108     DO108       1
+htstr     DW109     SS316     0.0253    0.0280     3         DI109     DO109       1
+htstr     DW110     SS316     0.0253    0.0280     3         DI110     DO110       1
+htstr     DW111     SS316     0.0253    0.0280     3         DI111     DO111       1
+htstr     DW112     SS316     0.0253    0.0280     3         DI112     DO112       1
+htstr     DW113     SS316     0.0253    0.0280     3         DI113     DO113       1
+htstr     DW114     SS316     0.0253    0.0280     3         DI114     DO114       1
+htstr     DW115     SS316     0.0253    0.0280     3         DI115     DO115       1
+htstr     DW116     SS316     0.0253    0.0280     3         DI116     DO116       1
+htstr     DW117     SS316     0.0253    0.0280     3         DI117     DO117       1
+htstr     DW118     SS316     0.0253    0.0280     3         DI118     DO118       1
+htstr     DW119     SS316     0.0253    0.0280     3         DI119     DO119       1
+htstr     DW120     SS316     0.0253    0.0280     3         DI120     DO120       1
+htstr     DW121     SS316     0.0253    0.0280     3         DI121     DO121       1
+htstr     DW122     SS316     0.0253    0.0280     3         DI122     DO122       1
+# #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# # thermal boundary conditions
+# #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# #####     id        type    pipe      pipenode
+thermbc   DI101     2       HEATED-e01      1
+thermbc   DI102     2       HEATED-e01      2
+thermbc   DI103     2       HEATED-e01      3
+thermbc   DI104     2       GRID01          1
+thermbc   DI105     2       HEATED-e02      1
+thermbc   DI106     2       HEATED-e02      2
+thermbc   DI107     2       HEATED-e02      3
+thermbc   DI108     2       GRID02          1
+thermbc   DI109     2       HEATED-e03      1
+thermbc   DI110     2       HEATED-e03      2
+thermbc   DI111     2       HEATED-e03      3
+thermbc   DI112     2       GRID03          1
+thermbc   DI113     2       HEATED-e04      1
+thermbc   DI114     2       HEATED-e04      2
+thermbc   DI115     2       HEATED-e04      3
+thermbc   DI116     2       GRID04          1
+thermbc   DI117     2       HEATED-e05      1
+thermbc   DI118     2       HEATED-e05      2
+thermbc   DI119     2       HEATED-e05      3
+thermbc   DI120     2       GRID05          1
+thermbc   DI121     2       HEATED-e06      1
+thermbc   DI122     2       HEATED-e06      2
+
+# #####     id        type      qflux
+thermbc   DO101     0          0.0
+thermbc   DO102     0          0.0
+thermbc   DO103     0          0.0
+thermbc   DO104     0          0.0
+thermbc   DO105     0          0.0
+thermbc   DO106     0          0.0
+thermbc   DO107     0          0.0
+thermbc   DO108     0          0.0
+thermbc   DO109     0          0.0
+thermbc   DO110     0          0.0
+thermbc   DO111     0          0.0
+thermbc   DO112     0          0.0
+thermbc   DO113     0          0.0
+thermbc   DO114     0          0.0
+thermbc   DO115     0          0.0
+thermbc   DO116     0          0.0
+thermbc   DO117     0          0.0
+thermbc   DO118     0          0.0
+thermbc   DO119     0          0.0
+thermbc   DO120     0          0.0
+thermbc   DO121     0          0.0
+thermbc   DO122     0          0.0
+
+# #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# # thermal boundary conditions
+# #---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+# Signals
+#---- ----1---- ----2---- ----3---- ----4---- ----5---- ----6---- ----7---- ----8---- ----9---- ----0----
+#####     id         type      value
+signal    TIME       time
+signal    TEMP_NA   lookup TIME &
+          653.15        0      &  
+          653.15       2000.0  
+signal    DTMAXTAB   lookup TIME &
+          0.100      -1000.00  &
+          0.100       0.00000  &
+          0.010       0.00001  &
+          0.010       9.00000  &
+          0.010      1000.000  &
+          0.010      100000.0
+signal    PNATAB    constant   1.045e5
+
+signal    MDOT_IN   lookup TIME &
+          3.41000  -2000.000    &
+          3.41000  -100.0000    &
+          3.41000   -50.0000    &
+          3.41000   0.000951    &
+          3.06325   0.233440    &
+          2.62798   0.692140    &
+          2.15076   1.367620    &
+          1.69452   2.325860    &
+          1.36413   3.387780    &
+          1.09563   4.638210    &
+          0.84915   6.256220    &
+          0.73588   7.032240    &
+          0.75161   7.186180    &
+          0.69183   7.324420    &
+          0.72854   7.421820    &
+          0.65092   7.622890    &
+          0.69602   7.783120    &
+          0.59953   7.933930    &
+          0.64987   8.084730    &
+          0.56492   8.273240    &
+          0.57436   8.508870    &
+          0.4422    8.763350    &
+          0.22719   9.152930    &
+          0.05099   9.423130    &
+          0.02267   9.523660    &
+          0.06253   9.614780    &
+          0.21985   9.696460    &
+          0.38137   9.797000    &
+          0.46213   9.891250    &
+          0.4915    10.18029    &
+          0.54184   10.46620    &
+          0.53765   10.91233    &
+          0.48311   11.27991    &
+          0.42228   11.78260    &
+          0.45059   12.05907    &
+          0.43906   12.27900    &
+          0.40549   12.54919    &
+          0.38766   13.06130    &
+          0.35305   13.88444    &
+          0.31949   14.71701    &
+          0.27649   15.93288    &
+          0.24502   17.00737    &
+          0.20622   18.76047    &
+          0.19153   19.25687    &
+          0.18000   20.26224
+
+signal    MDOT_OUT   lookup TIME &
+          3.41000  -2000.000    &
+          3.41000  -100.0000    &
+          3.41000   -50.0000    &
+          3.41000   0.000951    &
+          3.06325   0.233440    &
+          2.62798   0.692140    &
+          2.15076   1.367620    &
+          1.69452   2.325860    &
+          1.36413   3.387780    &
+          1.09563   4.638210    &
+          0.97606   5.52797     &
+          0.93723   5.72741     &
+          0.91083   5.95624     &
+          0.88597   6.16207     &
+          0.88442   6.25923     &
+          0.92791   6.33849     &
+          0.87821   6.40497     &
+          0.93257   6.50213     &
+          0.84869   6.65937     &
+          0.86578   6.74503     &
+          0.84869   6.92912     &
+          0.92170   6.99176     &
+          0.77569   7.126       &
+          0.88597   7.28324     &
+          0.70890   7.44049     &
+          0.91083   7.56577     &
+          0.60328   7.7358      &
+          0.92636   7.87259     &
+          0.57221   8.06563     &
+          0.83472   8.20881     &
+          0.63279   8.47856     &
+          0.73997   8.56549     &
+          0.77103   8.66777     &
+          0.71356   8.7547      &
+          0.62347   8.84291     &
+          0.66075   8.94135     &
+          0.71045   9.04106     &
+          0.65920   9.14334     &
+          0.56134   9.24305     &
+          0.62036   9.34533     &
+          0.45416   9.47189     &
+          0.36252   9.62019     &
+          0.19166   9.66621     &
+          0.12332   9.7851      &
+          0.20098   9.84774     &
+          0.08138   9.91806     &
+          0.31282   10.02289    &
+          0.29107   10.11749    &
+          0.17147   10.23127    &
+          0.21651   10.45244    &
+          0.26311   10.61863    &
+          0.21185   10.86281    &
+          0.22428   11.11849    &
+          0.33922   11.35628    &
+          0.45882   11.60173    &
+          0.49766   11.81267    &
+          0.39669   12.0952     &
+          0.36252   12.31125    &
+          0.41378   12.62191    &
+          0.36873   12.82518    &
+          0.37495   13.0131     &
+          0.35305   13.88444    &
+          0.31949   14.71701    &
+          0.27649   15.93288    &
+          0.24502   17.00737    &
+          0.20622   18.76047    &
+          0.19153   19.25687    &
+          0.18000   20.26224
+
+signal    MDOT_NA   formula (MDOT_IN + MDOT_OUT)/2.0
+      
+signal    POWTAB     lookup TIME &
+          1.00000  -2000.0000  &
+          1.00000   -120.0000  &
+          1.00000   -100.0000  &
+          1.00000      9.4500  &
+          0.00000      9.7500  &
+          0.00000   100000.00
