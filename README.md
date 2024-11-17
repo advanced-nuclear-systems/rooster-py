@@ -2,21 +2,36 @@
 
 The ROOSTER projects aims at developing a software for multi-physics modeling of Generation-IV Sodium Fast Reactor.
 
-## How to install and execute on Linux
-1. Install dependencies:
-- pip3 install CoolProp
-- pip3 install pyinstaller
+## How to install on Linux
+1. Clone the code:
+   `git clone https://github.com/advanced-nuclear-systems/rooster-py.git`
+   or download and unpack ZIP.
 
-2. Clone the code: `git clone https://github.com/rooster-code/rooster.git or download and unpack ZIP.
+2. Create virtual environment:
+   `python -m  venv venv-rooster`
 
-3. Compile Fortran source to the `.so` library by running `compile` or `compile_noOMP` batch file. Note that `gfortran` compiler should be installed.
+3. Activate it:
+   `source venv-rooster/bin/activate`
 
-4. Launch ROOSTER by `python rooster.py`.
+4. Update pip
+   `pip install --upgrade pip`
 
-5. Find the results in the `output` directory.
+5. Install dependencies:
+   `pip install CoolProp`
+   `pip install pyinstaller`
 
-6. if you want to package this source code into a executable code, please install pyinstaller and uncomment corresponding lines in the `compile`
+6. Compile Fortran source to the `.so` library by running 
+   `python _compile.py`
 
-ROOSTER has not yet been tested for Windows.
+Notes: 
+- The `gfortran` compiler should be installed.
+- If you want to pack the source code into an executable code, uncomment corresponding lines in the `_compile.py`
+- ROOSTER has not yet been tested for Windows.
+- More details are at https://advanced-nuclear-systems.github.io/.
 
-More details are at https://rooster-code.github.io/.
+## How to execute on Linux
+1. Launch ROOSTER
+   `python rooster.py`.
+
+2. Find the results in the `output` directory.
+
