@@ -18,3 +18,4 @@ dist
 slurm-*
 /log
 .vscode
+/venv-rooster
